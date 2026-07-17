@@ -126,7 +126,7 @@ let consumerChatSessions = [];
 let activeSessionId = null;
 
 // ==========================================
-// HỆ THỐNG ĐIỀU KHIỂN ĐÓNG/MỞ SIDEBAR (ĐÃ ĐỒNG BỘ)
+// HỆ THỐNG ĐIỀU KHIỂN ĐÓNG/MỞ SIDEBAR (ĐÃ ĐƯỢC FIX)
 // ==========================================
 function initCollapsibleSidebarLogic() {
   const sidebarPanel = document.getElementById('sidebar-panel');
@@ -135,16 +135,25 @@ function initCollapsibleSidebarLogic() {
 
   if (!sidebarPanel || !btnClose || !btnOpen) return;
 
-  // Khi bấm nút Thu gọn (<<)
+  // 1. Khi bấm nút Thu gọn (<<)
   btnClose.addEventListener('click', () => {
-    sidebarPanel.classList.add('sidebar-collapsed');
-    btnOpen.classList.remove('hidden'); // Kích hoạt nút Lịch sử xuất hiện
+    // Xóa các class chiếm diện tích của Tailwind để ép thu về 0px triệt để
+    sidebarPanel.classList.remove('w-80', 'p-5', 'border-r');
+    sidebarPanel.classList.add('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
+
+    // Kích hoạt nút Lịch sử xuất hiện
+    btnOpen.classList.remove('hidden');
   });
 
-  // Khi bấm nút Mở rộng (>> Lịch sử)
+  // 2. Khi bấm nút Mở rộng (>> Lịch sử)
   btnOpen.addEventListener('click', () => {
-    sidebarPanel.classList.remove('sidebar-collapsed');
-    btnOpen.classList.add('hidden'); // Ẩn nút đi cho thoáng diện tích
+    // Gỡ bỏ trạng thái ẩn hoàn toàn
+    sidebarPanel.classList.remove('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
+    // Khôi phục đầy đủ layout ban đầu của sidebar
+    sidebarPanel.classList.add('w-80', 'p-5', 'border-r');
+
+    // Ẩn nút đi cho thoáng diện tích
+    btnOpen.classList.add('hidden');
   });
 }
 
