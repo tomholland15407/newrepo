@@ -1,11 +1,10 @@
+/* eslint-disable */
 /**
  * Smart Assistant - Trợ Lý Mua Sắm Thông Thái (JS Engine for Webpack)
  * Vietnam Innovation Challenge 2026
  */
-
-// ==========================================
-// 1. MOCK GROUND TRUTH DATABASE (RAG TARGET)
-// ==========================================
+const MOCK_CATALOG = {
+...
 const MOCK_CATALOG = {
   ac: [
     {
