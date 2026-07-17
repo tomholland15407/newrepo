@@ -2,7 +2,7 @@
 /**
  * Smart Assistant - Trợ Lý Mua Sắm Thông Thái (JS Engine for Webpack)
  * Vietnam Innovation Challenge 2026
- * Hệ thống màu đồng bộ: Walmart Blue & Gold, Blibli Sky, Cdiscount Coral
+ * Hệ thống màu đồng bộ kép Dark & Light cho mọi kịch bản Demo
  */
 
 const MOCK_CATALOG = {
@@ -228,11 +228,11 @@ function analyzeLinguisticSlang(text) {
     const regex = new RegExp(`\\b${key}\\b`, 'gi');
     if (regex.test(lowerText)) {
       const pill = document.createElement('div');
-      pill.className = 'flex items-center justify-between bg-brand-panel px-2.5 py-1.5 rounded text-[11px] border border-brand-border';
+      pill.className = 'flex items-center justify-between bg-white dark:bg-brand-panel px-2.5 py-1.5 rounded text-[11px] border border-slate-200 dark:border-brand-border transition-colors duration-300 shadow-sm';
       pill.innerHTML = `
-        <span class="text-brand-gold font-semibold">"${key}"</span>
-        <i class="fa-solid fa-arrow-right text-[10px] text-slate-500"></i>
-        <span class="text-brand-electric font-medium">${val}</span>
+        <span class="text-brand-gold font-bold">"${key}"</span>
+        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400"></i>
+        <span class="text-brand-electric font-bold">${val}</span>
       `;
       slangDiv.appendChild(pill);
       detected = true;
@@ -241,18 +241,18 @@ function analyzeLinguisticSlang(text) {
 
   if (lowerText.includes('ngựa') || lowerText.includes('hp')) {
     const pill = document.createElement('div');
-    pill.className = 'flex items-center justify-between bg-brand-panel px-2.5 py-1.5 rounded text-[11px] border border-brand-border';
+    pill.className = 'flex items-center justify-between bg-white dark:bg-brand-panel px-2.5 py-1.5 rounded text-[11px] border border-slate-200 dark:border-brand-border transition-colors duration-300 shadow-sm';
     pill.innerHTML = `
-      <span class="text-brand-gold font-semibold">"Ngựa / HP"</span>
-      <i class="fa-solid fa-arrow-right text-[10px] text-slate-500"></i>
-      <span class="text-brand-success font-medium">Quy đổi: 1 HP ≈ 9000 BTU</span>
+      <span class="text-brand-gold font-bold">"Ngựa / HP"</span>
+      <i class="fa-solid fa-arrow-right text-[10px] text-slate-400"></i>
+      <span class="text-brand-success font-bold">1 HP ≈ 9000 BTU</span>
     `;
     slangDiv.appendChild(pill);
     detected = true;
   }
 
   if (!detected) {
-    slangDiv.innerHTML = `<span class="text-slate-500 italic text-[11px]">Chưa phát hiện từ viết tắt trong câu...</span>`;
+    slangDiv.innerHTML = `<span class="text-slate-400 dark:text-slate-500 italic text-[11px]">Chưa phát hiện từ viết tắt...</span>`;
   }
 }
 
@@ -271,19 +271,19 @@ function scrollChatToBottom() {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// CẬP NHẬT TRẠNG THÁI GÕ CHỮ CỦA MASCOT (DÙNG MASCOT.PNG MỚI)
+// CẬP NHẬT TRẠNG THÁI GÕ CHỮ CỦA MASCOT (HỖ TRỢ DUAL-THEME)
 function showTypingIndicator() {
   const chatBox = document.getElementById('chat-box');
   const indicatorHtml = `
     <div id="typing-indicator" class="flex items-start space-x-3 message-fade-in">
-      <div class="w-10 h-10 rounded-xl bg-white border border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+      <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
         <img src="img/mascot.png" alt="Mascot Typing..." class="w-full h-full object-contain p-0.5 animate-pulse" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
-      <div class="bg-brand-panel text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-brand-border">
+      <div class="bg-white dark:bg-brand-panel text-slate-400 dark:text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border transition-colors duration-300">
         <div class="flex items-center space-x-1 py-1">
-          <span class="w-2.5 h-2.5 bg-slate-500 rounded-full typing-dot"></span>
-          <span class="w-2.5 h-2.5 bg-slate-500 rounded-full typing-dot"></span>
-          <span class="w-2.5 h-2.5 bg-slate-500 rounded-full typing-dot"></span>
+          <span class="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full typing-dot"></span>
+          <span class="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full typing-dot"></span>
+          <span class="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full typing-dot"></span>
         </div>
       </div>
     </div>
@@ -304,12 +304,12 @@ function appendUserMessage(text) {
   const messageHtml = `
     <div class="flex items-start space-x-3 justify-end message-fade-in">
       <div class="space-y-1 max-w-[80%]">
-        <div class="bg-brand-cobalt text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md border border-brand-cobalt/40">
+        <div class="bg-brand-cobalt text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md border border-brand-cobalt/20">
           <p class="text-sm leading-relaxed">${text}</p>
         </div>
-        <div class="text-[10px] text-slate-500 text-right pr-2">Đã gửi</div>
+        <div class="text-[10px] text-slate-400 dark:text-slate-500 text-right pr-2">Đã gửi</div>
       </div>
-      <div class="w-9 h-9 rounded-xl bg-brand-panel border border-brand-border flex items-center justify-center shrink-0">
+      <div class="w-9 h-9 rounded-xl bg-white dark:bg-brand-panel border border-slate-200 dark:border-brand-border flex items-center justify-center shrink-0 transition-colors duration-300 shadow-sm">
         <i class="fa-solid fa-user text-brand-electric text-sm"></i>
       </div>
     </div>
@@ -318,25 +318,28 @@ function appendUserMessage(text) {
   scrollChatToBottom();
 }
 
-// ĐỒNG BỘ ẢNH CHUYÊN NGHIỆP TRONG CHAT
+// KHỞI TẠO TIN NHẮN TỪ TRỢ LÝ (HỖ TRỢ TRẠNG THÁI MÀU SÁNG/TỐI)
 function appendAssistantMessage(htmlContent) {
   const chatBox = document.getElementById('chat-box');
   const messageHtml = `
     <div class="flex items-start space-x-3 message-fade-in">
-      <div class="w-10 h-10 rounded-xl bg-white border border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+      <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
         <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
-        <div class="bg-brand-panel text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-brand-border">
+        <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border transition-colors duration-300">
           ${htmlContent}
         </div>
-        <span class="text-[10px] text-slate-500 pl-2">Phản hồi từ RAG Engine</span>
+        <span class="text-[10px] text-slate-400 dark:text-slate-500 pl-2">Phản hồi từ RAG Engine</span>
       </div>
     </div>
   `;
   chatBox.insertAdjacentHTML('beforeend', messageHtml);
   scrollChatToBottom();
 }
+
+// Gắn xuất API toàn cục để nút trong Chat có thể gọi hàm ngoài webpack dễ dàng
+window.appendAssistantMessage = appendAssistantMessage;
 
 // ==========================================
 // 5. CHAT SUBMISSION PROCESS (MAIN PIPELINE)
@@ -438,7 +441,7 @@ function processResponseLogic(userInput, latency) {
 
   if (sessionState.stage === 'PROBING') {
     document.getElementById('chat-stage').textContent = 'Đang Hỏi Ngược';
-    document.getElementById('chat-stage').className = 'font-semibold text-brand-gold';
+    document.getElementById('chat-stage').className = 'font-bold text-brand-gold';
 
     extractDataIntoContext(lowerInput);
 
@@ -486,7 +489,7 @@ function processResponseLogic(userInput, latency) {
 
   if (sessionState.stage === 'RECOMMENDATION') {
     document.getElementById('chat-stage').textContent = 'So Sánh & Đề Xuất';
-    document.getElementById('chat-stage').className = 'font-semibold text-brand-success';
+    document.getElementById('chat-stage').className = 'font-bold text-brand-success';
 
     updateSidebarLogs('catalog', true);
     updateSidebarLogs('promo', true);
@@ -521,18 +524,18 @@ function triggerMissingDataResponse() {
   updateSidebarLogs('catalog', false);
   appendAssistantMessage(`
     <div class="space-y-2">
-      <div class="flex items-center space-x-2 text-brand-coral font-semibold text-sm">
-        <i class="fa-solid fa-circle-exclamation"></i>
+      <div class="flex items-center space-x-2 text-brand-coral font-bold text-sm">
+        <i class="fa-solid fa-circle-exclamation animate-bounce"></i>
         <span>Sản phẩm này hiện đang cập nhật cơ sở dữ liệu...</span>
       </div>
-      <p class="text-sm text-slate-300">
+      <p class="text-sm text-slate-600 dark:text-slate-300">
         Kho hàng RAG thử nghiệm trong phân khu Demo của dự án hiện chưa lưu trữ thông số kỹ thuật hoặc bảng giá của hãng sản xuất này.
       </p>
-      <p class="text-sm text-slate-300">
+      <p class="text-sm text-slate-600 dark:text-slate-300">
         Để nhận thông tin chính xác 100%, em xin phép <strong>chuyển hướng kết nối trực tiếp anh/chị với tư vấn viên siêu thị</strong> gần nhất để gọi điện hỗ trợ chỉ sau 2 phút được không ạ?
       </p>
       <div class="flex space-x-2 pt-2">
-        <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ đã gửi thông tin thành công! Tư vấn viên Điện Máy Xanh sẽ gọi lại hỗ trợ ngay lập tức ạ.</p>')" class="bg-brand-cobalt hover:bg-brand-electric text-white text-xs px-3.5 py-2 rounded font-medium transition-all">
+        <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ đã gửi thông tin thành công! Tư vấn viên Điện Máy Xanh sẽ gọi lại hỗ trợ ngay lập tức ạ.</p>')" class="bg-brand-cobalt hover:bg-brand-electric text-white text-xs px-3.5 py-2 rounded font-semibold transition-all">
           Gặp nhân viên tư vấn ngay
         </button>
       </div>
@@ -590,11 +593,11 @@ window.resetConversation = function () {
   const chatBox = document.getElementById('chat-box');
   chatBox.innerHTML = `
     <div class="flex items-start space-x-3 message-fade-in">
-      <div class="w-10 h-10 rounded-xl bg-white border border-brand-border flex items-center justify-center shrink-0 shadow-md overflow-hidden">
+      <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center shrink-0 shadow-md overflow-hidden">
         <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="space-y-1 max-w-[80%]">
-        <div class="bg-brand-panel text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-brand-border">
+        <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border transition-colors duration-300">
           <p class="text-sm leading-relaxed">
             Dạ, phiên hội thoại đã được khởi động lại thành công. Toàn bộ tài liệu RAG và cơ chế chống ảo giác đã được thiết lập lại từ đầu ạ! ⚙️
           </p>
@@ -602,7 +605,7 @@ window.resetConversation = function () {
             Anh/chị muốn tư vấn so sánh Máy lạnh, Tủ lạnh hay Laptop của thương hiệu nào ạ? Hãy nhắn cho em nhé.
           </p>
         </div>
-        <span class="text-[10px] text-slate-500 pl-2">Vừa mới gửi</span>
+        <span class="text-[10px] text-slate-400 dark:text-slate-500 pl-2">Vừa mới gửi</span>
       </div>
     </div>
   `;
@@ -611,13 +614,13 @@ window.resetConversation = function () {
   resetCollectedData();
   document.getElementById('active-category').textContent = 'Chưa xác định';
   document.getElementById('chat-stage').textContent = 'Khởi tạo';
-  document.getElementById('chat-stage').className = 'font-semibold text-brand-gold';
-  document.getElementById('slang-inspector').innerHTML = `<span class="text-slate-500 italic text-[11px]">Chưa phát hiện từ viết tắt...</span>`;
-  document.getElementById('rag-catalog-status').className = 'text-slate-500';
+  document.getElementById('chat-stage').className = 'font-bold text-brand-gold';
+  document.getElementById('slang-inspector').innerHTML = `<span class="text-slate-400 dark:text-slate-500 italic text-[11px]">Chưa phát hiện từ viết tắt...</span>`;
+  document.getElementById('rag-catalog-status').className = 'text-slate-400 dark:text-slate-500';
   document.getElementById('rag-catalog-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất`;
-  document.getElementById('rag-promo-status').className = 'text-slate-500';
+  document.getElementById('rag-promo-status').className = 'text-slate-400 dark:text-slate-500';
   document.getElementById('rag-promo-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất`;
-  document.getElementById('rag-faq-status').className = 'text-slate-500';
+  document.getElementById('rag-faq-status').className = 'text-slate-400 dark:text-slate-500';
   document.getElementById('rag-faq-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất`;
   document.getElementById('latency-val').textContent = '0ms';
 };
@@ -639,10 +642,10 @@ function updateSidebarLogs(system, active) {
   if (!targetEl) return;
 
   if (active) {
-    targetEl.className = 'text-brand-success font-semibold flex items-center';
+    targetEl.className = 'text-brand-success font-bold flex items-center';
     targetEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-brand-success inline-block mr-2 pulse-green"></span>Truy xuất OK`;
   } else {
-    targetEl.className = 'text-brand-gold font-semibold flex items-center';
+    targetEl.className = 'text-brand-gold font-bold flex items-center';
     targetEl.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1.5"></i>Đang gọi API`;
   }
 }
@@ -668,7 +671,7 @@ function translateSpecToBenefit(specName, specVal) {
   return dictionary[specName] ? dictionary[specName][specVal] : '';
 }
 
-// HÀM HIỂN THỊ THẺ SO SÁNH SẢN PHẨM CHUYÊN NGHIỆP VỚI CÁC GAM MÀU ACCENT SÁNG GIÁ
+// HÀM HIỂN THỊ THẺ SO SÁNH SẢN PHẨM CHUYÊN NGHIỆP HỖ TRỢ DUAL-THEME ĐỒNG BỘ HOÀN HẢO
 function generateTop3Recommendations(category) {
   const products = MOCK_CATALOG[category];
   let htmlResult = `
@@ -686,16 +689,16 @@ function generateTop3Recommendations(category) {
     const gift = MOCK_PROMOTIONS.discounts[product.id] || 'Không áp dụng quà tặng đi kèm';
     const stockText =
       product.stock > 0
-        ? `<span class="text-brand-success font-medium">Còn hàng (${product.stock} máy tại siêu thị)</span>`
-        : `<span class="text-brand-coral font-medium">Hết hàng tạm thời (No Stock)</span>`;
+        ? `<span class="text-brand-success font-semibold">Còn hàng (${product.stock} máy tại siêu thị)</span>`
+        : `<span class="text-brand-coral font-semibold">Hết hàng tạm thời (No Stock)</span>`;
 
     let benefitHighlight = '';
     let tradeoffHighlight = '';
 
     if (category === 'ac') {
       benefitHighlight = `
-        <div class="text-xs text-slate-300 space-y-1 bg-brand-dark/50 p-2.5 rounded border border-brand-border">
-          <p class="text-[11px] text-brand-success font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
+        <div class="text-xs text-slate-700 dark:text-slate-300 space-y-1 bg-slate-50 dark:bg-brand-dark/50 p-2.5 rounded-lg border border-slate-200 dark:border-brand-border">
+          <p class="text-[11px] text-brand-success font-bold uppercase tracking-wider">Lợi ích thực tế:</p>
           <p>• Phù hợp hoàn hảo cho không gian <strong>${product.room_size}</strong>.</p>
           <p>• ${translateSpecToBenefit('inverter', product.inverter)}</p>
           <p>• Độ ồn tối đa chỉ <strong>${product.noise}</strong>.</p>
@@ -709,8 +712,8 @@ function generateTop3Recommendations(category) {
             : 'Công suất 1 HP chỉ khuyên dùng cho không gian dưới 15m², nếu phòng bị nắng rát chiếu trực tiếp hướng Tây vào buổi trưa thì máy sẽ mất nhiều thời gian để làm mát sâu.';
     } else if (category === 'fridge') {
       benefitHighlight = `
-        <div class="text-xs text-slate-300 space-y-1 bg-brand-dark/50 p-2.5 rounded border border-brand-border">
-          <p class="text-[11px] text-brand-success font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
+        <div class="text-xs text-slate-700 dark:text-slate-300 space-y-1 bg-slate-50 dark:bg-brand-dark/50 p-2.5 rounded-lg border border-slate-200 dark:border-brand-border">
+          <p class="text-[11px] text-brand-success font-bold uppercase tracking-wider">Lợi ích thực tế:</p>
           <p>• Dung tích <strong>${product.liters} Lít</strong>, tối ưu cho <strong>${product.family_size}</strong>.</p>
           <p>• ${product.cooling}</p>
         </div>
@@ -724,8 +727,8 @@ function generateTop3Recommendations(category) {
     } else if (category === 'laptop') {
       const is16GB = product.id === 'laptop-lenovo-03';
       benefitHighlight = `
-        <div class="text-xs text-slate-300 space-y-1 bg-brand-dark/50 p-2.5 rounded border border-brand-border">
-          <p class="text-[11px] text-brand-success font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
+        <div class="text-xs text-slate-700 dark:text-slate-300 space-y-1 bg-slate-50 dark:bg-brand-dark/50 p-2.5 rounded-lg border border-slate-200 dark:border-brand-border">
+          <p class="text-[11px] text-brand-success font-bold uppercase tracking-wider">Lợi ích thực tế:</p>
           <p>• Trọng lượng mỏng nhẹ <strong>${product.weight}</strong> dễ dàng mang đi học nhóm.</p>
           <p>• Màn hình sắc nét <strong>${product.screen}</strong> bảo vệ mắt tốt.</p>
           ${is16GB ? `<p>• ${translateSpecToBenefit('ram_16gb', true)}</p>` : `<p>• RAM 8GB đáp ứng trọn vẹn mọi nhu cầu văn phòng mượt mà.</p>`}
@@ -740,8 +743,8 @@ function generateTop3Recommendations(category) {
     }
 
     htmlResult += `
-      <!-- THẺ SẢN PHẨM ${idx + 1} SỬ DỤNG CLASS ĐỒNG BỘ MÀU CHUYỂN ĐỔI -->
-      <div class="trade-off-card bg-brand-dark rounded-xl p-4 border border-brand-border flex flex-col justify-between space-y-3">
+      <!-- THẺ SẢN PHẨM HỖ TRỢ DUAL-THEME ĐỒNG BỘ TOÀN DIỆN -->
+      <div class="trade-off-card bg-slate-50 dark:bg-brand-dark rounded-xl p-4 border border-slate-200 dark:border-brand-border flex flex-col justify-between space-y-3 transition-all duration-300 shadow-sm dark:shadow-none">
         <div>
           <div class="flex justify-between items-start mb-2">
             <span class="px-2 py-0.5 text-[10px] font-bold bg-brand-electric/10 text-brand-electric border border-brand-electric/20 rounded">
@@ -750,13 +753,13 @@ function generateTop3Recommendations(category) {
             ${isInstallmentZero ? `<span class="px-2 py-0.5 text-[10px] font-bold bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded">Góp 0%</span>` : ''}
           </div>
 
-          <h3 class="font-bold text-xs text-white line-clamp-2 min-h-[32px]">${product.name}</h3>
+          <h3 class="font-bold text-xs text-slate-900 dark:text-white line-clamp-2 min-h-[32px] transition-colors duration-300">${product.name}</h3>
 
-          <div class="mt-2 text-base font-extrabold text-white">
+          <div class="mt-2 text-base font-extrabold text-brand-cobalt dark:text-white transition-colors duration-300">
             ${formatVND(product.price)}
           </div>
 
-          <div class="mt-1 text-[11px] text-slate-400">
+          <div class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
             Trạng thái: ${stockText}
           </div>
 
@@ -766,20 +769,20 @@ function generateTop3Recommendations(category) {
           </div>
 
           <!-- Section Phân tích Trade-off sử dụng màu Coral của Cdiscount -->
-          <div class="mt-3 space-y-1 bg-brand-coral/5 p-2.5 rounded border border-brand-coral/10 text-xs text-slate-300">
-            <p class="text-[11px] text-brand-coral font-semibold uppercase tracking-wider flex items-center">
+          <div class="mt-3 space-y-1 bg-brand-coral/5 p-2.5 rounded-lg border border-brand-coral/15 text-xs text-slate-700 dark:text-slate-300">
+            <p class="text-[11px] text-brand-coral font-bold uppercase tracking-wider flex items-center">
               <i class="fa-solid fa-triangle-exclamation mr-1"></i> Điểm cần cân nhắc (Trade-off):
             </p>
             <p class="leading-relaxed text-[11px]">${tradeoffHighlight}</p>
           </div>
         </div>
 
-        <!-- Quà tặng & Action chọn mua sử dụng màu Cobalt của Cdiscount -->
-        <div class="pt-2 border-t border-brand-border space-y-2">
-          <div class="text-[11px] text-slate-400">
-            🎁 <strong>Quà tặng đi kèm:</strong> <span class="text-slate-200">${gift}</span>
+        <!-- Quà tặng & Action chọn mua -->
+        <div class="pt-2 border-t border-slate-200 dark:border-brand-border space-y-2">
+          <div class="text-[11px] text-slate-500 dark:text-slate-400">
+            🎁 <strong>Quà tặng đi kèm:</strong> <span class="text-slate-700 dark:text-slate-200 font-medium">${gift}</span>
           </div>
-          <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ em đã thêm <strong>${product.name}</strong> vào danh sách so sánh của anh/chị kèm bộ quà tặng khuyến mãi đặc quyền Điện Máy Xanh rồi nhé ạ!</p>')" class="w-full bg-brand-panel hover:bg-brand-cobalt hover:text-white text-xs py-2 rounded border border-brand-border hover:border-brand-cobalt font-medium transition-all duration-200">
+          <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ em đã thêm <strong>${product.name}</strong> vào danh sách so sánh của anh/chị kèm bộ quà tặng khuyến mãi đặc quyền Điện Máy Xanh rồi nhé ạ!</p>')" class="w-full bg-white dark:bg-brand-panel hover:bg-brand-cobalt hover:text-white text-xs py-2 rounded-lg border border-slate-200 dark:border-brand-border hover:border-brand-cobalt font-semibold transition-all duration-200 shadow-sm">
             Chọn Mua / Nhận Tư Vấn Sâu
           </button>
         </div>
