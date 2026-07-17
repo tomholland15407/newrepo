@@ -5,8 +5,7 @@
 
 // ==========================================
 // 1. MOCK GROUND TRUTH DATABASE (RAG TARGET)
-// ==========================================
-const MOCK_CATALOG = {
+// ==========================================const MOCK_CATALOG = {
   ac: [
     {
       id: 'ac-pana-01',
@@ -106,7 +105,7 @@ const MOCK_CATALOG = {
       inverter: false,
       cooling: 'Làm lạnh trực tiếp bằng mạch khí',
       saving: 'Không có Inverter, điện năng tiêu tốn nhiều nếu mở liên tục',
-      stock: 0, // Hết hàng để kiểm nghiệm Anti-Hallucination
+      stock: 0,
       raw_specs: {
         shelves: 'Nhựa cứng',
         design: 'Mini gọn nhẹ',
@@ -153,8 +152,7 @@ const MOCK_CATALOG = {
       brand: 'Lenovo',
       weight: '1.43kg',
       screen: '14 inch viền hơi dày',
-      usage:
-        'Đa nhiệm cực khủng với 16GB RAM không lo giật lag, gõ văn bản êm tay',
+      usage: 'Đa nhiệm cực khủng với 16GB RAM không lo giật lag, gõ văn bản êm tay',
       battery: '3 - 4 tiếng dùng liên tục',
       stock: 22,
       raw_specs: {
@@ -176,14 +174,10 @@ const MOCK_PROMOTIONS = {
 };
 
 const MOCK_FAQ = {
-  'bảo hành máy lạnh':
-    'Dạ, tất cả các dòng máy lạnh Panasonic và Daikin tại hệ thống được bảo hành chính hãng tại nhà 1 năm toàn bộ máy và 5 năm cho máy nén ạ. Casper bảo hành 2 năm.',
-  'bảo hành điều hòa':
-    'Dạ, tất cả các dòng máy lạnh Panasonic và Daikin tại hệ thống được bảo hành chính hãng tại nhà 1 năm toàn bộ máy và 5 năm cho máy nén ạ. Casper bảo hành 2 năm.',
-  'giao hàng':
-    'Dạ, miễn phí vận chuyển nội thành Đà Nẵng và các tỉnh có chi nhánh Điện Máy Xanh trong vòng 10km ạ. Giao lắp ngay trong ngày.',
-  'trả góp':
-    'Dạ, hiện hệ thống hỗ trợ trả góp 0% lãi suất thông qua thẻ tín dụng hoặc các công ty tài chính (Home Credit, HD Saison) với thủ tục chỉ cần CCCD gắn chip ạ.',
+  'bảo hành máy lạnh': 'Dạ, tất cả các dòng máy lạnh Panasonic và Daikin tại hệ thống được bảo hành chính hãng tại nhà 1 năm toàn bộ máy và 5 năm cho máy nén ạ. Casper bảo hành 2 năm.',
+  'bảo hành điều hòa': 'Dạ, tất cả các dòng máy lạnh Panasonic và Daikin tại hệ thống được bảo hành chính hãng tại nhà 1 năm toàn bộ máy và 5 năm cho máy nén ạ. Casper bảo hành 2 năm.',
+  'giao hàng': 'Dạ, miễn phí vận chuyển nội thành Đà Nẵng và các tỉnh có chi nhánh Điện Máy Xanh trong vòng 10km ạ. Giao lắp ngay trong ngày.',
+  'trả góp': 'Dạ, hiện hệ thống hỗ trợ trả góp 0% lãi suất thông qua thẻ tín dụng hoặc các công ty tài chính (Home Credit, HD Saison) với thủ tục chỉ cần CCCD gắn chip ạ.',
 };
 
 // ==========================================
@@ -191,7 +185,7 @@ const MOCK_FAQ = {
 // ==========================================
 let sessionState = {
   stage: 'INIT', // INIT -> PROBING -> RECOMMENDATION -> DONE
-  category: null, // "ac", "fridge", "laptop"
+  category: null, // 'ac', 'fridge', 'laptop'
   collectedData: {
     budget: null,
     roomSize: null,
@@ -231,12 +225,10 @@ function analyzeLinguisticSlang(text) {
   let detected = false;
 
   for (const [key, val] of Object.entries(SLANG_MAP)) {
-    // Sử dụng Regex để định vị chuẩn xác từ viết tắt độc lập, không bị lẫn vào từ khác
     const regex = new RegExp(`\\b${key}\\b`, 'gi');
     if (regex.test(lowerText)) {
       const pill = document.createElement('div');
-      pill.className =
-        'flex items-center justify-between bg-slate-800 px-2 py-1 rounded text-[11px] border border-slate-700/50';
+      pill.className = 'flex items-center justify-between bg-slate-800 px-2 py-1 rounded text-[11px] border border-slate-700/50';
       pill.innerHTML = `
         <span class="text-accent-amber font-semibold">"${key}"</span>
         <i class="fa-solid fa-arrow-right text-[10px] text-slate-500"></i>
@@ -247,11 +239,9 @@ function analyzeLinguisticSlang(text) {
     }
   }
 
-  // Phân tích thêm đơn vị "ngựa" cho điều hòa
   if (lowerText.includes('ngựa') || lowerText.includes('hp')) {
     const pill = document.createElement('div');
-    pill.className =
-      'flex items-center justify-between bg-slate-800 px-2 py-1 rounded text-[11px] border border-slate-700/50';
+    pill.className = 'flex items-center justify-between bg-slate-800 px-2 py-1 rounded text-[11px] border border-slate-700/50';
     pill.innerHTML = `
       <span class="text-accent-amber font-semibold">"Ngựa / HP"</span>
       <i class="fa-solid fa-arrow-right text-[10px] text-slate-500"></i>
@@ -266,7 +256,6 @@ function analyzeLinguisticSlang(text) {
   }
 }
 
-// Hàm chuyển định dạng tiền tệ Việt Nam Đồng
 function formatVND(amount) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
     .format(amount)
@@ -357,20 +346,13 @@ function handleUserSubmit(event) {
   const rawInput = inputEl.value.trim();
   if (!rawInput) return;
 
-  // 1. Gửi tin nhắn lên khung chat
   appendUserMessage(rawInput);
   inputEl.value = '';
-
-  // 2. Chạy bộ phân tích từ lóng ra sidepanel
   analyzeLinguisticSlang(rawInput);
-
-  // 3. Hiển thị hoạt ảnh typing
   showTypingIndicator();
 
-  // 4. Giả lập độ trễ đạt chuẩn Hackathon (Hỏi thường < 3s, So sánh < 5s)
-  const isCompareRequest =
-    detectCompareKeyword(rawInput) || sessionState.stage === 'PROBING';
-  const latency = isCompareRequest ? 1600 : 750; // Giả lập thời gian phản hồi thực tế của LLM
+  const isCompareRequest = detectCompareKeyword(rawInput) || sessionState.stage === 'PROBING';
+  const latency = isCompareRequest ? 1600 : 750;
 
   setTimeout(() => {
     removeTypingIndicator();
@@ -390,29 +372,22 @@ function detectCompareKeyword(text) {
 }
 
 function processResponseLogic(userInput, latency) {
-  // Đồng bộ độ trễ thực tế ra Sidebar
   document.getElementById('latency-val').textContent = `${latency}ms`;
-
   const lowerInput = userInput.toLowerCase();
 
-  // Hàng rào chặn ảo giác: Phát hiện từ khóa sản phẩm không có trong Catalog (Anti-Hallucination)
   if (detectUnknowSpecsOrPrices(lowerInput)) {
     triggerMissingDataResponse();
     return;
   }
 
-  // Xử lý các câu hỏi FAQ chính sách (bảo hành, lắp đặt, vận chuyển, trả góp)
   for (const [key, faqAns] of Object.entries(MOCK_FAQ)) {
     if (lowerInput.includes(key)) {
       updateSidebarLogs('faq', true);
-      appendAssistantMessage(
-        `<p class="text-sm leading-relaxed">${faqAns}</p>`,
-      );
+      appendAssistantMessage(`<p class="text-sm leading-relaxed">${faqAns}</p>`);
       return;
     }
   }
 
-  // KHỞI CHẠY TIẾN TRÌNH: NHẬN DIỆN NGÀNH HÀNG KHÁCH HÀNG ĐANG HỎI
   if (sessionState.stage === 'INIT') {
     if (
       lowerInput.includes('máy lạnh') ||
@@ -443,7 +418,6 @@ function processResponseLogic(userInput, latency) {
       sessionState.stage = 'PROBING';
       document.getElementById('active-category').textContent = 'Laptop';
     } else {
-      // Ngoài phạm vi demo của 3 ngành hàng
       appendAssistantMessage(`
         <p class="text-sm">Dạ, Trợ lý Thông thái hiện đang sẵn sàng cơ sở dữ liệu để tư vấn cho mình về 3 ngành hàng: <strong>Máy lạnh (Điều hòa), Tủ lạnh và Laptop</strong> ạ. 💻❄️</p>
         <p class="text-sm mt-2">Anh/chị có thể cho em hỏi mình đang muốn nâng cấp cho không gian sống hay sắm thiết bị phục vụ học tập/làm việc để em tư vấn chi tiết nhất nhé ạ?</p>
@@ -452,13 +426,10 @@ function processResponseLogic(userInput, latency) {
     }
   }
 
-  // TIẾN TRÌNH HỎI NGƯỢC (STEP 1: PROACTIVE PROBING)
   if (sessionState.stage === 'PROBING') {
     document.getElementById('chat-stage').textContent = 'Đang Hỏi Ngược';
-    document.getElementById('chat-stage').className =
-      'font-semibold text-accent-orange';
+    document.getElementById('chat-stage').className = 'font-semibold text-accent-orange';
 
-    // Trích xuất ngân sách nếu có (ví dụ: "dưới 15 củ")
     extractDataIntoContext(lowerInput);
 
     if (sessionState.category === 'ac') {
@@ -468,7 +439,7 @@ function processResponseLogic(userInput, latency) {
           <p class="text-sm">Dạ, máy lạnh tại hệ thống đang có rất nhiều dòng tiết kiệm điện cực xịn sò ạ!</p>
           <p class="text-sm mt-2">Để em chọn được dòng máy chạy êm và có công suất **ngựa (HP)** vừa vặn nhất, anh/chị cho em hỏi <strong>diện tích phòng ngủ/phòng khách</strong> của mình khoảng bao nhiêu mét vuông (m²) vậy ạ? Và phòng mình có bị hướng nắng nóng chiếu trực tiếp vào không anh/chị?</p>
         `);
-        sessionState.collectedData.roomSize = 'WAITING'; // Set cờ đợi câu trả lời diện tích
+        sessionState.collectedData.roomSize = 'WAITING';
         return;
       } else if (sessionState.collectedData.roomSize === 'WAITING') {
         parseRoomSizeAndSun(lowerInput);
@@ -503,27 +474,22 @@ function processResponseLogic(userInput, latency) {
     }
   }
 
-  // TIẾN TRÌNH XUẤT ĐỀ XUẤT TOP 3 VÀ PHÂN TÍCH ĐÁNH ĐỔI (STEP 3: RECOMMENDATION)
   if (sessionState.stage === 'RECOMMENDATION') {
     document.getElementById('chat-stage').textContent = 'So Sánh & Đề Xuất';
-    document.getElementById('chat-stage').className =
-      'font-semibold text-accent-green';
+    document.getElementById('chat-stage').className = 'font-semibold text-accent-green';
 
-    // Đồng bộ hoàn thành tiến trình RAG lên sidepanel
     updateSidebarLogs('catalog', true);
     updateSidebarLogs('promo', true);
 
     const recommendedHtml = generateTop3Recommendations(sessionState.category);
     appendAssistantMessage(recommendedHtml);
 
-    // Chuyển máy trạng thái về ban đầu để người dùng có thể hỏi tiếp
     sessionState.stage = 'INIT';
     sessionState.category = null;
     resetCollectedData();
   }
 }
 
-// Kiểm tra chống ảo giác: Tránh bịa đặt các dòng máy ngoài catalog
 function detectUnknowSpecsOrPrices(input) {
   const productExclusions = [
     'iphone',
@@ -541,7 +507,6 @@ function detectUnknowSpecsOrPrices(input) {
   return false;
 }
 
-// Phản hồi của hàng rào chống ảo giác (Anti-Hallucination Guardrail Response)
 function triggerMissingDataResponse() {
   updateSidebarLogs('catalog', false);
   appendAssistantMessage(`
@@ -557,7 +522,7 @@ function triggerMissingDataResponse() {
         Để có câu trả lời chính xác nhất, em xin phép <strong>kết nối trực tiếp anh/chị với nhân viên hỗ trợ trực tuyến</strong> hoặc lưu lại thông tin để gọi điện thoại tư vấn ngay sau 5 phút không ạ?
       </p>
       <div class="flex space-x-2 pt-2">
-        <button type="button" onclick="window.appendAssistantMessage('<p class=\'text-sm\'>Dạ đã chuyển tiếp yêu cầu! Nhân viên tư vấn Điện Máy Xanh sẽ gọi lại hỗ trợ ngay lập tức ạ.</p>')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs px-3 py-1.5 rounded font-medium transition-all">
+        <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ đã chuyển tiếp yêu cầu! Nhân viên tư vấn Điện Máy Xanh sẽ gọi lại hỗ trợ ngay lập tức ạ.</p>')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs px-3 py-1.5 rounded font-medium transition-all">
           Gặp Nhân Viên Tư Vấn
         </button>
       </div>
@@ -565,7 +530,6 @@ function triggerMissingDataResponse() {
   `);
 }
 
-// Bóc tách ngân sách của người dùng
 function extractDataIntoContext(text) {
   if (text.includes('triệu') || text.includes('tr') || text.includes('củ')) {
     const numbers = text.match(/\d+/g);
@@ -580,7 +544,7 @@ function parseRoomSizeAndSun(text) {
   if (match && match.length > 0) {
     sessionState.collectedData.roomSize = parseInt(match[0]);
   } else {
-    sessionState.collectedData.roomSize = 12; // Mặc định nếu người dùng gõ chữ không kèm số
+    sessionState.collectedData.roomSize = 12;
   }
   sessionState.collectedData.sunExposure =
     text.includes('nắng') ||
@@ -611,7 +575,6 @@ function resetCollectedData() {
   };
 }
 
-// Làm mới cuộc hội thoại
 window.resetConversation = function () {
   const chatBox = document.getElementById('chat-box');
   chatBox.innerHTML = `
@@ -637,23 +600,17 @@ window.resetConversation = function () {
   resetCollectedData();
   document.getElementById('active-category').textContent = 'Chưa xác định';
   document.getElementById('chat-stage').textContent = 'Khởi tạo';
-  document.getElementById('chat-stage').className =
-    'font-semibold text-accent-amber';
-  document.getElementById('slang-inspector').innerHTML =
-    `<span class="text-slate-500 italic">Chưa phát hiện từ viết tắt...</span>`;
+  document.getElementById('chat-stage').className = 'font-semibold text-accent-amber';
+  document.getElementById('slang-inspector').innerHTML = `<span class="text-slate-500 italic">Chưa phát hiện từ viết tắt...</span>`;
   document.getElementById('rag-catalog-status').className = 'text-slate-500';
-  document.getElementById('rag-catalog-status').innerHTML =
-    `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
+  document.getElementById('rag-catalog-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
   document.getElementById('rag-promo-status').className = 'text-slate-500';
-  document.getElementById('rag-promo-status').innerHTML =
-    `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
+  document.getElementById('rag-promo-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
   document.getElementById('rag-faq-status').className = 'text-slate-500';
-  document.getElementById('rag-faq-status').innerHTML =
-    `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
+  document.getElementById('rag-faq-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
   document.getElementById('latency-val').textContent = '0ms';
 };
 
-// Đổ nhanh dữ liệu demo cho BGK
 window.fillQuickPrompt = function (promptText) {
   const inputEl = document.getElementById('user-input');
   inputEl.value = promptText;
@@ -687,8 +644,7 @@ function translateSpecToBenefit(specName, specVal) {
   const dictionary = {
     inverter: {
       true: 'Công nghệ biến tần Inverter vượt trội: Giúp máy vận hành siêu êm ái, giảm tối đa tiếng ồn cục nóng ngoài trời và cực kỳ tiết kiệm điện năng tiêu thụ hàng tháng cho gia đình.',
-      false:
-        'Không có Inverter: Dễ tốn điện hơn nếu sử dụng liên tục trên 6 tiếng mỗi ngày.',
+      false: 'Không có Inverter: Dễ tốn điện hơn nếu sử dụng liên tục trên 6 tiếng mỗi ngày.',
     },
     screen_oled: {
       true: 'Màn hình OLED cao cấp: Cho dải màu rực rỡ, độ tương phản sâu xem phim giải trí cực đã mắt, chống mỏi mắt cho người học bài ban đêm.',
@@ -714,11 +670,8 @@ function generateTop3Recommendations(category) {
   `;
 
   products.forEach((product, idx) => {
-    const isInstallmentZero = MOCK_PROMOTIONS.installment_0.includes(
-      product.id,
-    );
-    const gift =
-      MOCK_PROMOTIONS.discounts[product.id] || 'Không áp dụng quà tặng đi kèm';
+    const isInstallmentZero = MOCK_PROMOTIONS.installment_0.includes(product.id);
+    const gift = MOCK_PROMOTIONS.discounts[product.id] || 'Không áp dụng quà tặng đi kèm';
     const stockText =
       product.stock > 0
         ? `<span class="text-accent-green font-medium">Còn hàng (${product.stock} máy tại siêu thị)</span>`
