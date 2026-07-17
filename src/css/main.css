@@ -1,0 +1,26 @@
+/* Hiệu ứng nhún nhảy thư giãn kiểu RPG idle animation */
+@keyframes mascot-bounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.02); /* Nhấc nhẹ lên và phồng nhẹ */
+  }
+}
+
+/* Hiệu ứng lắc lư vali khi đang tải dữ liệu (Casting RAG state) */
+@keyframes mascot-march {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Đăng ký các class tiện ích để gọi trực tiếp từ HTML */
+.animate-mascot-idle {
+  animation: mascot-bounce 3s ease-in-out infinite;
+}
+
+.animate-mascot-cast {
+  animation: mascot-march 0.5s ease-in-out infinite;
+}

@@ -4,8 +4,6 @@
  * Vietnam Innovation Challenge 2026
  */
 const MOCK_CATALOG = {
-...
-const MOCK_CATALOG = {
   ac: [
     {
       id: 'ac-pana-01',
@@ -271,12 +269,13 @@ function scrollChatToBottom() {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+// CẬP NHẬT TRẠNG THÁI GÕ CHỮ CỦA MASCOT
 function showTypingIndicator() {
   const chatBox = document.getElementById('chat-box');
   const indicatorHtml = `
     <div id="typing-indicator" class="flex items-start space-x-3 message-fade-in">
-      <div class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
-        <i class="fa-solid fa-robot text-slate-400 text-sm"></i>
+      <div class="w-10 h-10 rounded-xl bg-white border border-slate-700/50 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+        <img src="img/mascot.jpg" alt="Mascot Typing..." class="w-full h-full object-contain p-0.5 animate-pulse" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="bg-slate-800 text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-700/50">
         <div class="flex items-center space-x-1 py-1">
@@ -317,12 +316,13 @@ function appendUserMessage(text) {
   scrollChatToBottom();
 }
 
+// CẬP NHẬT AVATAR TIN NHẮN TỚI TỪ AI/RAG ENGINE
 function appendAssistantMessage(htmlContent) {
   const chatBox = document.getElementById('chat-box');
   const messageHtml = `
     <div class="flex items-start space-x-3 message-fade-in">
-      <div class="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center shrink-0 shadow-md">
-        <i class="fa-solid fa-robot text-white text-sm"></i>
+      <div class="w-10 h-10 rounded-xl bg-white border border-slate-700/50 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+        <img src="img/mascot.jpg" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
         <div class="bg-slate-800 text-slate-100 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-700/50">
@@ -359,6 +359,14 @@ function handleUserSubmit(event) {
     processResponseLogic(rawInput, latency);
   }, latency);
 }
+
+// Đăng ký bộ lắng nghe sự kiện Submit cho form Chat
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('chat-form');
+  if (form) {
+    form.addEventListener('submit', handleUserSubmit);
+  }
+});
 
 function detectCompareKeyword(text) {
   const lower = text.toLowerCase();
@@ -575,12 +583,13 @@ function resetCollectedData() {
   };
 }
 
+// LÀM MỚI HỘI THOẠI (RESET) - SỬ DỤNG LẠI AVATAR MASCOT CHÀO MỪNG
 window.resetConversation = function () {
   const chatBox = document.getElementById('chat-box');
   chatBox.innerHTML = `
     <div class="flex items-start space-x-3 message-fade-in">
-      <div class="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center shrink-0 shadow-md">
-        <i class="fa-solid fa-robot text-white text-sm"></i>
+      <div class="w-10 h-10 rounded-xl bg-white border border-slate-700/50 flex items-center justify-center shrink-0 shadow-md overflow-hidden">
+        <img src="img/mascot.jpg" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="space-y-1 max-w-[80%]">
         <div class="bg-slate-800 text-slate-100 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-700/50">
