@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS CDN với cấu hình màu sắc cao cấp từ Walmart, Blibli & Cdiscount -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -20,17 +20,14 @@
         extend: {
           colors: {
             brand: {
-              50: '#f0f7ff',
-              100: '#e0effe',
-              500: '#0284c7',
-              600: '#0369a1',
-              700: '#075985',
-              900: '#0c4a6e',
-            },
-            accent: {
-              orange: '#f97316',
-              green: '#22c55e',
-              amber: '#f59e0b'
+              dark: '#070f1e',        // Nền tối Indigo sâu thẳm (Walmart Deep Navy)
+              panel: '#0f1d36',       // Nền các thẻ Card, Sidebar, Chat Box
+              border: '#1e2e4a',      // Đường viền tinh tế có độ tương phản cao
+              cobalt: '#1d4ed8',      // Cdiscount Blue - Nút nhấn chính, điểm nhấn lớn
+              electric: '#0095da',    // Blibli Dynamic Blue - Trạng thái hoạt động, text quan trọng
+              coral: '#ff3b30',       // Cdiscount Coral Red - Trade-off, cảnh báo, giảm giá sâu
+              gold: '#ffb800',        // Walmart Warm Gold - Trả góp 0%, đề xuất giá trị, sao đánh giá
+              success: '#10b981',     // Success Green - Đèn RAG hoạt động mượt mà, còn hàng
             }
           },
           fontFamily: {
@@ -43,20 +40,20 @@
 
   <!-- CSS TÙY BIẾN NHÚNG TRỰC TIẾP CHỐNG LỖI COMPILER WEBPACK -->
   <style>
-    /* 1. Thanh cuộn mượt mà */
+    /* 1. Thanh cuộn đồng bộ hệ màu Dark Indigo */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #0f172a;
+      background: #070f1e;
     }
     ::-webkit-scrollbar-thumb {
-      background: #1e293b;
+      background: #1e2e4a;
       border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #0284c7;
+      background: #0095da;
     }
 
     /* 2. Hiệu ứng xuất hiện tin nhắn mượt mà */
@@ -99,18 +96,18 @@
     }
     .trade-off-card:hover {
       transform: translateY(-4px);
-      border-color: rgba(2, 132, 199, 0.4);
-      box-shadow: 0 12px 20px -10px rgba(2, 132, 199, 0.15);
+      border-color: rgba(0, 149, 218, 0.4);
+      box-shadow: 0 12px 20px -10px rgba(0, 149, 218, 0.15);
     }
 
     /* 5. Hiệu ứng nhấp nháy đèn trạng thái RAG */
     .pulse-green {
-      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
       animation: pulse-g 1.6s infinite cubic-bezier(0.66, 0, 0, 1);
     }
     @keyframes pulse-g {
       to {
-        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
       }
     }
 
@@ -129,30 +126,30 @@
   </style>
 </head>
 
-<body class="bg-slate-900 text-slate-100 font-sans h-screen flex flex-col overflow-hidden">
+<body class="bg-brand-dark text-slate-200 font-sans h-screen flex flex-col overflow-hidden">
 
   <!-- PHẦN ĐẦU TRANG (HEADER BAR) -->
-  <header class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex justify-between items-center shrink-0">
+  <header class="bg-brand-panel border-b border-brand-border px-6 py-4 flex justify-between items-center shrink-0">
     <div class="flex items-center space-x-3">
-      <!-- THAY THẾ ICON ROBOT BẰNG KHUNG ẢNH MASCOT CÓ HOẠT ẢNH FLOAT -->
-      <div class="w-12 h-12 rounded-xl bg-white p-0.5 shadow-lg shadow-brand-500/20 flex items-center justify-center overflow-hidden border border-brand-100 animate-mascot-float">
+      <!-- Khung ảnh mascot có hoạt ảnh nhún nhảy và nền trong suốt/trắng sang trọng -->
+      <div class="w-12 h-12 rounded-xl bg-white p-0.5 shadow-lg shadow-brand-electric/20 flex items-center justify-center overflow-hidden border border-brand-border animate-mascot-float">
         <img src="img/mascot.png" alt="Dien May Xanh Mascot" class="w-full h-full object-contain rounded-lg" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div>
         <h1 class="font-bold text-lg tracking-wide text-white flex items-center">
           Trợ Lý Mua Sắm Thông Thái
-          <span class="ml-2 px-2 py-0.5 text-xs bg-brand-500/10 text-brand-500 rounded border border-brand-500/20 font-normal">v1.2-Beta</span>
+          <span class="ml-2 px-2 py-0.5 text-xs bg-brand-electric/10 text-brand-electric rounded border border-brand-electric/20 font-normal">v1.3-Retail</span>
         </h1>
-        <p class="text-xs text-slate-400">AI-Powered Shopping Consultant • Điện Máy Xanh Partner</p>
+        <p class="text-xs text-slate-400">AI-Powered Shopping Consultant • Đối Tác Toàn Diện Điện Máy Xanh</p>
       </div>
     </div>
     <div class="flex items-center space-x-4 text-xs">
-      <span class="flex items-center text-accent-green">
-        <span class="w-2 h-2 rounded-full bg-accent-green inline-block mr-2 animate-ping"></span>
-        Hệ thống On-Premise Sẵn Sàng
+      <span class="flex items-center text-brand-success">
+        <span class="w-2 h-2 rounded-full bg-brand-success inline-block mr-2 animate-ping"></span>
+        Hệ thống RAG Sẵn Sàng
       </span>
-      <span class="text-slate-500">|</span>
-      <span class="text-slate-400">Thời gian phản hồi TB: <strong class="text-white">&lt; 3.0s</strong></span>
+      <span class="text-brand-border">|</span>
+      <span class="text-slate-400">Thời gian phản hồi TB: <strong class="text-white">&lt; 2.5s</strong></span>
     </div>
   </header>
 
@@ -160,25 +157,25 @@
   <main class="flex-1 flex overflow-hidden">
 
     <!-- BÊN TRÁI: BẢNG THEO DÕI RAG TRỰC TIẾP (TECHNICAL MONITOR) -->
-    <aside class="w-80 bg-slate-950 border-r border-slate-800 p-5 flex flex-col justify-between overflow-y-auto shrink-0 hidden md:flex">
+    <aside class="w-80 bg-brand-panel border-r border-brand-border p-5 flex flex-col justify-between overflow-y-auto shrink-0 hidden md:flex">
       <div class="space-y-6">
         <div>
           <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Thông Tin Phiên Tư Vấn</h2>
-          <div class="bg-slate-900 rounded-lg p-3.5 border border-slate-800 space-y-2">
+          <div class="bg-brand-dark rounded-lg p-3.5 border border-brand-border space-y-2">
             <div class="flex justify-between text-xs">
-              <span class="text-slate-400">Sản phẩm đang chọn:</span>
-              <span id="active-category" class="font-semibold text-brand-500">Chưa xác định</span>
+              <span class="text-slate-400">Ngành hàng chọn lọc:</span>
+              <span id="active-category" class="font-semibold text-brand-electric">Chưa xác định</span>
             </div>
             <div class="flex justify-between text-xs">
               <span class="text-slate-400">Giai đoạn hội thoại:</span>
-              <span id="chat-stage" class="font-semibold text-accent-amber">Khởi tạo</span>
+              <span id="chat-stage" class="font-semibold text-brand-gold">Khởi tạo</span>
             </div>
           </div>
         </div>
 
         <div>
-          <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Bộ Phân Tích Từ Lóng (Linguistic Parser)</h2>
-          <div class="bg-slate-900 rounded-lg p-3.5 border border-slate-800 space-y-2 text-xs">
+          <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Phân Tích Từ Lóng & Viết Tắt</h2>
+          <div class="bg-brand-dark rounded-lg p-3.5 border border-brand-border space-y-2 text-xs">
             <p class="text-slate-500 italic mb-2">Phát hiện viết tắt & chuẩn hóa ngôn ngữ địa phương:</p>
             <div id="slang-inspector" class="space-y-1 max-h-32 overflow-y-auto">
               <span class="text-slate-500 italic">Chưa phát hiện từ viết tắt...</span>
@@ -188,22 +185,22 @@
 
         <div>
           <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Trạng Thái RAG & Chống Ảo Giác</h2>
-          <div class="bg-slate-900 rounded-lg p-3.5 border border-slate-800 space-y-3 text-xs">
+          <div class="bg-brand-dark rounded-lg p-3.5 border border-brand-border space-y-3 text-xs">
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">1. Truy xuất Catalog:</span>
-              <span id="rag-catalog-status" class="text-slate-500"><i class="fa-solid fa-circle-minus mr-1"></i>Chờ</span>
+              <span class="text-slate-400">1. Kho Dữ Liệu Catalog:</span>
+              <span id="rag-catalog-status" class="text-slate-500 flex items-center"><i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">2. Truy xuất Ưu Đãi:</span>
-              <span id="rag-promo-status" class="text-slate-500"><i class="fa-solid fa-circle-minus mr-1"></i>Chờ</span>
+              <span class="text-slate-400">2. Chương Trình Khuyến Mãi:</span>
+              <span id="rag-promo-status" class="text-slate-500 flex items-center"><i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">3. Chính sách & FAQ:</span>
-              <span id="rag-faq-status" class="text-slate-500"><i class="fa-solid fa-circle-minus mr-1"></i>Chờ</span>
+              <span class="text-slate-400">3. Chính Sách & FAQs:</span>
+              <span id="rag-faq-status" class="text-slate-500 flex items-center"><i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất</span>
             </div>
-            <div class="pt-2 border-t border-slate-800">
-              <p class="text-[10px] text-slate-500">Guardrail Tránh Ảo Giác (Anti-Hallucination Active):</p>
-              <div class="mt-1 flex items-center space-x-1 text-accent-green">
+            <div class="pt-2 border-t border-brand-border">
+              <p class="text-[10px] text-slate-500">Bộ Kiểm Soát Chống Ảo Giác (Guardrails):</p>
+              <div class="mt-1 flex items-center space-x-1 text-brand-success">
                 <i class="fa-solid fa-shield-halved"></i>
                 <span class="text-[11px] font-semibold">Bảo vệ thông tin chính xác 100%</span>
               </div>
@@ -213,9 +210,9 @@
       </div>
 
       <!-- Footer Sidebar -->
-      <div class="pt-4 border-t border-slate-800 space-y-2">
+      <div class="pt-4 border-t border-brand-border space-y-2">
         <div class="flex items-center space-x-2 text-xs text-slate-400">
-          <i class="fa-solid fa-bolt text-brand-500"></i>
+          <i class="fa-solid fa-bolt text-brand-electric"></i>
           <span>Độ trễ API RAG: <strong id="latency-val" class="text-slate-200">0ms</strong></span>
         </div>
         <div class="text-[10px] text-slate-600">
@@ -225,15 +222,15 @@
     </aside>
 
     <!-- BÊN PHẢI: KHUNG CHAT TƯƠNG TÁC (INTERACTIVE CHAT INTERFACE) -->
-    <section class="flex-1 flex flex-col bg-slate-900 relative">
+    <section class="flex-1 flex flex-col bg-brand-dark relative">
 
       <!-- Banner Thông báo Nổi -->
-      <div class="bg-slate-950/40 border-b border-slate-800 px-6 py-2 flex justify-between items-center text-xs text-slate-400 shrink-0">
+      <div class="bg-brand-panel/40 border-b border-brand-border px-6 py-2 flex justify-between items-center text-xs text-slate-400 shrink-0">
         <div class="flex items-center space-x-2">
-          <span class="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-pulse"></span>
-          <span>Khuyên dùng: Nhập nhu cầu thực tế của bạn bằng ngôn ngữ tự nhiên.</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-electric inline-block animate-pulse"></span>
+          <span>Lời khuyên: Nhập nhu cầu thực tế của bạn bằng ngôn ngữ tự nhiên.</span>
         </div>
-        <button onclick="window.resetConversation()" class="hover:text-white transition-colors flex items-center space-x-1 text-[11px] bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded">
+        <button onclick="window.resetConversation()" class="hover:text-white transition-colors flex items-center space-x-1 text-[11px] bg-brand-panel hover:bg-brand-border px-2.5 py-1 rounded border border-brand-border/40">
           <i class="fa-solid fa-rotate-left"></i>
           <span>Làm mới hội thoại</span>
         </button>
@@ -242,22 +239,27 @@
       <!-- Khu vực hiển thị tin nhắn -->
       <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-6">
 
-        <!-- THAY THẾ TIN NHẮN CHÀO MỪNG BAN ĐẦU - DÙNG AVATAR MASCOT CHUYÊN NGHIỆP -->
+        <!-- TIN NHẮN CHÀO MỪNG BAN ĐẦU - DÙNG AVATAR MASCOT PNG TRONG SUỐT -->
         <div class="flex items-start space-x-3 message-fade-in">
-          <div class="w-10 h-10 rounded-xl bg-white border border-slate-700/50 flex items-center justify-center shrink-0 shadow-md overflow-hidden">
+          <div class="w-10 h-10 rounded-xl bg-white border border-brand-border flex items-center justify-center shrink-0 shadow-md overflow-hidden">
             <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
           </div>
           <div class="space-y-1 max-w-[80%]">
-            <div class="bg-slate-800 text-slate-100 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-700/50">
+            <div class="bg-brand-panel text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-brand-border">
               <p class="text-sm leading-relaxed">
-                Dạ, em xin chào anh/chị ạ! Em là <strong>Trợ lý Mua sắm Thông thái</strong> của hệ thống Điện Máy Xanh. 🌟
+                Dạ, em xin chào anh/chị ạ! Em là <strong>Trợ lý Mua sắm Thông thái</strong> đồng hành cùng anh/chị tại hệ thống Điện Máy Xanh. 🌟
               </p>
               <p class="text-sm leading-relaxed mt-2">
-                Em ở đây để hỗ trợ anh/chị lựa chọn các sản phẩm công nghệ và điện máy phù hợp nhất với nhu cầu thực tế của gia đình mình (từ diện tích phòng, số người dùng, ngân sách, hay các băn khoăn về tiết kiệm điện).
+                Em được tích hợp cơ sở dữ liệu thời gian thực (RAG) nhằm hỗ trợ anh/chị lựa chọn các sản phẩm công nghệ và điện máy tối ưu nhất dựa trên nhu cầu, diện tích lắp đặt, số người sử dụng hay hạn mức tài chính của mình.
               </p>
               <p class="text-sm leading-relaxed mt-2">
-                Anh/chị đang có nhu cầu tìm mua sản phẩm nào thế ạ? Em có thể hỗ trợ tư vấn <strong>điều hòa (máy lạnh), tủ lạnh, hoặc laptop</strong> ngay đây ạ!
+                Anh/chị đang cần tìm dòng sản phẩm nào dưới đây để em hỗ trợ tư vấn tức thì ạ?
               </p>
+              <div class="mt-3 flex gap-2 flex-wrap">
+                <span class="px-2.5 py-1 bg-brand-dark rounded text-xs border border-brand-border font-medium text-brand-electric">❄️ Máy lạnh</span>
+                <span class="px-2.5 py-1 bg-brand-dark rounded text-xs border border-brand-border font-medium text-brand-electric">🥦 Tủ lạnh</span>
+                <span class="px-2.5 py-1 bg-brand-dark rounded text-xs border border-brand-border font-medium text-brand-electric">💻 Laptop</span>
+              </div>
             </div>
             <span class="text-[10px] text-slate-500 pl-2">Vừa mới gửi</span>
           </div>
@@ -266,31 +268,31 @@
       </div>
 
       <!-- Thẻ Gợi ý Kịch bản nhanh (Quick Prompts) -->
-      <div class="px-6 py-3 bg-slate-900 border-t border-slate-800/40 shrink-0">
+      <div class="px-6 py-3 bg-brand-panel/30 border-t border-brand-border/40 shrink-0">
         <p class="text-[11px] text-slate-500 mb-2 flex items-center font-semibold">
-          <i class="fa-regular fa-lightbulb text-accent-amber mr-1"></i> Gợi ý kịch bản Demo nhanh cho Ban Giám Khảo:
+          <i class="fa-regular fa-lightbulb text-brand-gold mr-1"></i> Gợi ý các kịch bản Demo nhanh cho Ban Giám Khảo:
         </p>
         <div class="flex flex-wrap gap-2">
-          <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 củ cho phòng ngủ')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95">
+          <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 củ cho phòng ngủ')" class="text-xs bg-brand-panel hover:bg-brand-border border border-brand-border text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95">
             ❄️ "Mua đh pana dưới 15 củ"
           </button>
-          <button onclick="window.fillQuickPrompt('Tìm tủ lạnh tầm 10tr cho nhà 4 người')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95">
+          <button onclick="window.fillQuickPrompt('Tìm tủ lạnh tầm 10tr cho nhà 4 người')" class="text-xs bg-brand-panel hover:bg-brand-border border border-brand-border text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95">
             🥦 "Tủ lạnh tầm 10tr cho 4 người"
           </button>
-          <button onclick="window.fillQuickPrompt('Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95">
+          <button onclick="window.fillQuickPrompt('Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học')" class="text-xs bg-brand-panel hover:bg-brand-border border border-brand-border text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95">
             💻 "Laptop mỏng nhẹ ~15tr"
           </button>
-          <button onclick="window.fillQuickPrompt('Hỏi chính sách bảo hành của máy lạnh daikin')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95">
+          <button onclick="window.fillQuickPrompt('Hỏi chính sách bảo hành của máy lạnh daikin')" class="text-xs bg-brand-panel hover:bg-brand-border border border-brand-border text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95">
             🛡️ "Bảo hành máy lạnh Daikin"
           </button>
         </div>
       </div>
 
       <!-- Ô NHẬP LIỆU GỬI TIN NHẮN (INPUT BAR) -->
-      <footer class="p-4 bg-slate-950 border-t border-slate-800 shrink-0">
+      <footer class="p-4 bg-brand-panel border-t border-brand-border shrink-0">
         <form id="chat-form" class="relative flex items-center">
-          <input type="text" id="user-input" placeholder="Nhập câu hỏi của bạn bằng tiếng Việt tự nhiên... (Ví dụ: 'Cần tìm tl tầm 8tr cho gia đình 3 người ko tốn điện')"
-            class="w-full bg-slate-900 border border-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-slate-100 placeholder-slate-500 text-sm rounded-xl pl-4 pr-24 py-4 focus:outline-none transition-all duration-200"
+          <input type="text" id="user-input" placeholder="Nhập câu hỏi bằng tiếng Việt... (Ví dụ: 'Cần tìm tl tầm 8tr cho gia đình 3 người ko tốn điện')"
+            class="w-full bg-brand-dark border border-brand-border focus:border-brand-electric focus:ring-1 focus:ring-brand-electric text-slate-100 placeholder-slate-500 text-sm rounded-xl pl-4 pr-24 py-4 focus:outline-none transition-all duration-200"
             autocomplete="off" required>
 
           <div class="absolute right-3 flex items-center space-x-2">
@@ -299,7 +301,7 @@
               <i class="fa-solid fa-microphone"></i>
             </button>
             <!-- Send Button -->
-            <button type="submit" class="bg-brand-500 hover:bg-brand-600 text-white font-medium text-sm px-4 py-2 rounded-lg flex items-center space-x-1.5 transition-all shadow-md shadow-brand-500/10">
+            <button type="submit" class="bg-brand-cobalt hover:bg-brand-electric text-white font-medium text-sm px-4 py-2 rounded-lg flex items-center space-x-1.5 transition-all shadow-md shadow-brand-cobalt/10">
               <span>Gửi</span>
               <i class="fa-solid fa-paper-plane text-xs"></i>
             </button>

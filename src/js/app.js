@@ -2,7 +2,9 @@
 /**
  * Smart Assistant - Trợ Lý Mua Sắm Thông Thái (JS Engine for Webpack)
  * Vietnam Innovation Challenge 2026
+ * Hệ thống màu đồng bộ: Walmart Blue & Gold, Blibli Sky, Cdiscount Coral
  */
+
 const MOCK_CATALOG = {
   ac: [
     {
@@ -226,11 +228,11 @@ function analyzeLinguisticSlang(text) {
     const regex = new RegExp(`\\b${key}\\b`, 'gi');
     if (regex.test(lowerText)) {
       const pill = document.createElement('div');
-      pill.className = 'flex items-center justify-between bg-slate-800 px-2 py-1 rounded text-[11px] border border-slate-700/50';
+      pill.className = 'flex items-center justify-between bg-brand-panel px-2.5 py-1.5 rounded text-[11px] border border-brand-border';
       pill.innerHTML = `
-        <span class="text-accent-amber font-semibold">"${key}"</span>
+        <span class="text-brand-gold font-semibold">"${key}"</span>
         <i class="fa-solid fa-arrow-right text-[10px] text-slate-500"></i>
-        <span class="text-green-400 font-medium">${val}</span>
+        <span class="text-brand-electric font-medium">${val}</span>
       `;
       slangDiv.appendChild(pill);
       detected = true;
@@ -239,18 +241,18 @@ function analyzeLinguisticSlang(text) {
 
   if (lowerText.includes('ngựa') || lowerText.includes('hp')) {
     const pill = document.createElement('div');
-    pill.className = 'flex items-center justify-between bg-slate-800 px-2 py-1 rounded text-[11px] border border-slate-700/50';
+    pill.className = 'flex items-center justify-between bg-brand-panel px-2.5 py-1.5 rounded text-[11px] border border-brand-border';
     pill.innerHTML = `
-      <span class="text-accent-amber font-semibold">"Ngựa / HP"</span>
+      <span class="text-brand-gold font-semibold">"Ngựa / HP"</span>
       <i class="fa-solid fa-arrow-right text-[10px] text-slate-500"></i>
-      <span class="text-green-400 font-medium">Quy đổi: 1 Ngựa ≈ 9000 BTU</span>
+      <span class="text-brand-success font-medium">Quy đổi: 1 HP ≈ 9000 BTU</span>
     `;
     slangDiv.appendChild(pill);
     detected = true;
   }
 
   if (!detected) {
-    slangDiv.innerHTML = `<span class="text-slate-500 italic">Chưa phát hiện từ viết tắt trong câu...</span>`;
+    slangDiv.innerHTML = `<span class="text-slate-500 italic text-[11px]">Chưa phát hiện từ viết tắt trong câu...</span>`;
   }
 }
 
@@ -269,15 +271,15 @@ function scrollChatToBottom() {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// CẬP NHẬT TRẠNG THÁI GÕ CHỮ CỦA MASCOT
+// CẬP NHẬT TRẠNG THÁI GÕ CHỮ CỦA MASCOT (DÙNG MASCOT.PNG MỚI)
 function showTypingIndicator() {
   const chatBox = document.getElementById('chat-box');
   const indicatorHtml = `
     <div id="typing-indicator" class="flex items-start space-x-3 message-fade-in">
-      <div class="w-10 h-10 rounded-xl bg-white border border-slate-700/50 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+      <div class="w-10 h-10 rounded-xl bg-white border border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
         <img src="img/mascot.png" alt="Mascot Typing..." class="w-full h-full object-contain p-0.5 animate-pulse" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
-      <div class="bg-slate-800 text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-700/50">
+      <div class="bg-brand-panel text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-brand-border">
         <div class="flex items-center space-x-1 py-1">
           <span class="w-2.5 h-2.5 bg-slate-500 rounded-full typing-dot"></span>
           <span class="w-2.5 h-2.5 bg-slate-500 rounded-full typing-dot"></span>
@@ -302,13 +304,13 @@ function appendUserMessage(text) {
   const messageHtml = `
     <div class="flex items-start space-x-3 justify-end message-fade-in">
       <div class="space-y-1 max-w-[80%]">
-        <div class="bg-brand-600 text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md">
+        <div class="bg-brand-cobalt text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md border border-brand-cobalt/40">
           <p class="text-sm leading-relaxed">${text}</p>
         </div>
         <div class="text-[10px] text-slate-500 text-right pr-2">Đã gửi</div>
       </div>
-      <div class="w-9 h-9 rounded-xl bg-brand-900 border border-brand-500 flex items-center justify-center shrink-0">
-        <i class="fa-solid fa-user text-brand-100 text-sm"></i>
+      <div class="w-9 h-9 rounded-xl bg-brand-panel border border-brand-border flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-user text-brand-electric text-sm"></i>
       </div>
     </div>
   `;
@@ -316,16 +318,16 @@ function appendUserMessage(text) {
   scrollChatToBottom();
 }
 
-// CẬP NHẬT AVATAR TIN NHẮN TỚI TỪ AI/RAG ENGINE
+// ĐỒNG BỘ ẢNH CHUYÊN NGHIỆP TRONG CHAT
 function appendAssistantMessage(htmlContent) {
   const chatBox = document.getElementById('chat-box');
   const messageHtml = `
     <div class="flex items-start space-x-3 message-fade-in">
-      <div class="w-10 h-10 rounded-xl bg-white border border-slate-700/50 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+      <div class="w-10 h-10 rounded-xl bg-white border border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
         <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
-        <div class="bg-slate-800 text-slate-100 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-700/50">
+        <div class="bg-brand-panel text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-brand-border">
           ${htmlContent}
         </div>
         <span class="text-[10px] text-slate-500 pl-2">Phản hồi từ RAG Engine</span>
@@ -352,7 +354,7 @@ function handleUserSubmit(event) {
   showTypingIndicator();
 
   const isCompareRequest = detectCompareKeyword(rawInput) || sessionState.stage === 'PROBING';
-  const latency = isCompareRequest ? 1600 : 750;
+  const latency = isCompareRequest ? 1500 : 600;
 
   setTimeout(() => {
     removeTypingIndicator();
@@ -427,8 +429,8 @@ function processResponseLogic(userInput, latency) {
       document.getElementById('active-category').textContent = 'Laptop';
     } else {
       appendAssistantMessage(`
-        <p class="text-sm">Dạ, Trợ lý Thông thái hiện đang sẵn sàng cơ sở dữ liệu để tư vấn cho mình về 3 ngành hàng: <strong>Máy lạnh (Điều hòa), Tủ lạnh và Laptop</strong> ạ. 💻❄️</p>
-        <p class="text-sm mt-2">Anh/chị có thể cho em hỏi mình đang muốn nâng cấp cho không gian sống hay sắm thiết bị phục vụ học tập/làm việc để em tư vấn chi tiết nhất nhé ạ?</p>
+        <p class="text-sm">Dạ, Trợ lý Thông thái hiện đang kết nối trực tiếp với kho hàng của Điện Máy Xanh để tư vấn cho mình về 3 ngành hàng chính: <strong>Máy lạnh (Điều hòa), Tủ lạnh và Laptop</strong> ạ. 💻❄️</p>
+        <p class="text-sm mt-2">Anh/chị có thể cho em hỏi mình đang muốn mua thiết bị lắp đặt cho gia đình hay sắm máy tính học tập để em tư vấn phân tích chuẩn nhất nhé ạ?</p>
       `);
       return;
     }
@@ -436,7 +438,7 @@ function processResponseLogic(userInput, latency) {
 
   if (sessionState.stage === 'PROBING') {
     document.getElementById('chat-stage').textContent = 'Đang Hỏi Ngược';
-    document.getElementById('chat-stage').className = 'font-semibold text-accent-orange';
+    document.getElementById('chat-stage').className = 'font-semibold text-brand-gold';
 
     extractDataIntoContext(lowerInput);
 
@@ -444,8 +446,8 @@ function processResponseLogic(userInput, latency) {
       if (sessionState.collectedData.roomSize === null) {
         updateSidebarLogs('catalog', false);
         appendAssistantMessage(`
-          <p class="text-sm">Dạ, máy lạnh tại hệ thống đang có rất nhiều dòng tiết kiệm điện cực xịn sò ạ!</p>
-          <p class="text-sm mt-2">Để em chọn được dòng máy chạy êm và có công suất **ngựa (HP)** vừa vặn nhất, anh/chị cho em hỏi <strong>diện tích phòng ngủ/phòng khách</strong> của mình khoảng bao nhiêu mét vuông (m²) vậy ạ? Và phòng mình có bị hướng nắng nóng chiếu trực tiếp vào không anh/chị?</p>
+          <p class="text-sm">Dạ, máy lạnh tại hệ thống đang áp dụng cực nhiều ưu đãi giảm sâu và hỗ trợ trả góp 0% lãi suất ạ! ❄️</p>
+          <p class="text-sm mt-2">Để em chọn lựa máy có công suất <strong>ngựa (HP)</strong> phù hợp, tránh hao tổn điện năng vô ích, anh/chị cho em hỏi <strong>diện tích phòng ngủ hoặc phòng khách</strong> của mình rộng khoảng bao nhiêu m² vậy ạ? Phòng của mình có bị hướng nắng nóng trực tiếp chiếu vào không anh/chị?</p>
         `);
         sessionState.collectedData.roomSize = 'WAITING';
         return;
@@ -457,8 +459,8 @@ function processResponseLogic(userInput, latency) {
       if (sessionState.collectedData.familySize === null) {
         updateSidebarLogs('catalog', false);
         appendAssistantMessage(`
-          <p class="text-sm">Dạ, tủ lạnh là thiết bị tối quan trọng cho gia đình, lựa chọn dung tích lít phù hợp sẽ giúp bảo quản thực phẩm tối ưu và tránh lãng phí điện năng ạ.</p>
-          <p class="text-sm mt-2">Để em lọc sản phẩm chuẩn xác nhất, anh/chị cho em hỏi **nhà mình có khoảng bao nhiêu thành viên** sinh hoạt chung ạ? Và anh/chị mong muốn tầm tài chính khoảng bao nhiêu "củ" đổ lại ạ?</p>
+          <p class="text-sm">Dạ, việc chọn dung tích tủ lạnh phù hợp với số người sẽ giúp giữ thực phẩm luôn tươi ngon và tiết kiệm hóa đơn tiền điện đáng kể ạ. 🥦</p>
+          <p class="text-sm mt-2">Anh/chị cho em hỏi **nhà mình hiện có khoảng bao nhiêu thành viên** sinh hoạt chung ạ? Và ngân sách dự phòng mình muốn đầu tư khoảng dưới bao nhiêu "củ" thế ạ?</p>
         `);
         sessionState.collectedData.familySize = 'WAITING';
         return;
@@ -470,8 +472,8 @@ function processResponseLogic(userInput, latency) {
       if (sessionState.collectedData.usage === null) {
         updateSidebarLogs('catalog', false);
         appendAssistantMessage(`
-          <p class="text-sm">Dạ, laptop mỏng nhẹ mang đi lại cho sinh viên là phân khúc đang có rất nhiều deal hời kèm trả góp 0% lãi suất ạ!</p>
-          <p class="text-sm mt-2">Để em lọc cấu hình mượt mà nhất, ngoài việc học và làm văn phòng thông thường thì bạn có chơi game online hay dùng các phần mềm đồ họa thiết kế nào khác không ạ?</p>
+          <p class="text-sm">Dạ, các phân khúc laptop mỏng nhẹ dành cho học sinh, sinh viên và nhân viên văn phòng đang có giá cực tốt ạ. 💻</p>
+          <p class="text-sm mt-2">Để cấu hình chạy mượt mà nhất trong suốt 4 năm, ngoài học tập và làm văn phòng cơ bản, mình có dùng thêm phần mềm thiết kế đồ họa (như Photoshop, Canva, Premiere) hay chơi các tựa game nào khác không ạ?</p>
         `);
         sessionState.collectedData.usage = 'WAITING';
         return;
@@ -484,7 +486,7 @@ function processResponseLogic(userInput, latency) {
 
   if (sessionState.stage === 'RECOMMENDATION') {
     document.getElementById('chat-stage').textContent = 'So Sánh & Đề Xuất';
-    document.getElementById('chat-stage').className = 'font-semibold text-accent-green';
+    document.getElementById('chat-stage').className = 'font-semibold text-brand-success';
 
     updateSidebarLogs('catalog', true);
     updateSidebarLogs('promo', true);
@@ -519,19 +521,19 @@ function triggerMissingDataResponse() {
   updateSidebarLogs('catalog', false);
   appendAssistantMessage(`
     <div class="space-y-2">
-      <div class="flex items-center space-x-2 text-accent-orange font-semibold text-sm">
+      <div class="flex items-center space-x-2 text-brand-coral font-semibold text-sm">
         <i class="fa-solid fa-circle-exclamation"></i>
-        <span>Dạ, hiện hệ thống chưa cập nhật thông tin này ạ.</span>
+        <span>Sản phẩm này hiện đang cập nhật cơ sở dữ liệu...</span>
       </div>
       <p class="text-sm text-slate-300">
-        Kho dữ liệu sản phẩm mẫu (Catalog & Ưu đãi) hiện tại trong khuôn khổ thử nghiệm chưa chứa thông tin chi tiết về sản phẩm hoặc hãng này.
+        Kho hàng RAG thử nghiệm trong phân khu Demo của dự án hiện chưa lưu trữ thông số kỹ thuật hoặc bảng giá của hãng sản xuất này.
       </p>
       <p class="text-sm text-slate-300">
-        Để có câu trả lời chính xác nhất, em xin phép <strong>kết nối trực tiếp anh/chị với nhân viên hỗ trợ trực tuyến</strong> hoặc lưu lại thông tin để gọi điện thoại tư vấn ngay sau 5 phút không ạ?
+        Để nhận thông tin chính xác 100%, em xin phép <strong>chuyển hướng kết nối trực tiếp anh/chị với tư vấn viên siêu thị</strong> gần nhất để gọi điện hỗ trợ chỉ sau 2 phút được không ạ?
       </p>
       <div class="flex space-x-2 pt-2">
-        <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ đã chuyển tiếp yêu cầu! Nhân viên tư vấn Điện Máy Xanh sẽ gọi lại hỗ trợ ngay lập tức ạ.</p>')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs px-3 py-1.5 rounded font-medium transition-all">
-          Gặp Nhân Viên Tư Vấn
+        <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ đã gửi thông tin thành công! Tư vấn viên Điện Máy Xanh sẽ gọi lại hỗ trợ ngay lập tức ạ.</p>')" class="bg-brand-cobalt hover:bg-brand-electric text-white text-xs px-3.5 py-2 rounded font-medium transition-all">
+          Gặp nhân viên tư vấn ngay
         </button>
       </div>
     </div>
@@ -583,21 +585,21 @@ function resetCollectedData() {
   };
 }
 
-// LÀM MỚI HỘI THOẠI (RESET) - SỬ DỤNG LẠI AVATAR MASCOT CHÀO MỪNG
+// LÀM MỚI HỘI THOẠI (RESET) - ĐỒNG BỘ MÀU CHUYÊN NGHIỆP VÀ MASCOT PNG MỚI
 window.resetConversation = function () {
   const chatBox = document.getElementById('chat-box');
   chatBox.innerHTML = `
     <div class="flex items-start space-x-3 message-fade-in">
-      <div class="w-10 h-10 rounded-xl bg-white border border-slate-700/50 flex items-center justify-center shrink-0 shadow-md overflow-hidden">
+      <div class="w-10 h-10 rounded-xl bg-white border border-brand-border flex items-center justify-center shrink-0 shadow-md overflow-hidden">
         <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="space-y-1 max-w-[80%]">
-        <div class="bg-slate-800 text-slate-100 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-700/50">
+        <div class="bg-brand-panel text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-brand-border">
           <p class="text-sm leading-relaxed">
-            Dạ, cuộc trò chuyện đã được làm mới. Toàn bộ hệ thống RAG và rào cản chống ảo giác (Guardrails) đã khởi động lại hoàn toàn ạ! ⚙️
+            Dạ, phiên hội thoại đã được khởi động lại thành công. Toàn bộ tài liệu RAG và cơ chế chống ảo giác đã được thiết lập lại từ đầu ạ! ⚙️
           </p>
           <p class="text-sm leading-relaxed mt-2">
-            Anh/chị đang cần tìm mua máy lạnh, tủ lạnh hay laptop phục vụ cho gia đình mình thế ạ? Hãy chat cho em biết nhé.
+            Anh/chị muốn tư vấn so sánh Máy lạnh, Tủ lạnh hay Laptop của thương hiệu nào ạ? Hãy nhắn cho em nhé.
           </p>
         </div>
         <span class="text-[10px] text-slate-500 pl-2">Vừa mới gửi</span>
@@ -609,14 +611,14 @@ window.resetConversation = function () {
   resetCollectedData();
   document.getElementById('active-category').textContent = 'Chưa xác định';
   document.getElementById('chat-stage').textContent = 'Khởi tạo';
-  document.getElementById('chat-stage').className = 'font-semibold text-accent-amber';
-  document.getElementById('slang-inspector').innerHTML = `<span class="text-slate-500 italic">Chưa phát hiện từ viết tắt...</span>`;
+  document.getElementById('chat-stage').className = 'font-semibold text-brand-gold';
+  document.getElementById('slang-inspector').innerHTML = `<span class="text-slate-500 italic text-[11px]">Chưa phát hiện từ viết tắt...</span>`;
   document.getElementById('rag-catalog-status').className = 'text-slate-500';
-  document.getElementById('rag-catalog-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
+  document.getElementById('rag-catalog-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất`;
   document.getElementById('rag-promo-status').className = 'text-slate-500';
-  document.getElementById('rag-promo-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
+  document.getElementById('rag-promo-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất`;
   document.getElementById('rag-faq-status').className = 'text-slate-500';
-  document.getElementById('rag-faq-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
+  document.getElementById('rag-faq-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất`;
   document.getElementById('latency-val').textContent = '0ms';
 };
 
@@ -637,10 +639,10 @@ function updateSidebarLogs(system, active) {
   if (!targetEl) return;
 
   if (active) {
-    targetEl.className = 'text-accent-green font-semibold flex items-center';
-    targetEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-accent-green inline-block mr-1.5 pulse-green"></span>Truy xuất OK`;
+    targetEl.className = 'text-brand-success font-semibold flex items-center';
+    targetEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-brand-success inline-block mr-2 pulse-green"></span>Truy xuất OK`;
   } else {
-    targetEl.className = 'text-accent-amber font-semibold flex items-center';
+    targetEl.className = 'text-brand-gold font-semibold flex items-center';
     targetEl.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1.5"></i>Đang gọi API`;
   }
 }
@@ -652,26 +654,27 @@ function updateSidebarLogs(system, active) {
 function translateSpecToBenefit(specName, specVal) {
   const dictionary = {
     inverter: {
-      true: 'Công nghệ biến tần Inverter vượt trội: Giúp máy vận hành siêu êm ái, giảm tối đa tiếng ồn cục nóng ngoài trời và cực kỳ tiết kiệm điện năng tiêu thụ hàng tháng cho gia đình.',
-      false: 'Không có Inverter: Dễ tốn điện hơn nếu sử dụng liên tục trên 6 tiếng mỗi ngày.',
+      true: 'Công nghệ Inverter tiết kiệm điện năng tiêu thụ tối đa, giúp máy chạy siêu êm ái, tăng cường tuổi thọ linh kiện.',
+      false: 'Không có Inverter: Tiêu tốn nhiều điện năng hơn nếu hoạt động liên tục.',
     },
     screen_oled: {
-      true: 'Màn hình OLED cao cấp: Cho dải màu rực rỡ, độ tương phản sâu xem phim giải trí cực đã mắt, chống mỏi mắt cho người học bài ban đêm.',
+      true: 'Màn hình OLED cao cấp dải màu rực rỡ, bảo vệ thị lực khi học tập và làm việc ban đêm.',
     },
     ram_16gb: {
-      true: 'Bộ nhớ RAM 16GB cực khủng: Lướt web mở 30 tab Chrome đồng thời, chạy Excel nặng không lo giật lag hay treo ứng dụng giữa chừng.',
+      true: 'RAM 16GB đa nhiệm mượt mà, mở hàng chục tab Chrome đồng thời không lo giật lag.',
     },
   };
 
   return dictionary[specName] ? dictionary[specName][specVal] : '';
 }
 
+// HÀM HIỂN THỊ THẺ SO SÁNH SẢN PHẨM CHUYÊN NGHIỆP VỚI CÁC GAM MÀU ACCENT SÁNG GIÁ
 function generateTop3Recommendations(category) {
   const products = MOCK_CATALOG[category];
   let htmlResult = `
     <div class="space-y-4">
       <p class="text-sm">
-        Dạ, dựa vào phân tích nhu cầu thực tế của gia đình mình, em xin đề xuất **Top 3 sản phẩm tối ưu nhất** được trích xuất trực tiếp từ kho hàng Điện Máy Xanh kèm phân tích điểm đánh đổi (Trade-off) rõ ràng để mình dễ dàng lựa chọn ạ:
+        Dạ, dựa vào nhu cầu thực tế của gia đình mình, RAG Engine đã lọc và đưa ra bảng so sánh <strong>Top 3 sản phẩm tối ưu nhất</strong> kèm phân tích điểm đánh đổi (Trade-off) chi tiết giúp anh/chị dễ ra quyết định:
       </p>
 
       <!-- GRID OF 3 CARDS -->
@@ -683,16 +686,16 @@ function generateTop3Recommendations(category) {
     const gift = MOCK_PROMOTIONS.discounts[product.id] || 'Không áp dụng quà tặng đi kèm';
     const stockText =
       product.stock > 0
-        ? `<span class="text-accent-green font-medium">Còn hàng (${product.stock} máy tại siêu thị)</span>`
-        : `<span class="text-red-500 font-medium">Hết hàng tạm thời (No Stock)</span>`;
+        ? `<span class="text-brand-success font-medium">Còn hàng (${product.stock} máy tại siêu thị)</span>`
+        : `<span class="text-brand-coral font-medium">Hết hàng tạm thời (No Stock)</span>`;
 
     let benefitHighlight = '';
     let tradeoffHighlight = '';
 
     if (category === 'ac') {
       benefitHighlight = `
-        <div class="text-xs text-slate-300 space-y-1 bg-slate-900/50 p-2 rounded border border-slate-700/30">
-          <p class="text-[11px] text-accent-green font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
+        <div class="text-xs text-slate-300 space-y-1 bg-brand-dark/50 p-2.5 rounded border border-brand-border">
+          <p class="text-[11px] text-brand-success font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
           <p>• Phù hợp hoàn hảo cho không gian <strong>${product.room_size}</strong>.</p>
           <p>• ${translateSpecToBenefit('inverter', product.inverter)}</p>
           <p>• Độ ồn tối đa chỉ <strong>${product.noise}</strong>.</p>
@@ -700,51 +703,51 @@ function generateTop3Recommendations(category) {
       `;
       tradeoffHighlight =
         idx === 2
-          ? 'Mức giá cực rẻ tiết kiệm tài chính tối đa, tuy nhiên máy sử dụng màng lọc bụi thô cơ bản (không lọc được bụi siêu mịn PM2.5) và máy hoạt động có tiếng ồn lớn hơn hai dòng cao cấp phía trên.'
+          ? 'Mức giá rẻ nhất phân khúc giúp tiết kiệm tài chính ban đầu cực tốt, tuy nhiên máy chỉ trang bị màng lọc thô cơ bản (không kháng khuẩn bụi mịn PM2.5) và máy chạy phát tiếng ồn lớn hơn khi quá tải.'
           : idx === 1
-            ? 'Làm lạnh cực nhanh và sâu nhưng giá thành cao hơn hẳn dòng Panasonic, diện tích lắp đặt cục nóng lớn hơn.'
-            : 'Công suất 1 HP chỉ khuyên dùng cho phòng nhỏ dưới 15m², nếu phòng bị hướng nắng gắt chiếu trực tiếp vào buổi trưa thì máy sẽ mất nhiều thời gian hơn để làm mát sâu.';
+            ? 'Khả năng làm lạnh nhanh vượt trội nhưng giá thành tương đối cao hơn các dòng khác, thiết kế cục nóng lớn cần vị trí lắp đặt thông thoáng rộng rãi.'
+            : 'Công suất 1 HP chỉ khuyên dùng cho không gian dưới 15m², nếu phòng bị nắng rát chiếu trực tiếp hướng Tây vào buổi trưa thì máy sẽ mất nhiều thời gian để làm mát sâu.';
     } else if (category === 'fridge') {
       benefitHighlight = `
-        <div class="text-xs text-slate-300 space-y-1 bg-slate-900/50 p-2 rounded border border-slate-700/30">
-          <p class="text-[11px] text-accent-green font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
-          <p>• Dung tích <strong>${product.liters} Lít</strong>, đáp ứng trọn vẹn nhu cầu trữ thực phẩm cho <strong>${product.family_size}</strong>.</p>
+        <div class="text-xs text-slate-300 space-y-1 bg-brand-dark/50 p-2.5 rounded border border-brand-border">
+          <p class="text-[11px] text-brand-success font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
+          <p>• Dung tích <strong>${product.liters} Lít</strong>, tối ưu cho <strong>${product.family_size}</strong>.</p>
           <p>• ${product.cooling}</p>
         </div>
       `;
       tradeoffHighlight =
         idx === 2
-          ? 'Mức giá siêu rẻ cho sinh viên nhưng dung tích rất nhỏ 90L không có ngăn làm đá đông mềm riêng biệt, và không tích hợp Inverter tiết kiệm điện.'
+          ? 'Giá thành mini rẻ nhất cho các bạn sinh viên nhưng dung tích rất nhỏ 90L không có ngăn cấp đông mềm chuyên dụng, dễ đóng tuyết nếu dùng lâu và không tiết kiệm điện.'
           : idx === 0
-            ? 'Kiểu dáng ngăn đá phía trên truyền thống nên mỗi lần lấy rau củ ngăn dưới cùng mình sẽ phải cúi khom người hơi mỏi nhẹ một chút.'
-            : 'Trang bị vòi lấy nước ngoài siêu tiện lợi nhưng kích thước tủ tương đối to ngang, cần vị trí đặt tủ rộng tối thiểu 70cm để mở cánh tủ thoải mái nhất.';
+            ? 'Thiết kế ngăn đá phía trên truyền thống quen thuộc nhưng mỗi lần lấy rau củ ngăn dưới cùng mình sẽ phải khom người hơi mỏi nhẹ một chút.'
+            : 'Trang bị vòi lấy nước ngoài siêu tiện lợi, tuy nhiên kích thước tủ khá to ngang, đòi hỏi không gian nhà bếp rộng rãi để mở cánh tủ thoải mái.';
     } else if (category === 'laptop') {
       const is16GB = product.id === 'laptop-lenovo-03';
       benefitHighlight = `
-        <div class="text-xs text-slate-300 space-y-1 bg-slate-900/50 p-2 rounded border border-slate-700/30">
-          <p class="text-[11px] text-accent-green font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
-          <p>• Thiết kế mỏng nhẹ chỉ nặng <strong>${product.weight}</strong>, mang đi học cả ngày không mệt mỏi.</p>
-          <p>• Màn hình <strong>${product.screen}</strong> bảo vệ thị lực.</p>
-          ${is16GB ? `<p>• ${translateSpecToBenefit('ram_16gb', true)}</p>` : `<p>• 8GB RAM mượt mà cho mọi tác vụ Word, Excel phổ thông.</p>`}
+        <div class="text-xs text-slate-300 space-y-1 bg-brand-dark/50 p-2.5 rounded border border-brand-border">
+          <p class="text-[11px] text-brand-success font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
+          <p>• Trọng lượng mỏng nhẹ <strong>${product.weight}</strong> dễ dàng mang đi học nhóm.</p>
+          <p>• Màn hình sắc nét <strong>${product.screen}</strong> bảo vệ mắt tốt.</p>
+          ${is16GB ? `<p>• ${translateSpecToBenefit('ram_16gb', true)}</p>` : `<p>• RAM 8GB đáp ứng trọn vẹn mọi nhu cầu văn phòng mượt mà.</p>`}
         </div>
       `;
       tradeoffHighlight =
         idx === 2
-          ? 'Cấu hình cực mạnh và đa nhiệm siêu khủng trong tầm giá tốt nhưng viền màn hình hơi dày và vỏ máy bằng chất liệu nhựa thuần tối giản, ít sang trọng.'
+          ? 'Sở hữu cấu hình đa nhiệm 16GB RAM cực mạnh nhưng chất liệu vỏ nhựa tối giản, viền màn hình hơi dày so với các dòng cao cấp vỏ nhôm.'
           : idx === 0
-            ? 'Thiết kế vỏ nhôm tinh xảo cao cấp nhưng thời lượng pin ở mức trung bình (4-5 tiếng), bạn nên mang theo củ sạc đi kèm khi học nhóm cả ngày.'
-            : 'Màn hình OLED hiển thị màu sắc rực rỡ siêu nịnh mắt nhưng vỏ máy cấu trúc nhựa dễ bám dấu vân tay khi sử dụng.';
+            ? 'Thiết kế vỏ nhôm tinh xảo cao cấp mỏng nhẹ nhưng thời lượng pin ở mức trung bình (4-5 tiếng), bạn nên chú ý mang theo bộ sạc khi học cả ngày.'
+            : 'Màn hình OLED rực rỡ nịnh mắt nhưng vỏ máy cấu trúc bóng dễ bám dấu vân tay khi thao tác mở gập liên tục.';
     }
 
     htmlResult += `
-      <!-- THẺ SẢN PHẨM ${idx + 1} -->
-      <div class="trade-off-card bg-slate-950 rounded-xl p-4 border border-slate-800 flex flex-col justify-between space-y-3">
+      <!-- THẺ SẢN PHẨM ${idx + 1} SỬ DỤNG CLASS ĐỒNG BỘ MÀU CHUYỂN ĐỔI -->
+      <div class="trade-off-card bg-brand-dark rounded-xl p-4 border border-brand-border flex flex-col justify-between space-y-3">
         <div>
           <div class="flex justify-between items-start mb-2">
-            <span class="px-2 py-0.5 text-[10px] font-bold bg-brand-500/10 text-brand-500 border border-brand-500/20 rounded">
+            <span class="px-2 py-0.5 text-[10px] font-bold bg-brand-electric/10 text-brand-electric border border-brand-electric/20 rounded">
               Gợi Ý ${idx + 1}
             </span>
-            ${isInstallmentZero ? `<span class="px-2 py-0.5 text-[10px] font-bold bg-accent-orange/10 text-accent-orange border border-accent-orange/20 rounded">Góp 0%</span>` : ''}
+            ${isInstallmentZero ? `<span class="px-2 py-0.5 text-[10px] font-bold bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded">Góp 0%</span>` : ''}
           </div>
 
           <h3 class="font-bold text-xs text-white line-clamp-2 min-h-[32px]">${product.name}</h3>
@@ -754,7 +757,7 @@ function generateTop3Recommendations(category) {
           </div>
 
           <div class="mt-1 text-[11px] text-slate-400">
-            Tồn kho: ${stockText}
+            Trạng thái: ${stockText}
           </div>
 
           <!-- Section dịch thuật thông số -->
@@ -762,22 +765,22 @@ function generateTop3Recommendations(category) {
             ${benefitHighlight}
           </div>
 
-          <!-- Section Phân tích Trade-off chi tiết -->
-          <div class="mt-3 space-y-1 bg-amber-500/5 p-2 rounded border border-amber-500/10 text-xs text-slate-300">
-            <p class="text-[11px] text-accent-amber font-semibold uppercase tracking-wider flex items-center">
+          <!-- Section Phân tích Trade-off sử dụng màu Coral của Cdiscount -->
+          <div class="mt-3 space-y-1 bg-brand-coral/5 p-2.5 rounded border border-brand-coral/10 text-xs text-slate-300">
+            <p class="text-[11px] text-brand-coral font-semibold uppercase tracking-wider flex items-center">
               <i class="fa-solid fa-triangle-exclamation mr-1"></i> Điểm cần cân nhắc (Trade-off):
             </p>
-            <p class="leading-relaxed">${tradeoffHighlight}</p>
+            <p class="leading-relaxed text-[11px]">${tradeoffHighlight}</p>
           </div>
         </div>
 
-        <!-- Quà tặng & Action chọn mua -->
-        <div class="pt-2 border-t border-slate-800/60 space-y-2">
+        <!-- Quà tặng & Action chọn mua sử dụng màu Cobalt của Cdiscount -->
+        <div class="pt-2 border-t border-brand-border space-y-2">
           <div class="text-[11px] text-slate-400">
             🎁 <strong>Quà tặng đi kèm:</strong> <span class="text-slate-200">${gift}</span>
           </div>
-          <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ đã thêm sản phẩm <strong>${product.name}</strong> vào danh sách tư vấn của bạn cùng ưu đãi đặc biệt rồi nhé ạ!</p>')" class="w-full bg-slate-800 hover:bg-brand-600 hover:text-white text-xs py-2 rounded font-medium transition-all">
-            Chọn Mua / Tư Vấn
+          <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ em đã thêm <strong>${product.name}</strong> vào danh sách so sánh của anh/chị kèm bộ quà tặng khuyến mãi đặc quyền Điện Máy Xanh rồi nhé ạ!</p>')" class="w-full bg-brand-panel hover:bg-brand-cobalt hover:text-white text-xs py-2 rounded border border-brand-border hover:border-brand-cobalt font-medium transition-all duration-200">
+            Chọn Mua / Nhận Tư Vấn Sâu
           </button>
         </div>
       </div>
