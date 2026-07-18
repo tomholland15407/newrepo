@@ -1,178 +1,79 @@
 /* ================================================================= */
-/* HIỆU ỨNG TRỰC QUAN & ANIMATION CHO MASCOT                         */
-/* OPTION 1: THE LIQUID ELASTIC WAVE WITH GLOW                       */
-/* ================================================================= */
-@keyframes liquid-elastic-wave {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-    filter: drop-shadow(0 4px 6px rgba(0, 149, 218, 0.15));
-  }
-  30% {
-    transform: translateY(-6px) scaleX(0.95) scaleY(1.05);
-    filter: drop-shadow(0 14px 20px rgba(0, 149, 218, 0.45)) drop-shadow(0 0 12px rgba(0, 149, 218, 0.3));
-  }
-  50% {
-    transform: translateY(-1px) scaleX(1.03) scaleY(0.97);
-    filter: drop-shadow(0 6px 10px rgba(0, 149, 218, 0.25)) drop-shadow(0 0 6px rgba(0, 149, 218, 0.15));
-  }
-  70% {
-    transform: translateY(-3px) scaleX(0.98) scaleY(1.02);
-    filter: drop-shadow(0 10px 14px rgba(0, 149, 218, 0.35)) drop-shadow(0 0 10px rgba(0, 149, 218, 0.2));
-  }
-}
-
-.animate-mascot-idle {
-  animation: liquid-elastic-wave 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  display: inline-block !important;
-}
-
-/* Hiệu ứng trượt xuất hiện của tin nhắn mới */
-.message-fade-in {
-  animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes slideUpFade {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ================================================================= */
-/* UPGRADED: ULTRA-LIVELY THREE DOTS WITH SQUASH, STRETCH & ELECTRIC GLOW */
-/* ================================================================= */
-.typing-dot {
-  display: inline-block !important;
-  will-change: transform, opacity, background-color, box-shadow;
-  animation: ultra-lively-wave 0.5s infinite cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.typing-dot:nth-child(2) {
-  animation-delay: 0.08s;
-}
-.typing-dot:nth-child(3) {
-  animation-delay: 0.16s;
-}
-
-@keyframes ultra-lively-wave {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-    opacity: 0.4;
-  }
-  35% {
-    transform: translateY(-10px) scaleX(0.8) scaleY(1.25); /* Expressive stretch upwards */
-    opacity: 1;
-    background-color: #0095da !important; /* Glows dynamic blue */
-    box-shadow: 0 0 10px #0095da, 0 0 20px rgba(0, 149, 218, 0.4);
-  }
-  70% {
-    transform: translateY(1.5px) scaleX(1.2) scaleY(0.85); /* Snappy squash impact on baseline */
-    opacity: 0.7;
-  }
-}
-
-/* Thanh cuộn scrollbar thanh mảnh thẩm mỹ */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 10px;
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: #1e2e4a;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #0095da;
-}
-
-/* ================================================================= */
-/* BỘ ĐIỀU KHIỂN THU GỌN SIDEBAR NÂNG CAO                            */
-/* ================================================================= */
-.sidebar-transition {
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              padding 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.2s ease-in-out;
-  overflow-x: hidden; /* Chặn vỡ layout nội dung text khi đóng */
-}
-
-/* Trạng thái ẩn hoàn toàn của Sidebar */
-.sidebar-collapsed {
-  width: 0px !important;
-  padding-left: 0px !important;
-  padding-right: 0px !important;
-  opacity: 0 !important;
-  border-right-width: 0px !important;
-  pointer-events: none;
-}
-
-/* Hiệu ứng cho phần tử lịch sử xuất hiện sinh động */
-.history-item-appear {
-  animation: itemAppear 0.25s ease-out forwards;
-}
-
-@keyframes itemAppear {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-/* ================================================================= */
-/* PHÂN HỆ NÂNG CẤP GIAO DIỆN LIGHT THEME PHONG CÁCH GEMINI AI        */
+/* THE SMART ARCHITECT - GAMIFICATION LAYER EXTENSIONS               */
 /* ================================================================= */
 
-/* Lớp nền mạng lưới kỹ thuật số trừu tượng đan xen ánh sáng trắng */
-.custom-mesh-bg {
+/* Thiết kế viền kim loại nhám đơn sắc cho Adult Gamification */
+.metallic-profile-card {
+  background: linear-gradient(135deg, rgba(30, 46, 74, 0.4) 0%, rgba(15, 29, 54, 0.6) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+.light .metallic-profile-card {
+  background: linear-gradient(135deg, rgba(241, 245, 249, 0.8) 0%, rgba(228, 236, 243, 0.8) 100%);
+  border: 1px solid rgba(0, 149, 218, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 149, 218, 0.05);
+}
+
+/* Heads-Up Display (HUD) Tối ưu hóa Chỉ số thời gian thực */
+.hud-persistent-panel {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 149, 218, 0.25);
+  background: rgba(7, 15, 30, 0.85);
+  transition: all 300ms linear;
+}
+.light .hud-persistent-panel {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 149, 218, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Thanh tiến trình hình học phẳng phẳng - Không bo góc tròn hoạt họa */
+.linear-progress-bar {
+  height: 4px;
+  background-color: rgba(30, 46, 74, 1);
   position: relative;
-  background-color: #edf2f7;
+  overflow: hidden;
+}
+.light .linear-progress-bar {
+  background-color: rgba(226, 232, 240, 1);
+}
+.linear-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #006bd6 0%, #0095da 100%);
+  transition: width 300ms linear;
 }
 
-/* Sử dụng kỹ thuật SVG Vector Base64 để vẽ các đường lưới hình học tinh xảo của thiết kế mới */
-.custom-mesh-bg::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.85;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1200 800'%3E%3Cpath d='M-100,200 L400,-50 L900,300 L1400,-100 M-50,600 L300,450 L800,700 L1300,400 M200,900 L600,500 L1100,850' fill='none' stroke='%23ffffff' stroke-width='1.5' stroke-opacity='0.6'/%3E%3Ccircle cx='400' cy='-50' r='3' fill='%23ffffff' fill-opacity='0.7'/%3E%3Ccircle cx='900' cy='300' r='4' fill='%23ffffff' fill-opacity='0.8'/%3E%3Ccircle cx='300' cy='450' r='3.5' fill='%23ffffff' fill-opacity='0.7'/%3E%3Ccircle cx='800' cy='700' r='4' fill='%23ffffff' fill-opacity='0.8'/%3E%3Ccircle cx='600' cy='500' r='3' fill='%23ffffff' fill-opacity='0.7'/%3E%3C/svg%3E");
-  background-size: cover;
-  background-position: center;
+/* Thẻ thử thách mật độ cao (High-Density Challenge Cards) */
+.challenge-card-pill {
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(30, 46, 74, 0.8);
+}
+.challenge-card-pill:hover {
+  border-color: #0095da;
+  background-color: rgba(0, 149, 218, 0.08) !important;
+  transform: translateY(-1px);
 }
 
-/* Định nghĩa lại hiệu ứng Glassmorphism cho các hộp thoại động */
-.glass-message-card {
-  background: rgba(255, 255, 255, 0.72) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
-  box-shadow: 0 12px 40px rgba(0, 149, 218, 0.06), inset 0 2px 4px rgba(255, 255, 255, 0.6) !important;
+/* Bộ điều chỉnh thông số tuyến tính */
+.parameter-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: #1e2e4a;
+  outline: none;
 }
-
-.dark .glass-message-card {
-  background: rgba(15, 29, 54, 0.85) !important;
-  backdrop-filter: blur(14px) !important;
-  box-shadow: none !important;
+.parameter-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 0px; /* Hình vuông kỹ thuật */
+  background: #0095da;
+  cursor: pointer;
+  transition: transform 150ms ease;
 }
-
-/* Cấu trúc nút chọn sản phẩm chuyển thành viền mỏng thanh lịch */
-.custom-btn-select {
-  background: #ffffff !important;
-  color: #007be8 !important;
-  border: 1px solid #d1e3f8 !important;
-  transition: all 0.2s ease-in-out !important;
-}
-
-.custom-btn-select:hover {
-  background: #008bfc !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(0, 139, 252, 0.25) !important;
+.parameter-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
 }
