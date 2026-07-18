@@ -120,7 +120,7 @@ const MOCK_FAQ = {
 let sessionState = {
   stage: 'INIT', // INIT -> PROBING -> RECOMMENDATION
   category: null, // ac, fridge, laptop
-  collectedData: {
+  collectedData = {
     brand: null,
     budget: null, // { modifier: 'dưới'|'trên'|'tầm', value: số }
     roomSize: null, // số m2
@@ -367,7 +367,7 @@ function restoreSessionMessages(session) {
         </div>
         <div class="space-y-1 max-w-[85%] w-full">
           <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
-            <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ!</p>
+            <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
           </div>
         </div>
       </div>`;
@@ -719,33 +719,58 @@ window.resetConversation = function() {
     }
   }
 
-  const chatBox = document.getElementById('chat-box');
-  if (chatBox) {
-    chatBox.innerHTML = `
-      <div class="flex items-start space-x-3.5 message-fade-in">
-        <div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)]">
-          <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
-        </div>
-        <div class="space-y-1 max-w-[85%] w-full">
-          <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
-            <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
+  // Tìm cuộc trò chuyện trống mới nhất hiện có trong danh sách lịch sử phiên
+  const newestEmptySession = consumerChatSessions.find(session => !session.messages || session.messages.length === 0);
+
+  if (newestEmptySession) {
+    // TÁI SỬ DỤNG PHIÊN TRỐNG SẴN CÓ: Chuyển activeSessionId sang ID của phiên trống này
+    activeSessionId = newestEmptySession.id;
+
+    // Gọi hàm phục hồi tin nhắn mặc định của hệ thống dành cho phiên trống
+    restoreSessionMessages(newestEmptySession);
+
+    // Dọn sạch thêm dữ liệu gỡ lỗi ẩn trên DOM để tránh lỗi dữ liệu rác
+    const slangInspectorEl = document.getElementById('slang-inspector');
+    if (slangInspectorEl) slangInspectorEl.textContent = '';
+    const catalogStatusEl = document.getElementById('rag-catalog-status');
+    if (catalogStatusEl) catalogStatusEl.textContent = '';
+    const promoStatusEl = document.getElementById('rag-promo-status');
+    if (promoStatusEl) promoStatusEl.textContent = '';
+    const faqStatusEl = document.getElementById('rag-faq-status');
+    if (faqStatusEl) faqStatusEl.textContent = '';
+
+    // Làm mới UI danh sách lịch sử để highlight đúng phiên trống này trên Sidebar
+    renderChatHistoryUI();
+  } else {
+    // KHỞI TẠO PHIÊN MỚI TINH: Nếu trong mảng hoàn toàn không có phiên trống nào khả dụng
+    const chatBox = document.getElementById('chat-box');
+    if (chatBox) {
+      chatBox.innerHTML = `
+        <div class="flex items-start space-x-3.5 message-fade-in">
+          <div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)]">
+            <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
           </div>
-        </div>
-      </div>`;
+          <div class="space-y-1 max-w-[85%] w-full">
+            <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
+              <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    sessionState.stage = 'INIT';
+    sessionState.category = null;
+    sessionState.collectedData = { brand: null, budget: null, roomSize: null, familySize: null, purpose: null };
+
+    document.getElementById('active-category').textContent = 'Chưa xác định';
+    document.getElementById('chat-stage').textContent = 'INIT';
+    document.getElementById('slang-inspector').textContent = '';
+    document.getElementById('rag-catalog-status').textContent = '';
+    document.getElementById('rag-promo-status').textContent = '';
+    document.getElementById('rag-faq-status').textContent = '';
+
+    createNewChatSession();
   }
-
-  sessionState.stage = 'INIT';
-  sessionState.category = null;
-  sessionState.collectedData = { brand: null, budget: null, roomSize: null, familySize: null, purpose: null };
-
-  document.getElementById('active-category').textContent = 'Chưa xác định';
-  document.getElementById('chat-stage').textContent = 'INIT';
-  document.getElementById('slang-inspector').textContent = '';
-  document.getElementById('rag-catalog-status').textContent = '';
-  document.getElementById('rag-promo-status').textContent = '';
-  document.getElementById('rag-faq-status').textContent = '';
-
-  createNewChatSession();
 };
 
 window.fillQuickPrompt = function(promptText) {
