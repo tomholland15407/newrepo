@@ -1,416 +1,1058 @@
 /* eslint-disable */
 /**
- * Smart Architect Engine v2.0 - Core Computational System
- * Bộ điều phối tích hợp tính toán chỉ số tối ưu hóa thiết bị định cấu hình thời gian thực (AOI)
+ * Smart Assistant - Trợ Lý Mua Sắm Thông Thái (JS Engine Nâng Cấp Toàn Diện)
+ * Bộ điều phối hội thoại thông minh tích hợp bộ trích xuất thực thể (Slot-Filling)
+ * Hoàn toàn không cắt xén logic - Sẵn sàng chạy Production Mockup
  */
 
-const CONFIG_CATALOG = {
-  air_conditioner: [
-    { id: 'ac-pana-01', name: 'Panasonic Inverter 1 HP CU/CS-XPU9XKH-8', price: 11490000, brand: 'Panasonic', capacity: 12, energyRating: 95, specMatch: 90 },
-    { id: 'ac-daikin-02', name: 'Daikin Inverter 1.5 HP FTKB35WAVMV', price: 13990000, brand: 'Daikin', capacity: 18, energyRating: 92, specMatch: 85 },
-    { id: 'ac-casper-03', name: 'Casper Inverter 1 HP TC-09IS35', price: 5890000, brand: 'Casper', capacity: 12, energyRating: 75, specMatch: 70 }
+const MOCK_CATALOG = {
+  ac: [
+    {
+      id: 'ac-pana-01',
+      name: 'Panasonic Inverter 1 HP CU/CS-XPU9XKH-8',
+      price: 11490000,
+      brand: 'Panasonic',
+      room_size: 'Dưới 15m²',
+      noise: '19dB - siêu êm',
+      inverter: true,
+      stock: 12,
+    },
+    {
+      id: 'ac-daikin-02',
+      name: 'Daikin Inverter 1.5 HP FTKB35WAVMV',
+      price: 13990000,
+      brand: 'Daikin',
+      room_size: 'Từ 15 đến 20m²',
+      noise: '22dB - rất yên tĩnh',
+      inverter: true,
+      stock: 8,
+    },
+    {
+      id: 'ac-casper-03',
+      name: 'Casper Inverter 1 HP TC-09IS35',
+      price: 5890000,
+      brand: 'Casper',
+      room_size: 'Dưới 15m²',
+      noise: '28dB - trung bình',
+      inverter: true,
+      stock: 25,
+    }
   ],
-  refrigerator: [
-    { id: 'rf-samsung-01', name: 'Samsung Inverter 236 lít RT22M4032BY/SV', price: 6490000, brand: 'Samsung', capacity: 3, energyRating: 88, specMatch: 80 },
-    { id: 'rf-lg-02', name: 'Tủ lạnh LG Inverter 315 lít GN-D312PS', price: 8890000, brand: 'LG', capacity: 4, energyRating: 90, specMatch: 92 },
-    { id: 'rf-aqua-03', name: 'Tủ lạnh Aqua 90 lít AQR-D99FA', price: 2790000, brand: 'Aqua', capacity: 1, energyRating: 60, specMatch: 65 }
+  fridge: [
+    {
+      id: 'fridge-samsung-01',
+      name: 'Tủ lạnh Samsung Inverter 236 lít RT22M4032BY/SV',
+      price: 6490000,
+      brand: 'Samsung',
+      liters: 236,
+      family_size: '2 - 4 người',
+      cooling: 'Chế độ đông mềm Optimal Fresh Zone tiện lợi',
+      stock: 5,
+    },
+    {
+      id: 'fridge-lg-02',
+      name: 'Tủ lạnh LG Inverter 315 lít GN-D312PS',
+      price: 8890000,
+      brand: 'LG',
+      liters: 315,
+      family_size: '3 - 5 người',
+      cooling: 'Hệ thống làm lạnh đa chiều Door Cooling tỏa đều',
+      stock: 15,
+    },
+    {
+      id: 'fridge-aqua-03',
+      name: 'Tủ lạnh Aqua 90 lít AQR-D99FA',
+      price: 2790000,
+      brand: 'Aqua',
+      liters: 90,
+      family_size: '1 - 2 người (Sinh viên)',
+      cooling: 'Làm lạnh trực tiếp bằng mạch khí cơ bản',
+      stock: 4,
+    }
   ],
   laptop: [
-    { id: 'lt-hp-01', name: 'HP Pavilion 14-dv2073TU (Core i5 / 8GB RAM / 512GB SSD)', price: 14500000, brand: 'HP', performance: 'medium', energyRating: 80, specMatch: 85 },
-    { id: 'lt-asus-02', name: 'Asus Vivobook 14 OLED (Core i5 / 8GB RAM / 512GB SSD)', price: 15200000, brand: 'Asus', performance: 'high', energyRating: 85, specMatch: 90 },
-    { id: 'lt-lenovo-03', name: 'Lenovo IdeaPad Slim 3 (Core i5 / 16GB RAM / 512GB SSD)', price: 12900000, brand: 'Lenovo', performance: 'low', energyRating: 78, specMatch: 75 }
+    {
+      id: 'laptop-hp-01',
+      name: 'HP Pavilion 14-dv2073TU (Core i5 / 8GB RAM / 512GB SSD)',
+      price: 14500000,
+      brand: 'HP',
+      weight: '1.4kg',
+      screen: '14 inch Full HD',
+      stock: 9,
+    },
+    {
+      id: 'laptop-asus-02',
+      name: 'Asus Vivobook 14 OLED (Core i5 / 8GB RAM / 512GB SSD)',
+      price: 15200000,
+      brand: 'Asus',
+      weight: '1.6kg',
+      screen: '14 inch OLED siêu sắc nét',
+      stock: 14,
+    },
+    {
+      id: 'laptop-lenovo-03',
+      name: 'Lenovo IdeaPad Slim 3 (Core i5 / 16GB RAM / 512GB SSD)',
+      price: 12900000,
+      brand: 'Lenovo',
+      weight: '1.43kg',
+      screen: '14 inch viền mỏng',
+      stock: 22,
+    }
   ]
 };
 
-// COMPONENT 1: THE OPTIMIZATION PROGRESS ENGINE STATE MACHINE
-let optimizationState = {
-  currentCategory: null,
-  constraints: {
-    maxBudget: 30000000,
-    roomCapacity: 15,
-    userCount: 2,
-    performanceRequirement: 'medium'
-  },
-  selectedProduct: null,
-  calculatedMetrics: {
-    budgetEfficiency: 0,
-    utilityMatch: 0,
-    sustainabilityScore: 0,
-    totalAoi: 0
+const MOCK_PROMOTIONS = {
+  installment_0: ['ac-pana-01', 'ac-daikin-02', 'fridge-lg-02'],
+  discounts: {
+    'ac-pana-01': 'Tặng combo ống đồng vật tư 800.000đ',
+    'laptop-asus-02': 'Tặng chuột không dây Bluetooth chính hãng',
+    'fridge-lg-02': 'Phiếu mua hàng gia dụng trị giá 300.000đ',
   }
 };
 
-let userExpertiseProfile = {
-  tier: "Household Optimizer",
-  totalOptimized: 14,
-  xp: 2650
+const MOCK_FAQ = {
+  'bảo hành': 'Dạ, sản phẩm tại Điện Máy Xanh được bảo hành chính hãng 1 đổi 1 trong vòng 30 ngày đầu nếu có lỗi phần cứng từ nhà sản xuất ạ!',
+  'giao hàng': 'Dạ, hệ thống miễn phí vận chuyển lắp đặt trong bán kính 10km quanh siêu thị gần nhất ngay trong ngày ạ.',
+  'trả góp': 'Dạ, hiện tại có chương trình hỗ trợ trả góp 0% lãi suất qua căn cước công dân gắn chip cực nhanh chóng, xét duyệt chỉ 5 phút ạ.'
 };
 
-// Khởi chạy Module điều phối
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('chat-form');
-  if (form) form.addEventListener('submit', runExecutionFlow);
-  initCollapsibleSidebarLogic();
-  syncExpertiseWidgetUI();
-});
+const MASCOT_IMAGES = [
+  'mascot.png'
+];
 
+let sessionState = {
+  stage: 'INIT', // INIT -> PROBING -> RECOMMENDATION
+  category: null, // ac, fridge, laptop
+  collectedData: {
+    brand: null,
+    budget: null, // { modifier: 'dưới'|'trên'|'tầm', value: số }
+    roomSize: null,
+    familySize: null,
+    purpose: null
+  }
+};
+
+let consumerChatSessions = [];
+let activeSessionId = null;
+
+// ==========================================
+// HỆ THỐNG TRẠNG THÁI GAMIFICATION TOÀN CỤC
+// ==========================================
+let gameSystemState = {
+  xp: 0,
+  level: 1,
+  xpRequired: 100,
+  score: 0,
+  comboStreak: 0,
+  quests: {
+    firstContact: { id: 'firstContact', name: 'Khoi tao ket noi', completed: false, xpReward: 30 },
+    deepSearch: { id: 'deepSearch', name: 'Tim kiem chi tiet', completed: false, xpReward: 50 },
+    faqExplorer: { id: 'faqExplorer', name: 'Khai pha trung tam ho tro', completed: false, xpReward: 40 },
+    conversionMaster: { id: 'conversionMaster', name: 'Chot don chong nhanh', completed: false, xpReward: 100 }
+  }
+};
+
+// ==========================================
+// HỆ THỐNG ĐIỀU KHIỂN ĐÓNG/MỞ SIDEBAR
+// ==========================================
 function initCollapsibleSidebarLogic() {
-  const panel = document.getElementById('sidebar-panel');
+  const sidebarPanel = document.getElementById('sidebar-panel');
   const btnClose = document.getElementById('btn-close-sidebar');
   const btnOpen = document.getElementById('btn-open-sidebar');
-  if (!panel || !btnClose || !btnOpen) return;
+
+  if (!sidebarPanel || !btnClose || !btnOpen) return;
 
   btnClose.addEventListener('click', () => {
-    panel.classList.remove('w-80', 'p-4');
-    panel.classList.add('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
+    sidebarPanel.classList.remove('w-80', 'p-5', 'border-r');
+    sidebarPanel.classList.add('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
     btnOpen.classList.remove('hidden');
   });
+
   btnOpen.addEventListener('click', () => {
-    panel.classList.remove('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
-    panel.classList.add('w-80', 'p-4');
+    sidebarPanel.classList.remove('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
+    sidebarPanel.classList.add('w-80', 'p-5', 'border-r');
     btnOpen.classList.add('hidden');
   });
 }
 
-function syncExpertiseWidgetUI() {
-  document.getElementById('user-tier-label').textContent = userExpertiseProfile.tier;
-  document.getElementById('total-optimized-count').textContent = `${userExpertiseProfile.totalOptimized} cấu hình`;
-}
-
-// COMPONENT 2: INTERACTIVE PARAMETER ADJUSTERS ENGINE
-window.triggerCategorySelection = function(category) {
-  optimizationState.currentCategory = category;
-  document.getElementById('active-category').textContent = category;
-  document.getElementById('aoi-hud-overlay').classList.remove('hidden');
-
-  appendSystemLog(`Phân hệ kết nối thành công: [${category.toUpperCase()}]. Vui lòng hiệu chỉnh thông số vật lý phòng máy.`);
-  renderInlineSliders(category);
-  recomputeAoiIndex();
-};
-
-function renderInlineSliders(category) {
-  const chatBox = document.getElementById('chat-box');
-  let configBlockHtml = `<div class="bg-brand-panel border border-brand-border p-4 font-mono text-xs w-full space-y-3 message-fade-in">
-    <div class="text-brand-electric font-bold uppercase tracking-wider border-b border-brand-border pb-1">BẢNG HIỆU CHỈNH THÔNG SỐ VẬT LÝ</div>`;
-
-  // Ngân sách mặc định cho mọi phân hệ
-  configBlockHtml += `
-    <div class="space-y-1">
-      <div class="flex justify-between text-slate-400">
-        <span>HẠN MỨC NGÂN SÁCH (VND)</span>
-        <span id="slider-txt-budget" class="text-white font-bold">20,000,000</span>
-      </div>
-      <input type="range" min="5000000" max="40000000" step="500000" value="20000000"
-        class="parameter-slider" oninput="window.updateSliderMetric('maxBudget', this.value, 'slider-txt-budget', true)">
-    </div>`;
-
-  if (category === 'air_conditioner') {
-    configBlockHtml += `
-      <div class="space-y-1">
-        <div class="flex justify-between text-slate-400">
-          <span>DIỆN TÍCH KHÔNG GIAN (m²)</span>
-          <span id="slider-txt-room" class="text-white font-bold">15 m²</span>
-        </div>
-        <input type="range" min="8" max="40" step="1" value="15"
-          class="parameter-slider" oninput="window.updateSliderMetric('roomCapacity', this.value, 'slider-txt-room', false, 'm²')">
-      </div>`;
-  } else if (category === 'refrigerator') {
-    configBlockHtml += `
-      <div class="space-y-1">
-        <div class="flex justify-between text-slate-400">
-          <span>SỐ THÀNH VIÊN SỬ DỤNG</span>
-          <span id="slider-txt-users" class="text-white font-bold">3 nhân khẩu</span>
-        </div>
-        <input type="range" min="1" max="8" step="1" value="3"
-          class="parameter-slider" oninput="window.updateSliderMetric('userCount', this.value, 'slider-txt-users', false, 'nhân khẩu')">
-      </div>`;
-  } else if (category === 'laptop') {
-    configBlockHtml += `
-      <div class="space-y-1">
-        <div class="flex justify-between text-slate-400">
-          <span>YÊU CẦU ĐỒ HỌA/HIỆU NĂNG</span>
-          <span id="slider-txt-perf" class="text-white font-bold">Trung bình</span>
-        </div>
-        <input type="range" min="1" max="3" step="1" value="2"
-          class="parameter-slider" oninput="window.updateSliderPerformance(this.value)">
-      </div>`;
-  }
-
-  configBlockHtml += `
-    <button onclick="window.executeParametricSearch()" class="w-full mt-2 bg-brand-border hover:bg-brand-cobalt border border-slate-600 text-white font-bold py-2 transition-all">
-      [CHẠY THUẬT TOÁN LỌC KHO HÀNG THỜI GIAN THỰC]
-    </button>
-  </div>`;
-
-  chatBox.insertAdjacentHTML('beforeend', configBlockHtml);
-  scrollChatToBottom();
-}
-
-window.updateSliderMetric = function(key, val, textId, isCurrency, unit = '') {
-  optimizationState.constraints[key] = parseInt(val, 10);
-  if (isCurrency) {
-    document.getElementById(textId).textContent = new Intl.NumberFormat('vi-VN').format(val);
-  } else {
-    document.getElementById(textId).textContent = `${val} ${unit}`;
-  }
-  recomputeAoiIndex();
-};
-
-window.updateSliderPerformance = function(val) {
-  const map = { 1: 'low', 2: 'medium', 3: 'high' };
-  const txtMap = { 1: 'Cơ bản (Văn phòng)', 2: 'Trung bình (Đa nhiệm)', 3: 'Cao (Đồ họa/Gaming)' };
-  optimizationState.constraints.performanceRequirement = map[val];
-  document.getElementById('slider-txt-perf').textContent = txtMap[val];
-  recomputeAoiIndex();
-};
-
-// CHỈ SỐ LỰA CHỌN THUẬT TOÁN KỸ THUẬT THỜI GIAN THỰC (AOI ENGINE CALCULATOR)
-function recomputeAoiIndex() {
-  const constraints = optimizationState.constraints;
-  const cat = optimizationState.currentCategory;
-  if (!cat) return;
-
-  const sampleProducts = CONFIG_CATALOG[cat];
-  let targetProduct = optimizationState.selectedProduct || sampleProducts[0];
-
-  // Tính hiệu quả ngân sách (Budget Efficiency)
-  let budgetEff = 0;
-  if (targetProduct.price <= constraints.maxBudget) {
-    budgetEff = Math.round((targetProduct.price / constraints.maxBudget) * 100);
-    if (budgetEff > 100) budgetEff = 100;
-  } else {
-    budgetEff = Math.max(10, Math.round(100 - ((targetProduct.price - constraints.maxBudget) / constraints.maxBudget) * 100));
-  }
-
-  // Tính mức tương thích nhu cầu (Utility Match)
-  let utilMatch = 50;
-  if (cat === 'air_conditioner') {
-    const requiredCap = constraints.roomCapacity * 1;
-    utilMatch = targetProduct.capacity >= requiredCap ? 95 : 45;
-  } else if (cat === 'refrigerator') {
-    utilMatch = targetProduct.capacity >= constraints.userCount ? 92 : 55;
-  } else if (cat === 'laptop') {
-    const perfMap = { 'low': 1, 'medium': 2, 'high': 3 };
-    utilMatch = perfMap[targetProduct.performance] >= perfMap[constraints.performanceRequirement] ? 90 : 40;
-  }
-
-  // Tính chỉ số bền vững (Sustainability Factor)
-  let sustainScore = targetProduct.energyRating;
-
-  // Tính tổng điểm tích hợp trung bình trọng số
-  let totalAoi = Math.round((budgetEff * 0.4) + (utilMatch * 0.35) + (sustainScore * 0.25));
-
-  optimizationState.calculatedMetrics = {
-    budgetEfficiency: budgetEff,
-    utilityMatch: utilMatch,
-    sustainabilityScore: sustainScore,
-    totalAoi: totalAoi
-  };
-
-  // Cập nhật lên HUD
-  document.getElementById('hud-total-aoi').textContent = `${totalAoi}/100`;
-  document.getElementById('hud-val-budget').textContent = `${budgetEff}%`;
-  document.getElementById('hud-bar-budget').style.width = `${budgetEff}%`;
-  document.getElementById('hud-val-utility').textContent = `${utilMatch}%`;
-  document.getElementById('hud-bar-utility').style.width = `${utilMatch}%`;
-  document.getElementById('hud-val-sustainability').textContent = `${sustainScore}%`;
-  document.getElementById('hud-bar-sustainability').style.width = `${sustainScore}%`;
-
-  document.getElementById('slang-inspector').textContent = JSON.stringify(optimizationState);
-}
-
-// MECHANICAL PILLAR B: CONTEXTUAL SCENARIO QUESTS ENGINE
-window.loadContextScenario = function(id) {
-  document.getElementById('aoi-hud-overlay').classList.remove('hidden');
-  if (id === 1) {
-    optimizationState.currentCategory = 'air_conditioner';
-    optimizationState.constraints = { maxBudget: 25000000, roomCapacity: 22, userCount: 4, performanceRequirement: 'medium' };
-    appendUserSimulationLog("KÍCH HOẠT THỬ THÁCH_01: Tối ưu không gian sống căn hộ thông minh diện tích 22m2, hạn mức tài chính 25,000,000đ.");
-    renderInlineSliders('air_conditioner');
-  } else {
-    optimizationState.currentCategory = 'laptop';
-    optimizationState.constraints = { maxBudget: 14000000, roomCapacity: 10, userCount: 1, performanceRequirement: 'high' };
-    appendUserSimulationLog("KÍCH HOẠT THỬ THÁCH_02: Trạm làm việc từ xa, yêu cầu đồ họa cao, ngân sách cực hạn 14,000,000đ.");
-    renderInlineSliders('laptop');
-  }
-  document.getElementById('active-category').textContent = optimizationState.currentCategory;
-  recomputeAoiIndex();
-};
-
-function runExecutionFlow(e) {
-  if (e && e.preventDefault) e.preventDefault();
-  const inputEl = document.getElementById('user-input');
-  const query = inputEl.value.trim();
-  if (!query) return;
-
-  appendUserSimulationLog(query);
-  inputEl.value = '';
-
-  const latencyBox = document.getElementById('latency-val');
-  const t0 = performance.now();
-
-  // Trình phân tích từ khóa kỹ thuật (Heuristic Extraction Rule Base)
-  setTimeout(() => {
-    const lower = query.toLowerCase();
-    if (lower.includes('máy lạnh') || lower.includes('điều hòa')) optimizationState.currentCategory = 'air_conditioner';
-    if (lower.includes('tủ lạnh')) optimizationState.currentCategory = 'refrigerator';
-    if (lower.includes('laptop') || lower.includes('máy tính')) optimizationState.currentCategory = 'laptop';
-
-    if (optimizationState.currentCategory) {
-      document.getElementById('active-category').textContent = optimizationState.currentCategory;
-      document.getElementById('aoi-hud-overlay').classList.remove('hidden');
-      window.executeParametricSearch();
-    } else {
-      appendSystemLog("THÔNG BÁO: Không thể định dạng phân hệ ngành hàng cấu trúc. Vui lòng chọn trực tiếp [Máy lạnh / Tủ lạnh / Laptop].");
+// ==========================================
+// HIỆU ỨNG RUNG LẮC ĐỒNG LOẠT CHO TOÀN BỘ MASCOT
+// ==========================================
+function injectJiggleStyles() {
+  if (document.getElementById('mascot-jiggle-style')) return;
+  const style = document.createElement('style');
+  style.id = 'mascot-jiggle-style';
+  style.innerHTML = `
+    @keyframes jiggleVivid {
+      0% { transform: scale(1) rotate(0deg); }
+      15% { transform: scale(1.15) rotate(-10deg); }
+      30% { transform: scale(1.15) rotate(8deg); }
+      45% { transform: scale(1.08) rotate(-6deg); }
+      60% { transform: scale(1.08) rotate(4deg); }
+      75% { transform: scale(1.02) rotate(-2deg); }
+      100% { transform: scale(1) rotate(0deg); }
     }
-    latencyBox.textContent = `${Math.round(performance.now() - t0)}ms`;
-  }, 400);
+    .animate-jiggle-vivid {
+      animation: jiggleVivid 0.6s ease-in-out;
+      display: inline-block !important;
+    }
+  `;
+  document.head.appendChild(style);
 }
 
-window.executeParametricSearch = function() {
-  const cat = optimizationState.currentCategory;
-  if (!cat) return;
-
-  const products = CONFIG_CATALOG[cat];
-  let cardsHtml = `<div class="text-xs font-mono mb-2 text-slate-400 uppercase tracking-wider">KẾT QUẢ ĐỐI CHIẾU DANH MỤC THỜI GIAN THỰC:</div>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 w-full">`;
-
-  products.forEach(p => {
-    cardsHtml += `
-      <div class="bg-brand-panel border border-brand-border p-3 flex flex-col justify-between font-mono text-xs space-y-2">
-        <div>
-          <div class="text-[10px] text-brand-electric font-bold">MÃ THIẾT BỊ: ${p.id.toUpperCase()}</div>
-          <h4 class="text-white font-bold text-xs mt-1 line-clamp-2">${p.name}</h4>
-          <div class="text-brand-gold font-bold mt-1">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price)}</div>
-          <div class="mt-2 pt-2 border-t border-brand-border/60 text-[10px] text-slate-400 space-y-0.5">
-            <div>Chỉ số tương thích: <strong>${p.specMatch}%</strong></div>
-            <div>Hiệu năng tiêu thụ năng lượng: <strong>${p.energyRating}%</strong></div>
-          </div>
-        </div>
-        <button onclick="window.selectAndEvaluateProduct('${cat}', '${p.id}')" class="w-full bg-brand-dark hover:bg-brand-cobalt border border-brand-border text-white text-[11px] font-bold py-1.5 transition-all">
-          [PHÂN TÍCH CẤU HÌNH]
-        </button>
-      </div>`;
+function triggerMascotJiggle() {
+  const allMascots = document.querySelectorAll('img[src*="mascot"]');
+  allMascots.forEach(mascot => {
+    if (mascot.id === 'header-mascot') return;
+    mascot.classList.add('animate-jiggle-vivid');
   });
+  setTimeout(() => {
+    allMascots.forEach(mascot => {
+      if (mascot.id === 'header-mascot') return;
+      mascot.classList.remove('animate-jiggle-vivid');
+    });
+  }, 600);
+}
 
-  cardsHtml += `</div>`;
-  appendSystemLog(cardsHtml);
-};
+// LOGIC XỬ LÝ ĐẶT MUA SẢN PHẨM PHỐI HỢP GAMIFICATION
+window.handleBuyProduct = function() {
+  window.appendAssistantMessage('<p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-circle-check mr-1.5"></i>Dạ tuyệt vời, hệ thống Điện Máy Xanh đã ghi nhận yêu cầu đặt mua sản phẩm của anh/chị! Nhân viên tổng đài sẽ liên hệ hỗ trợ mình sau ít phút ạ.</p>');
+  triggerMascotJiggle();
 
-window.selectAndEvaluateProduct = function(cat, id) {
-  const product = CONFIG_CATALOG[cat].find(p => p.id === id);
-  if (!product) return;
+  // Thuc thi thong so Gamification khi mua hang hang thanh cong
+  executeGamificationReward(gameSystemState.quests.conversionMaster.xpReward, 'Chot Don Thanh Cong');
+  triggerQuestCompletion('conversionMaster');
 
-  optimizationState.selectedProduct = product;
-  recomputeAoiIndex();
-
-  // TOÀN THỂ HOÀN TẤT THỬ THÁCH: BÁO CÁO TỐI ƯU HÓA KIẾN TRÚC THAY THẾ TIN NHẮN CUỐI CHAT
-  const metrics = optimizationState.calculatedMetrics;
-  let reportHtml = `
-    <div class="bg-brand-dark border-2 border-brand-electric p-4 font-mono text-xs w-full space-y-3 message-fade-in">
-      <div class="text-center font-bold text-sm text-white border-b border-brand-border pb-2 tracking-widest">
-        BÁO CÁO KẾT QUẢ TỐI ƯU HÓA CẤU HÌNH HỆ THỐNG
-      </div>
-      <div class="grid grid-cols-2 gap-2 text-[11px] border-b border-brand-border pb-2">
-        <div><span class="text-slate-400">Thiết bị cấu hình:</span> <br><strong class="text-white">${product.name}</strong></div>
-        <div><span class="text-slate-400">Tổng chi phí thực tế:</span> <br><strong class="text-brand-gold">${new Intl.NumberFormat('vi-VN').format(product.price)} VND</strong></div>
-      </div>
-
-      <div class="space-y-1">
-        <div class="text-[10px] font-bold text-slate-300">PHÂN TÍCH ĐÁNH GIÁ CHỈ SỐ AOI TRỌNG SỐ:</div>
-        <div class="flex justify-between"><span>Hiệu quả sử dụng ngân sách:</span> <strong class="text-white">${metrics.budgetEfficiency}/100</strong></div>
-        <div class="flex justify-between"><span>Độ thích ứng vật lý thực tế:</span> <strong class="text-white">${metrics.utilityMatch}/100</strong></div>
-        <div class="flex justify-between"><span>Hệ số vận hành bền vững:</span> <strong class="text-white">${metrics.sustainabilityScore}/100</strong></div>
-        <div class="flex justify-between border-t border-brand-border pt-1 font-bold text-brand-electric">
-          <span>ĐIỂM HIỆU NĂNG KIẾN TRÚC (TOTAL AOI):</span>
-          <span>${metrics.totalAoi}/100</span>
-        </div>
-      </div>
-
-      <div class="p-2 bg-brand-panel text-slate-300 text-[11px] leading-relaxed border border-brand-border">
-        <strong>Phân tích Đánh Đổi (Trade-off Matrix):</strong>
-        ${metrics.totalAoi >= 85
-          ? "Cấu hình đạt mức tương thích lý tưởng. Tỷ lệ suy hao tài chính tối thiểu, công suất đáp ứng dư tải, hệ số tiết kiệm năng lượng đạt chuẩn vận hành công nghiệp."
-          : "Cấu hình ở trạng thái cân bằng giới hạn. Ngân sách ban đầu được tối ưu hóa tuy nhiên chỉ số dự phòng công suất tương lai bị thu hẹp đáng kể."}
-      </div>
-
-      <div class="text-[10px] text-brand-success font-bold text-center pt-1">
-        <i class="fa-solid fa-square-check"></i> CẤU HÌNH ĐÃ ĐƯỢC CHUYỂN VÀO HỆ THỐNG KHO PHÂN PHỐI ĐIỆN MÁY XANH
-      </div>
-    </div>
-  `;
-
-  appendSystemLog(reportHtml);
-
-  // Cộng kinh nghiệm tích lũy nâng cấp Tier tài khoản người dùng
-  userExpertiseProfile.totalOptimized += 1;
-  userExpertiseProfile.xp += 150;
-  if (userExpertiseProfile.xp >= 4000) {
-    userExpertiseProfile.tier = "Technology Architect";
+  const headerMascot = document.getElementById('header-mascot');
+  if (headerMascot) {
+    headerMascot.classList.remove('animate-glowing-orb');
+    headerMascot.classList.add('animate-violent-bounce');
+    setTimeout(() => {
+      headerMascot.classList.remove('animate-violent-bounce');
+      headerMascot.classList.add('animate-glowing-orb');
+    }, 1000);
   }
-  syncExpertiseWidgetUI();
 };
 
-function appendUserSimulationLog(text) {
+// ==========================================
+// UTILITIES & CHAT UI RENDERERS
+// ==========================================
+function formatVND(amount) {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount).replace('₫', 'đ');
+}
+
+document.addEventListener('click', function(e) {
+  if (e.target && e.target.classList.contains('custom-btn-select')) {
+    window.handleBuyProduct();
+  }
+});
+
+function scrollChatToBottom() {
+  const chatBox = document.getElementById('chat-box');
+  if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function showTypingIndicator() {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
   const html = `
-    <div class="flex items-start justify-end space-x-2 message-fade-in">
-      <div class="bg-brand-border text-white border border-slate-700 font-mono text-xs p-3 max-w-[80%]">
-        <span class="text-brand-electric font-bold">[USR_EXEC]:</span> ${text}
+    <div id="typing-indicator" class="flex items-start space-x-3.5 message-fade-in">
+      <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+        <img src="img/mascot.png" alt="..." class="w-full h-full object-contain p-0.5 animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+      </div>
+      <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 border border-blue-100 dark:border-blue-900/50 shadow-sm">
+        <div class="flex items-center space-x-1.5 py-1">
+          <span class="w-2 h-2 bg-slate-500 dark:bg-slate-400 rounded-full typing-dot inline-block"></span>
+          <span class="w-2 h-2 bg-slate-500 dark:bg-slate-400 rounded-full typing-dot inline-block"></span>
+          <span class="w-2 h-2 bg-slate-500 dark:bg-slate-400 rounded-full typing-dot inline-block"></span>
+        </div>
       </div>
     </div>`;
   chatBox.insertAdjacentHTML('beforeend', html);
   scrollChatToBottom();
 }
 
-function appendSystemLog(htmlContent) {
+function removeTypingIndicator() {
+  const indicator = document.getElementById('typing-indicator');
+  if (indicator) indicator.remove();
+}
+
+function appendUserMessage(text) {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
   const html = `
-    <div class="flex items-start space-x-3 message-fade-in">
-      <div class="w-8 h-8 border border-brand-electric bg-brand-panel flex items-center justify-center text-brand-electric text-xs font-mono font-bold shrink-0">
-        SYS
+    <div class="flex items-start space-x-3 justify-end message-fade-in">
+      <div class="space-y-1 max-w-[80%]">
+        <div class="bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tl-none px-4 py-3 shadow-md">
+          <p class="text-sm leading-relaxed">${text}</p>
+        </div>
       </div>
-      <div class="max-w-[85%] w-full">
-        <div class="bg-brand-panel text-slate-300 p-4 border border-brand-border font-mono text-xs leading-relaxed">
+      <div class="w-9 h-9 rounded-xl bg-white dark:bg-brand-panel border border-slate-200 dark:border-brand-border flex items-center justify-center shrink-0 shadow-sm">
+        <i class="fa-solid fa-user text-brand-electric text-sm"></i>
+      </div>
+    </div>`;
+  chatBox.insertAdjacentHTML('beforeend', html);
+  scrollChatToBottom();
+
+  if (activeSessionId) {
+    const s = consumerChatSessions.find(item => item.id === activeSessionId);
+    if (s) s.messages.push({ role: 'user', content: text });
+  }
+}
+
+function appendAssistantMessage(htmlContent) {
+  const chatBox = document.getElementById('chat-box');
+  if (!chatBox) return;
+  const html = `
+    <div class="flex items-start space-x-3.5 message-fade-in">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-slate-100 border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden">
+        <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" id="assistant-avatar-node" onerror="this.src='https://placehold.co/100x100?text=AI'">
+      </div>
+      <div class="space-y-1 max-w-[85%] w-full">
+        <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
           ${htmlContent}
         </div>
       </div>
     </div>`;
   chatBox.insertAdjacentHTML('beforeend', html);
   scrollChatToBottom();
+
+  // Gia tri aura thay doi theo cap do lien ket cua Mascot
+  applyMascotVisualRankAura();
+
+  if (activeSessionId) {
+    const s = consumerChatSessions.find(item => item.id === activeSessionId);
+    if (s) s.messages.push({ role: 'assistant', content: htmlContent });
+  }
+}
+window.appendAssistantMessage = appendAssistantMessage;
+
+// ==========================================
+// QUẢN LÝ LỊCH SỬ PHIÊN TRÒ CHUYỆN (SESSIONS)
+// ==========================================
+function createNewChatSession(initialTitle = "Cuộc trò chuyện mới") {
+  const newId = 'session_' + Date.now();
+  const randomMascot = MASCOT_IMAGES[Math.floor(Math.random() * MASCOT_IMAGES.length)];
+
+  const newSession = {
+    id: newId,
+    title: initialTitle,
+    timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+    messages: [],
+    category: null,
+    mascot: randomMascot
+  };
+  consumerChatSessions.unshift(newSession);
+  activeSessionId = newId;
+  renderChatHistoryUI();
+  return newSession;
 }
 
-window.resetConversation = function() {
-  optimizationState = {
-    currentCategory: null,
-    constraints: { maxBudget: 30000000, roomCapacity: 15, userCount: 2, performanceRequirement: 'medium' },
-    selectedProduct: null,
-    calculatedMetrics: { budgetEfficiency: 0, utilityMatch: 0, sustainabilityScore: 0, totalAoi: 0 }
-  };
-  document.getElementById('aoi-hud-overlay').classList.add('hidden');
-  document.getElementById('chat-box').innerHTML = `
-    <div class="flex items-start space-x-3 message-fade-in">
-      <div class="w-8 h-8 border border-brand-electric bg-brand-panel flex items-center justify-center text-brand-electric text-xs font-mono font-bold shrink-0">
-        SYS
-      </div>
-      <div class="max-w-[85%] w-full">
-        <div class="bg-brand-panel text-slate-200 p-4 border border-brand-border font-mono text-xs leading-relaxed">
-          <p class="font-bold text-sm text-white border-b border-brand-border pb-1.5 mb-2">HỆ THỐNG ĐÃ KHỞI ĐỘNG LẠI</p>
-          <p>Vui lòng chọn phân hệ thiết bị đích để cấu hình lại các thông số ràng buộc kỹ thuật tối ưu hóa:</p>
-          <div class="mt-3 flex gap-2">
-            <button onclick="window.triggerCategorySelection('air_conditioner')" class="px-3 py-1.5 bg-brand-dark hover:bg-slate-800 border border-brand-border text-brand-electric font-bold transition-all">[01] MÁY LẠNH</button>
-            <button onclick="window.triggerCategorySelection('refrigerator')" class="px-3 py-1.5 bg-brand-dark hover:bg-slate-800 border border-brand-border text-brand-electric font-bold transition-all">[02] TỦ LẠNH</button>
-            <button onclick="window.triggerCategorySelection('laptop')" class="px-3 py-1.5 bg-brand-dark hover:bg-slate-800 border border-brand-border text-brand-electric font-bold transition-all">[03] LAPTOP</button>
+function updateActiveSessionTitle(newTitle, categoryCode) {
+  if (!activeSessionId) return;
+  const s = consumerChatSessions.find(item => item.id === activeSessionId);
+  if (s) {
+    s.title = newTitle;
+    if (categoryCode) s.category = categoryCode;
+    renderChatHistoryUI();
+  }
+}
+
+function renderChatHistoryUI() {
+  const container = document.getElementById('chat-history-list');
+  if (!container) return;
+
+  if (consumerChatSessions.length === 0) {
+    container.innerHTML = `
+      <div id="history-empty-state" class="text-center py-8 px-4 border border-dashed border-amber-200 dark:border-amber-500/20 rounded-xl bg-amber-50/20">
+        <p class="text-[11px] text-amber-600 italic">Chưa có cuộc trò chuyện cũ.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  consumerChatSessions.forEach(session => {
+    const isActive = session.id === activeSessionId;
+    const pill = document.createElement('div');
+
+    pill.className = `group flex items-center justify-between p-3 rounded-xl border transition-all duration-200 pointer cursor-pointer text-xs font-medium history-item-appear ${
+      isActive
+      ? 'border-brand-electric/50 bg-brand-electric/5 text-brand-electric dark:bg-brand-electric/10'
+      : 'border-amber-200/70 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-950/10 text-amber-800 dark:text-amber-300 hover:bg-amber-100/60 dark:hover:bg-amber-900/20'
+    }`;
+
+    const mascotFile = 'mascot.png';
+    const iconImageHtml = `<img src="img/${mascotFile}" alt="Mascot" class="w-6 h-6 object-contain rounded-md shadow-sm bg-white" onerror="this.src='img/mascot.png'">`;
+
+    pill.innerHTML = `
+      <div class="flex items-center space-x-2.5 truncate w-[90%]">
+        <span class="shrink-0 flex items-center">${iconImageHtml}</span>
+        <div class="truncate flex flex-col text-left">
+          <span class="truncate font-semibold text-amber-950 dark:text-amber-100">${session.title}</span>
+          <span class="text-[10px] text-amber-600/80 dark:text-amber-400/60 mt-0.5">${session.timestamp} • Điện Máy Xanh</span>
+        </div>
+      </div>`;
+
+    pill.addEventListener('click', () => {
+      activeSessionId = session.id;
+      renderChatHistoryUI();
+      restoreSessionMessages(session);
+    });
+    container.appendChild(pill);
+  });
+}
+
+function restoreSessionMessages(session) {
+  const chatBox = document.getElementById('chat-box');
+  if (!chatBox) return;
+
+  if (!session.messages || session.messages.length === 0) {
+    chatBox.innerHTML = `
+      <div class="flex items-start space-x-3.5 message-fade-in">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-slate-100 border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] bg-white">
+          <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
+        </div>
+        <div class="space-y-1 max-w-[85%] w-full">
+          <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
+            <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
           </div>
         </div>
-      </div>
-    </div>`;
+      </div>`;
+    sessionState.stage = 'INIT';
+    sessionState.category = null;
+    sessionState.collectedData = { brand: null, budget: null, roomSize: null, familySize: null, purpose: null };
+
+    document.getElementById('active-category').textContent = 'Chưa xác định';
+    document.getElementById('chat-stage').textContent = 'INIT';
+    scrollChatToBottom();
+    return;
+  }
+
+  chatBox.innerHTML = '';
+  session.messages.forEach(msg => {
+    if (msg.role === 'user') {
+      const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tl-none px-4 py-3 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
+      chatBox.insertAdjacentHTML('beforeend', html);
+    } else {
+      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain animate-mascot-idle"></div><div class="max-w-[85%] w-full bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
+      chatBox.insertAdjacentHTML('beforeend', html);
+    }
+  });
+
+  sessionState.category = session.category;
+  sessionState.stage = session.messages.length > 0 ? 'RECOMMENDATION' : 'INIT';
+  document.getElementById('active-category').textContent = session.category || 'Chưa xác định';
+  document.getElementById('chat-stage').textContent = sessionState.stage;
   scrollChatToBottom();
+}
+
+// ========================================================
+// HEURISTIC NLP PARSER - TRÍCH XUẤT THÔNG TIN TỰ NHIÊN TIẾNG VIỆT
+// ========================================================
+function extractEntitiesFromText(text) {
+  const lower = text.toLowerCase();
+  let result = {};
+
+  if (lower.includes('máy lạnh') || lower.includes('điều hòa') || lower.includes('đh')) {
+    result.category = 'ac';
+  } else if (lower.includes('tủ lạnh') || lower.includes('tl')) {
+    result.category = 'fridge';
+  } else if (lower.includes('laptop') || lower.includes('máy tính')) {
+    result.category = 'laptop';
+  }
+
+  const brandsList = ['panasonic', 'daikin', 'casper', 'samsung', 'lg', 'aqua', 'hp', 'asus', 'lenovo'];
+  for (const b of brandsList) {
+    if (lower.includes(b)) {
+      result.brand = b.charAt(0).toUpperCase() + b.slice(1);
+      break;
+    }
+  }
+  if (!result.brand && lower.includes('pana')) result.brand = 'Panasonic';
+
+  const priceRegex = /(dưới|trên|tầm|khoảng|~)?\s*(\d+)\s*(triệu|tr|củ)/i;
+  const matchPrice = lower.match(priceRegex);
+  if (matchPrice) {
+    const modifier = matchPrice[1] || 'tầm';
+    const numericValue = parseInt(matchPrice[2], 10) * 1000000;
+    result.budget = { modifier, value: numericValue };
+  }
+
+  const roomRegex = /(\d+)\s*(m2|m²)/i;
+  const matchRoom = lower.match(roomRegex);
+  if (matchRoom) {
+    result.roomSize = parseInt(matchRoom[1], 10);
+  } else if (lower.includes('phòng ngủ')) {
+    result.roomSize = 12;
+  } else if (lower.includes('phòng khách')) {
+    result.roomSize = 22;
+  }
+
+  const familyRegex = /(\d+)\s*(người|thành viên|nhân khẩu)/i;
+  const matchFamily = lower.match(familyRegex);
+  if (matchFamily) {
+    result.familySize = parseInt(matchFamily[1], 10);
+  } else if (lower.includes('sinh viên') || lower.includes('ở một mình') || lower.includes('trọ')) {
+    result.familySize = 1;
+  }
+
+  if (lower.includes('sinh viên') || lower.includes('học tập') || lower.includes('văn phòng') || lower.includes('mỏng nhẹ')) {
+    result.purpose = 'office';
+  } else if (lower.includes('gaming') || lower.includes('đồ họa') || lower.includes('chơi game')) {
+    result.purpose = 'heavy';
+  }
+
+  return result;
+}
+
+// ========================================================
+// CORE LOGIC ENGINE - ĐIỀU PHỐI HỘI THOẠI & DỮ LIỆU RAG
+// ========================================================
+function handleFormSubmit(event) {
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+
+  const input = document.getElementById('user-input');
+  if (!input) return;
+  const val = input.value.trim();
+  if (!val) return;
+
+  if (!activeSessionId) createNewChatSession();
+
+  appendUserMessage(val);
+  input.value = '';
+  showTypingIndicator();
+
+  // Van hanh cong cu Gamification phat hien Combo chi tiet tin nhan
+  evaluateMessageGamificationCombo(val);
+
+  setTimeout(() => {
+    removeTypingIndicator();
+    dispatchLogicEngine(val);
+  }, 1300);
+}
+
+function dispatchLogicEngine(text) {
+  const startTime = performance.now();
+  const lower = text.toLowerCase();
+
+  // Kich hoat nhiem vu dau tien khi tro chuyen
+  if (!gameSystemState.quests.firstContact.completed) {
+    executeGamificationReward(gameSystemState.quests.firstContact.xpReward, 'Ket Noi Mascot');
+    triggerQuestCompletion('firstContact');
+  }
+
+  for (const [key, answer] of Object.entries(MOCK_FAQ)) {
+    if (lower.includes(key)) {
+      document.getElementById('rag-faq-status').textContent = `Khớp FAQ: [${key}]`;
+      document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
+      appendAssistantMessage(`<p class="text-sm"><i class="fa-solid fa-circle-info text-brand-electric mr-1.5"></i>${answer}</p>`);
+
+      // Thuong Diem khi tiep can FAQ He thong
+      executeGamificationReward(20, 'Khai Thac FAQ');
+      triggerQuestCompletion('faqExplorer');
+      return;
+    }
+  }
+  document.getElementById('rag-faq-status').textContent = 'Không khớp FAQ';
+
+  const extracted = extractEntitiesFromText(text);
+
+  if (extracted.category) sessionState.category = extracted.category;
+  if (extracted.brand) sessionState.collectedData.brand = extracted.brand;
+  if (extracted.budget) sessionState.collectedData.budget = extracted.budget;
+  if (extracted.roomSize) sessionState.collectedData.roomSize = extracted.roomSize;
+  if (extracted.familySize) sessionState.collectedData.familySize = extracted.familySize;
+  if (extracted.purpose) sessionState.collectedData.purpose = extracted.purpose;
+
+  document.getElementById('active-category').textContent = sessionState.category || 'Chưa xác định';
+  document.getElementById('slang-inspector').textContent = JSON.stringify(sessionState.collectedData);
+
+  // Kiem tra thuong quoc te cho viec dien thong tin phuc tap
+  let entitiesFoundCount = 0;
+  if (extracted.brand) entitiesFoundCount++;
+  if (extracted.budget) entitiesFoundCount++;
+  if (extracted.roomSize || extracted.familySize) entitiesFoundCount++;
+  if (entitiesFoundCount >= 2) {
+    executeGamificationReward(gameSystemState.quests.deepSearch.xpReward, 'Xay Dung Tieu Chi Chuyen Sau');
+    triggerQuestCompletion('deepSearch');
+  }
+
+  if (!sessionState.category) {
+    sessionState.stage = 'INIT';
+    document.getElementById('chat-stage').textContent = sessionState.stage;
+    document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
+    appendAssistantMessage('<p class="text-sm">Dạ, em có thể hỗ trợ tư vấn chuyên sâu và so sánh thông thái về 3 nhóm sản phẩm: <strong>Máy lạnh, Tủ lạnh, hoặc Laptop</strong>. Anh/chị đang có nhu cầu tìm mua sản phẩm nào ạ?</p>');
+    return;
+  }
+
+  let categoryLabel = "Trò chuyện";
+  if (sessionState.category === 'ac') categoryLabel = "Tư vấn Máy Lạnh";
+  if (sessionState.category === 'fridge') categoryLabel = "Tư vấn Tủ Lạnh";
+  if (sessionState.category === 'laptop') categoryLabel = "Tư vấn Laptop";
+  updateActiveSessionTitle(categoryLabel, sessionState.category);
+
+  if (sessionState.category === 'ac' && !sessionState.collectedData.roomSize) {
+    if (sessionState.stage === 'PROBING') {
+      sessionState.collectedData.roomSize = 12;
+      appendAssistantMessage('<p class="text-xs italic text-slate-400 mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Em xin phép lấy mức diện tích phòng ngủ tiêu chuẩn phổ thông (dưới 15m²) để lọc sản phẩm ngay cho mình nhé.</p>');
+    } else {
+      sessionState.stage = 'PROBING';
+      document.getElementById('chat-stage').textContent = sessionState.stage;
+      document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
+      appendAssistantMessage('<p class="text-sm">Dạ, để em tính toán công suất số Ngựa (HP) tối ưu nhất, anh/chị cho em hỏi <strong>diện tích phòng lắp đặt khoảng bao nhiêu m²</strong> (hoặc lắp cho không gian nào như phòng ngủ, phòng khách) ạ?</p>');
+      return;
+    }
+  }
+
+  if (sessionState.category === 'fridge' && !sessionState.collectedData.familySize) {
+    if (sessionState.stage === 'PROBING') {
+      sessionState.collectedData.familySize = 3;
+      appendAssistantMessage('<p class="text-xs italic text-slate-400 mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Em xin phép lấy dung tích tiêu chuẩn cho hộ gia đình 3 - 4 thành viên phổ biến để đề xuất các mẫu tối ưu nhé.</p>');
+    } else {
+      sessionState.stage = 'PROBING';
+      document.getElementById('chat-stage').textContent = sessionState.stage;
+      document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
+      appendAssistantMessage('<p class="text-sm">Dạ, nhà mình dự kiến **có khoảng bao nhiêu thành viên** sẽ dùng chung tủ lạnh ạ, để em lọc mức dung tích (lít) chứa thực phẩm vừa vặn nhất cho gia đình mình?</p>');
+      return;
+    }
+  }
+
+  if (sessionState.category === 'laptop' && !sessionState.collectedData.brand && !sessionState.collectedData.budget) {
+    if (sessionState.stage !== 'PROBING') {
+      sessionState.stage = 'PROBING';
+      document.getElementById('chat-stage').textContent = sessionState.stage;
+      document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
+      appendAssistantMessage('<p class="text-sm">Dạ, anh/chị tìm mua laptop phục vụ chính cho **nhu cầu học tập văn phòng mỏng nhẹ** hay **đồ họa chơi game nặng** ạ? Nếu mình có khoảng ngân sách dự kiến, hãy chia sẻ để em định hình máy chuẩn nhất nha!</p>');
+      return;
+    }
+  }
+
+  sessionState.stage = 'RECOMMENDATION';
+  document.getElementById('chat-stage').textContent = sessionState.stage;
+
+  const catalog = MOCK_CATALOG[sessionState.category];
+  let filteredProducts = [...catalog];
+
+  if (sessionState.collectedData.brand) {
+    const targetBrand = sessionState.collectedData.brand.toLowerCase();
+    filteredProducts = filteredProducts.filter(p => p.brand.toLowerCase().includes(targetBrand));
+  }
+
+  if (sessionState.collectedData.budget) {
+    const { modifier, value } = sessionState.collectedData.budget;
+    if (modifier === 'dưới') {
+      filteredProducts = filteredProducts.filter(p => p.price <= value);
+    } else if (modifier === 'trên') {
+      filteredProducts = filteredProducts.filter(p => p.price >= value);
+    } else {
+      filteredProducts = filteredProducts.filter(p => p.price <= value * 1.15);
+    }
+  }
+
+  if (sessionState.category === 'ac' && sessionState.collectedData.roomSize) {
+    const size = sessionState.collectedData.roomSize;
+    if (size <= 15) {
+      filteredProducts = filteredProducts.filter(p => p.room_size.includes('Dưới 15m²'));
+    } else {
+      filteredProducts = filteredProducts.filter(p => p.room_size.includes('15 đến 20m²'));
+    }
+  }
+
+  if (sessionState.category === 'fridge' && sessionState.collectedData.familySize) {
+    const size = sessionState.collectedData.familySize;
+    if (size <= 2) {
+      filteredProducts = filteredProducts.filter(p => p.family_size.includes('1 - 2') || p.family_size.includes('2 - 4'));
+    } else if (size >= 3 && size <= 4) {
+      filteredProducts = filteredProducts.filter(p => p.family_size.includes('2 - 4') || p.family_size.includes('3 - 5'));
+    } else {
+      filteredProducts = filteredProducts.filter(p => p.family_size.includes('3 - 5'));
+    }
+  }
+
+  let isFallbackTriggered = false;
+  if (filteredProducts.length === 0) {
+    filteredProducts = [...catalog];
+    isFallbackTriggered = true;
+  }
+
+  document.getElementById('rag-catalog-status').textContent = `Tìm thấy ${filteredProducts.length} mẫu`;
+  document.getElementById('rag-promo-status').textContent = 'Đã áp mã khuyến mãi dynamic';
+
+  let introductionPrompt = "";
+  if (isFallbackTriggered) {
+    introductionPrompt = `Dạ hiện tại kho hàng không có mẫu nào khớp hoàn hảo 100% tiêu chí đặc thù trên, em xin phép đề xuất **Top ${filteredProducts.length} sản phẩm bán chạy nhất** thuộc nhóm ngành hàng này tại Điện Máy Xanh để anh/chị cân nhắc ạ:`;
+  } else {
+    introductionPrompt = `Dạ tuyệt vời! Khảo sát kho hàng thời gian thực, em đã tìm thấy **${filteredProducts.length} sản phẩm tối ưu nhất** phù hợp hoàn chỉnh với mong muốn của mình. Dưới đây là phân tích đặc tính kỹ thuật kèm điểm đánh đổi thực tế:`;
+  }
+
+  let cardsHtml = `<p class="text-[13.5px] leading-relaxed mb-4 text-slate-800 dark:text-slate-200">${introductionPrompt}</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+
+  filteredProducts.forEach((product, idx) => {
+    const hasZeroInstallment = MOCK_PROMOTIONS.installment_0.includes(product.id);
+    const promotionGift = MOCK_PROMOTIONS.discounts[product.id] || 'Tặng phiếu mua hàng trị giá 200.000đ (Áp dụng mua đồ gia dụng)';
+
+    let tradeOffAnalysis = "Dòng sản phẩm quốc dân, lượng đặt mua rất cao dễ gặp tình trạng thiếu hàng cục bộ tại một số quận huyện.";
+    if (product.price < 6000000) {
+      tradeOffAnalysis = "Giá thành siêu rẻ tiết kiệm chi phí, tuy nhiên tính năng chỉ dừng ở mức cơ bản, không tích hợp nhiều công nghệ cảm biến cao cấp.";
+    } else if (product.price > 13000000) {
+      tradeOffAnalysis = "Công nghệ và độ bền xuất sắc hàng đầu, tuy nhiên tổng chi phí đầu tư ban đầu sẽ cao hơn các thương hiệu phổ thông.";
+    }
+
+    let specsHtml = "";
+    if (sessionState.category === 'ac') {
+      specsHtml = `<li><i class="fa-solid fa-expand text-slate-400 mr-1.5"></i>Diện tích: <strong>${product.room_size}</strong></li>
+                   <li><i class="fa-solid fa-volume-low text-slate-400 mr-1.5"></i>Độ ồn: <strong>${product.noise}</strong></li>`;
+    } else if (sessionState.category === 'fridge') {
+      specsHtml = `<li><i class="fa-solid fa-box-open text-slate-400 mr-1.5"></i>Dung tích: <strong>${product.liters} Lít</strong></li>
+                   <li><i class="fa-solid fa-snowflake text-slate-400 mr-1.5"></i>Làm lạnh: <strong>${product.family_size}</strong></li>`;
+    } else if (sessionState.category === 'laptop') {
+      specsHtml = `<li><i class="fa-solid fa-weight-hanging text-slate-400 mr-1.5"></i>Trọng lượng: <strong>${product.weight}</strong></li>
+                   <li><i class="fa-solid fa-laptop text-slate-400 mr-1.5"></i>Màn hình: <strong>${product.screen}</strong></li>`;
+    }
+
+    cardsHtml += `
+      <div class="bg-amber-50/60 dark:bg-amber-950/20 rounded-xl p-4 border border-amber-200/80 dark:border-amber-500/20 flex flex-col justify-between space-y-3.5 shadow-sm transition-all hover:shadow-md hover:border-amber-400/80">
+        <div>
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-200/50 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200 rounded">Đề xuất ${idx + 1}</span>
+            ${hasZeroInstallment ? `<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded flex items-center gap-0.5"><i class="fa-solid fa-bolt text-[8px]"></i> Trả góp 0%</span>` : ''}
+          </div>
+          <h3 class="font-bold text-[12.5px] text-slate-900 dark:text-white mt-2 line-clamp-2 h-9 leading-snug">${product.name}</h3>
+          <div class="text-[15px] font-extrabold text-blue-600 dark:text-brand-electric mt-1.5">${formatVND(product.price)}</div>
+
+          <ul class="text-[11px] text-slate-600 dark:text-slate-400 mt-2.5 space-y-1 bg-white/80 dark:bg-brand-dark/40 p-2.5 rounded-lg border border-amber-100 dark:border-brand-border/30">
+            ${specsHtml}
+          </ul>
+
+          <p class="text-[11px] text-amber-700 dark:text-amber-400 font-semibold mt-2.5 flex items-start"><i class="fa-solid fa-gift mr-1.5 mt-0.5 text-xs shrink-0"></i><span>Quà tặng: ${promotionGift}</span></p>
+        </div>
+
+        <div class="bg-white dark:bg-amber-900/20 p-2.5 rounded-lg text-[11px] text-amber-900 dark:text-amber-400 border border-amber-200/60 leading-relaxed">
+          <strong>Điểm đánh đổi (Trade-off):</strong> ${tradeOffAnalysis}
+        </div>
+
+        <button class="w-full custom-btn-select text-xs py-2.5 rounded-xl font-bold transition-all shadow-sm">Đặt Mua Ngay</button>
+      </div>`;
+  });
+
+  cardsHtml += `</div>`;
+  appendAssistantMessage(cardsHtml);
+
+  // Thuong diem khi quet xong danh muc kho hang RAG thanh cong
+  executeGamificationReward(15, 'Quet Du Lieu RAG Kho Hang');
+
+  sessionState.stage = 'INIT';
+  sessionState.category = null;
+  sessionState.collectedData = { brand: null, budget: null, roomSize: null, familySize: null, purpose: null };
+
+  document.getElementById('chat-stage').textContent = sessionState.stage;
+  document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
+}
+
+// ==========================================
+// CÁC HÀM KHỞI TẠO VÀ LÀM MỚI PHIÊN
+// ==========================================
+window.resetConversation = function() {
+  if (activeSessionId) {
+    const currentSession = consumerChatSessions.find(item => item.id === activeSessionId);
+    if (currentSession && (!currentSession.messages || currentSession.messages.length === 0)) {
+      return;
+    }
+  }
+
+  const newestEmptySession = consumerChatSessions.find(session => !session.messages || session.messages.length === 0);
+
+  if (newestEmptySession) {
+    activeSessionId = newestEmptySession.id;
+    restoreSessionMessages(newestEmptySession);
+
+    document.getElementById('slang-inspector').textContent = '';
+    document.getElementById('rag-catalog-status').textContent = '';
+    document.getElementById('rag-promo-status').textContent = '';
+    document.getElementById('rag-faq-status').textContent = '';
+
+    renderChatHistoryUI();
+  } else {
+    const chatBox = document.getElementById('chat-box');
+    if (chatBox) {
+      chatBox.innerHTML = `
+        <div class="flex items-start space-x-3.5 message-fade-in">
+          <div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)]">
+            <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
+          </div>
+          <div class="space-y-1 max-w-[85%] w-full">
+            <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
+              <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    sessionState.stage = 'INIT';
+    sessionState.category = null;
+    sessionState.collectedData = { brand: null, budget: null, roomSize: null, familySize: null, purpose: null };
+
+    document.getElementById('active-category').textContent = 'Chưa xác định';
+    document.getElementById('chat-stage').textContent = 'INIT';
+    document.getElementById('slang-inspector').textContent = '';
+    document.getElementById('rag-catalog-status').textContent = '';
+    document.getElementById('rag-promo-status').textContent = '';
+    document.getElementById('rag-faq-status').textContent = '';
+
+    createNewChatSession();
+  }
 };
 
-function scrollChatToBottom() {
-  const box = document.getElementById('chat-box');
-  if (box) box.scrollTop = box.scrollHeight;
+window.fillQuickPrompt = function(promptText) {
+  const input = document.getElementById('user-input');
+  if (input) {
+    input.value = promptText;
+    input.focus();
+  }
+};
+
+// ==========================================
+// CÁC HÀM XỬ LÝ LOGIC ENGINE MỚI CỦA GAMIFICATION
+// ==========================================
+function evaluateMessageGamificationCombo(text) {
+  const parsed = extractEntitiesFromText(text);
+  let comboScore = 0;
+  if (parsed.category) comboScore++;
+  if (parsed.brand) comboScore++;
+  if (parsed.budget) comboScore++;
+  if (parsed.roomSize || parsed.familySize) comboScore++;
+
+  if (comboScore >= 2) {
+    gameSystemState.comboStreak++;
+    gameSystemState.score += (comboScore * 50 * gameSystemState.comboStreak);
+    executeGamificationReward(comboScore * 15, 'Combo Thong Tin Bac ' + comboScore);
+    triggerMascotJiggle();
+  } else {
+    gameSystemState.comboStreak = 0;
+  }
+  updateGamificationVisualHUD();
 }
+
+function executeGamificationReward(xpValue, reasonString) {
+  gameSystemState.xp += xpValue;
+  gameSystemState.score += (xpValue * 10);
+
+  // Tinh toan cap do Level Up phu hop
+  if (gameSystemState.xp >= gameSystemState.xpRequired) {
+    gameSystemState.xp -= gameSystemState.xpRequired;
+    gameSystemState.level++;
+    gameSystemState.xpRequired = Math.round(gameSystemState.xpRequired * 1.5);
+
+    // Day thong bao Level Up dac biet vao khung Chat
+    setTimeout(() => {
+      renderLevelUpNotificationInChat();
+    }, 600);
+  }
+
+  updateGamificationVisualHUD();
+  renderFloatingScoreTextIndicator(xpValue, reasonString);
+}
+
+function triggerQuestCompletion(questId) {
+  if (gameSystemState.quests[questId] && !gameSystemState.quests[questId].completed) {
+    gameSystemState.quests[questId].completed = true;
+    updateGamificationVisualHUD();
+
+    const element = document.getElementById('quest-card-' + questId);
+    if (element) {
+      element.classList.add('quest-card-resolved');
+      const badge = element.querySelector('.quest-badge-status');
+      if (badge) {
+        badge.className = 'quest-badge-status px-2 py-0.5 text-[9px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded';
+        badge.textContent = 'Hoan thanh';
+      }
+    }
+  }
+}
+
+function updateGamificationVisualHUD() {
+  const lvlElement = document.getElementById('game-mascot-level');
+  const titleElement = document.getElementById('game-mascot-title');
+  const xpBarElement = document.getElementById('game-xp-progress-bar');
+  const xpTextElement = document.getElementById('game-xp-text-value');
+  const scoreElement = document.getElementById('game-score-total');
+  const streakElement = document.getElementById('game-streak-multiplier');
+
+  if (lvlElement) lvlElement.textContent = gameSystemState.level;
+  if (scoreElement) scoreElement.textContent = gameSystemState.score;
+
+  if (streakElement) {
+    if (gameSystemState.comboStreak > 0) {
+      streakElement.textContent = 'Combo x' + gameSystemState.comboStreak;
+      streakElement.classList.remove('hidden');
+    } else {
+      streakElement.classList.add('hidden');
+    }
+  }
+
+  // Tinh toan phan tram thanh trai nghiem XP
+  const percentage = Math.min(100, Math.round((gameSystemState.xp / gameSystemState.xpRequired) * 100));
+  if (xpBarElement) xpBarElement.style.width = percentage + '%';
+  if (xpTextElement) xpTextElement.textContent = gameSystemState.xp + '/' + gameSystemState.xpRequired + ' XP';
+
+  // Cap nhat danh hieu tien hoa cua Mascot theo linh hon web
+  if (titleElement) {
+    if (gameSystemState.level === 1) titleElement.textContent = 'Mascot Tap Su';
+    else if (gameSystemState.level === 2) titleElement.textContent = 'Mascot Thong Thai';
+    else if (gameSystemState.level === 3) titleElement.textContent = 'Mascot Chuyen Gia';
+    else titleElement.textContent = 'Mascot Dai Su Dien May';
+  }
+}
+
+function renderFloatingScoreTextIndicator(xpAmount, reason) {
+  const chatForm = document.getElementById('chat-form');
+  if (!chatForm) return;
+
+  const indicator = document.createElement('div');
+  indicator.className = 'absolute bottom-16 left-4 bg-slate-900/90 text-white font-sans text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-md pointer-events-none z-50 animate-score-popup flex items-center space-x-1 border border-brand-electric/30';
+  indicator.innerHTML = `<i class="fa-solid fa-star text-brand-gold mr-1"></i><span>+${xpAmount} XP: ${reason}</span>`;
+
+  chatForm.appendChild(indicator);
+  setTimeout(() => {
+    indicator.remove();
+  }, 1200);
+}
+
+function renderLevelUpNotificationInChat() {
+  const chatBox = document.getElementById('chat-box');
+  if (!chatBox) return;
+
+  const html = `
+    <div class="flex items-center justify-center py-2 message-fade-in select-none">
+      <div class="bg-gradient-to-r from-orange-500/10 via-amber-500/20 to-orange-500/10 border-y border-amber-500/30 w-full text-center py-2.5 px-4">
+        <p class="text-xs font-bold tracking-widest text-amber-800 dark:text-amber-300 uppercase">
+          <i class="fa-solid fa-angles-up mr-2 text-orange-500 animate-bounce"></i>
+          Lien ket Mascot tang bac: Cap do ${gameSystemState.level}
+        </p>
+        <p class="text-[10px] text-amber-700/80 dark:text-amber-400/70 mt-0.5">Mascot phat trien nang luc tu van, ho tro anh/chi nhiet tinh hon nua!</p>
+      </div>
+    </div>`;
+  chatBox.insertAdjacentHTML('beforeend', html);
+  scrollChatToBottom();
+  triggerMascotJiggle();
+}
+
+function applyMascotVisualRankAura() {
+  const avatars = document.querySelectorAll('#assistant-avatar-node');
+  avatars.forEach(node => {
+    if (gameSystemState.level >= 2) {
+      node.classList.add('mascot-epic-glow');
+    } else {
+      node.classList.remove('mascot-epic-glow');
+    }
+  });
+}
+
+// ĐỒNG BỘ KHỞI TẠO KHI TẢI TRANG HOÀN TẤT
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('chat-form');
+  if (form) form.addEventListener('submit', handleFormSubmit);
+
+  initCollapsibleSidebarLogic();
+  injectJiggleStyles();
+  updateGamificationVisualHUD();
+
+  const allElements = document.getElementsByTagName('*');
+  for (let el of allElements) {
+    if (el.textContent.trim().startsWith('Dữ liệu bảo mật') && el.children.length === 0) {
+      el.style.textAlign = 'left';
+      el.style.display = 'block';
+      if (el.parentElement) {
+        el.parentElement.style.display = 'flex';
+        el.parentElement.style.flexDirection = 'column';
+        el.parentElement.style.alignItems = 'flex-start';
+        el.parentElement.style.textAlign = 'left';
+        el.parentElement.style.paddingLeft = '0';
+        el.parentElement.style.marginLeft = '0';
+      }
+    }
+  }
+
+  createNewChatSession();
+});
+
+// ==========================================
+// INJECT NEW DYNAMIC MASCOT ANIMATIONS (FLOATING & VIOLENT BOUNCE)
+// ==========================================
+(function injectHeaderMascotAnimations() {
+  if (document.getElementById('header-mascot-animations')) return;
+  const style = document.createElement('style');
+  style.id = 'header-mascot-animations';
+  style.innerHTML = `
+    @keyframes orbFloatGlow {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+        filter: drop-shadow(0 4px 8px rgba(0,149,218,0.25));
+      }
+      50% {
+        transform: translateY(-5px) scale(1.05);
+        filter: drop-shadow(0 12px 20px rgba(0,149,218,0.55));
+      }
+    }
+    .animate-glowing-orb {
+      animation: orbFloatGlow 3s ease-in-out infinite !important;
+      will-change: transform, filter;
+    }
+    @keyframes violentBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      10% { transform: translateY(-30px) scaleY(1.3) scaleX(0.85); }
+      20% { transform: translateY(22px) scaleY(0.7) scaleX(1.25); }
+      30% { transform: translateY(-22px) scaleY(1.15) scaleX(0.9); }
+      40% { transform: translateY(16px) scaleY(0.85) scaleX(1.1); }
+      50% { transform: translateY(-12px) scaleY(1.05); }
+      60% { transform: translateY(10px) scaleY(0.95); }
+      70% { transform: translateY(-6px); }
+      80% { transform: translateY(4px); }
+      90% { transform: translateY(-1px); }
+    }
+    .animate-violent-bounce {
+      animation: violentBounce 1s cubic-bezier(.36,.07,.19,.97) both !important;
+      will-change: transform;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
+// ==========================================
+// FORCE INJECT HACKATHON LIVE DOTS ANIMATION
+// ==========================================
+(function injectUltraLivelyDots() {
+  if (document.getElementById('ultra-lively-dots-style')) return;
+  const style = document.createElement('style');
+  style.id = 'ultra-lively-dots-style';
+  style.innerHTML = `
+    .typing-dot {
+      display: inline-block !important;
+      will-change: transform, opacity, background-color, box-shadow;
+      animation: ultra-lively-wave 0.5s infinite cubic-bezier(0.25, 1, 0.5, 1) !important;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.08s !important; }
+    .typing-dot:nth-child(3) { animation-delay: 0.16s !important; }
+
+    @keyframes ultra-lively-wave {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.4;
+      }
+      35% {
+        transform: translateY(-10px) scaleX(0.8) scaleY(1.25) !important;
+        opacity: 1;
+        background-color: #0095da !important;
+        box-shadow: 0 0 10px #0095da, 0 0 20px rgba(0, 149, 218, 0.4);
+      }
+      70% {
+        transform: translateY(1.5px) scaleX(1.2) scaleY(0.85) !important;
+        opacity: 0.7;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+})();
