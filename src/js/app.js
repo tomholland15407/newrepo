@@ -309,7 +309,6 @@ function updateActiveSessionTitle(newTitle, categoryCode) {
   }
 }
 
-// MODIFIED: Updated background, border, and text styles to light yellow/amber
 function renderChatHistoryUI() {
   const container = document.getElementById('chat-history-list');
   if (!container) return;
@@ -407,7 +406,6 @@ function extractEntitiesFromText(text) {
   const lower = text.toLowerCase();
   let result = {};
 
-  // 1. Phân loại nhóm ngành hàng (Category)
   if (lower.includes('máy lạnh') || lower.includes('điều hòa') || lower.includes('đh')) {
     result.category = 'ac';
   } else if (lower.includes('tủ lạnh') || lower.includes('tl')) {
@@ -416,7 +414,6 @@ function extractEntitiesFromText(text) {
     result.category = 'laptop';
   }
 
-  // 2. Trích xuất Hãng sản xuất (Brand)
   const brandsList = ['panasonic', 'daikin', 'casper', 'samsung', 'lg', 'aqua', 'hp', 'asus', 'lenovo'];
   for (const b of brandsList) {
     if (lower.includes(b)) {
@@ -426,7 +423,6 @@ function extractEntitiesFromText(text) {
   }
   if (!result.brand && lower.includes('pana')) result.brand = 'Panasonic';
 
-  // 3. Trích xuất hạn mức tài chính (Budget)
   const priceRegex = /(dưới|trên|tầm|khoảng|~)?\s*(\d+)\s*(triệu|tr|củ)/i;
   const matchPrice = lower.match(priceRegex);
   if (matchPrice) {
@@ -435,7 +431,6 @@ function extractEntitiesFromText(text) {
     result.budget = { modifier, value: numericValue };
   }
 
-  // 4. Trích xuất diện tích phòng cho Máy Lạnh (Room Size)
   const roomRegex = /(\d+)\s*(m2|m²)/i;
   const matchRoom = lower.match(roomRegex);
   if (matchRoom) {
@@ -446,7 +441,6 @@ function extractEntitiesFromText(text) {
     result.roomSize = 22;
   }
 
-  // 5. Trích xuất số người dùng cho Tủ Lạnh (Family Size)
   const familyRegex = /(\d+)\s*(người|thành viên|nhân khẩu)/i;
   const matchFamily = lower.match(familyRegex);
   if (matchFamily) {
@@ -455,7 +449,6 @@ function extractEntitiesFromText(text) {
     result.familySize = 1;
   }
 
-  // 6. Trích xuất nhu cầu laptop (Purpose)
   if (lower.includes('sinh viên') || lower.includes('học tập') || lower.includes('văn phòng') || lower.includes('mỏng nhẹ')) {
     result.purpose = 'office';
   } else if (lower.includes('gaming') || lower.includes('đồ họa') || lower.includes('chơi game')) {
@@ -494,7 +487,6 @@ function dispatchLogicEngine(text) {
   const startTime = performance.now();
   const lower = text.toLowerCase();
 
-  // BƯỚC 1: QUÉT FAQ ĐỒNG BỘ
   for (const [key, answer] of Object.entries(MOCK_FAQ)) {
     if (lower.includes(key)) {
       document.getElementById('rag-faq-status').textContent = `Khớp FAQ: [${key}]`;
@@ -505,7 +497,6 @@ function dispatchLogicEngine(text) {
   }
   document.getElementById('rag-faq-status').textContent = 'Không khớp FAQ';
 
-  // BƯỚC 2: NLP TRÍCH XUẤT THỰC THỂ
   const extracted = extractEntitiesFromText(text);
 
   if (extracted.category) sessionState.category = extracted.category;
@@ -518,7 +509,6 @@ function dispatchLogicEngine(text) {
   document.getElementById('active-category').textContent = sessionState.category || 'Chưa xác định';
   document.getElementById('slang-inspector').textContent = JSON.stringify(sessionState.collectedData);
 
-  // BƯỚC 3: KIỂM TRA TÍNH XÁC ĐỊNH NGÀNH HÀNG
   if (!sessionState.category) {
     sessionState.stage = 'INIT';
     document.getElementById('chat-stage').textContent = sessionState.stage;
@@ -533,7 +523,6 @@ function dispatchLogicEngine(text) {
   if (sessionState.category === 'laptop') categoryLabel = "Tư vấn Laptop";
   updateActiveSessionTitle(categoryLabel, sessionState.category);
 
-  // BƯỚC 4: ĐIỀU TRA THÔNG TIN CÒN THIẾU
   if (sessionState.category === 'ac' && !sessionState.collectedData.roomSize) {
     if (sessionState.stage === 'PROBING') {
       sessionState.collectedData.roomSize = 12;
@@ -570,7 +559,6 @@ function dispatchLogicEngine(text) {
     }
   }
 
-  // BƯỚC 5: KHU VỰC TRUY VẤN DỮ LIỆU KHO HÀNG & PHÂN TÍCH TRADE-OFF
   sessionState.stage = 'RECOMMENDATION';
   document.getElementById('chat-stage').textContent = sessionState.stage;
 
@@ -655,24 +643,25 @@ function dispatchLogicEngine(text) {
                    <li><i class="fa-solid fa-laptop text-slate-400 mr-1.5"></i>Màn hình: <strong>${product.screen}</strong></li>`;
     }
 
+    // MODIFIED: Product suggestion cards now feature a lively light yellow layout with golden borders!
     cardsHtml += `
-      <div class="bg-white dark:bg-brand-panel/90 rounded-xl p-4 border border-slate-200 dark:border-brand-border flex flex-col justify-between space-y-3.5 shadow-sm transition-all hover:shadow-md hover:border-brand-electric/40">
+      <div class="bg-amber-50/60 dark:bg-amber-950/20 rounded-xl p-4 border border-amber-200/80 dark:border-amber-500/20 flex flex-col justify-between space-y-3.5 shadow-sm transition-all hover:shadow-md hover:border-amber-400/80">
         <div>
           <div class="flex items-center justify-between">
-            <span class="px-2 py-0.5 text-[10px] font-bold bg-brand-electric/10 text-brand-electric rounded">Đề xuất ${idx + 1}</span>
+            <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-200/50 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200 rounded">Đề xuất ${idx + 1}</span>
             ${hasZeroInstallment ? `<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded flex items-center gap-0.5"><i class="fa-solid fa-bolt text-[8px]"></i> Trả góp 0%</span>` : ''}
           </div>
           <h3 class="font-bold text-[12.5px] text-slate-900 dark:text-white mt-2 line-clamp-2 h-9 leading-snug">${product.name}</h3>
           <div class="text-[15px] font-extrabold text-blue-600 dark:text-brand-electric mt-1.5">${formatVND(product.price)}</div>
 
-          <ul class="text-[11px] text-slate-600 dark:text-slate-400 mt-2.5 space-y-1 bg-slate-50 dark:bg-brand-dark/40 p-2.5 rounded-lg border border-slate-100 dark:border-brand-border/30">
+          <ul class="text-[11px] text-slate-600 dark:text-slate-400 mt-2.5 space-y-1 bg-white/80 dark:bg-brand-dark/40 p-2.5 rounded-lg border border-amber-100 dark:border-brand-border/30">
             ${specsHtml}
           </ul>
 
           <p class="text-[11px] text-amber-700 dark:text-amber-400 font-semibold mt-2.5 flex items-start"><i class="fa-solid fa-gift mr-1.5 mt-0.5 text-xs shrink-0"></i><span>Quà tặng: ${promotionGift}</span></p>
         </div>
 
-        <div class="bg-amber-500/5 dark:bg-amber-500/10 p-2.5 rounded-lg text-[11px] text-amber-800 dark:text-amber-400 border border-amber-500/20 leading-relaxed">
+        <div class="bg-white dark:bg-amber-900/20 p-2.5 rounded-lg text-[11px] text-amber-900 dark:text-amber-400 border border-amber-200/60 leading-relaxed">
           <strong>Điểm đánh đổi (Trade-off):</strong> ${tradeOffAnalysis}
         </div>
 
