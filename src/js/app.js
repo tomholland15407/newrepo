@@ -1,7 +1,8 @@
 /* eslint-disable */
 /**
- * Smart Assistant - Trợ Lý Mua Sắm Thông Thái (JS Engine)
- * Toàn bộ cơ sở dữ liệu MockData và logic điều phối hội thoại
+ * Smart Assistant - Trợ Lý Mua Sắm Thông Thái (JS Engine Nâng Cấp Toàn Diện)
+ * Bộ điều phối hội thoại thông minh tích hợp bộ trích xuất thực thể (Slot-Filling)
+ * Hoàn toàn không cắt xén logic - Sẵn sàng chạy Production Mockup
  */
 
 const MOCK_CATALOG = {
@@ -115,11 +116,17 @@ const MOCK_FAQ = {
   'trả góp': 'Dạ, hiện tại có chương trình hỗ trợ trả góp 0% lãi suất qua căn cước công dân gắn chip cực nhanh chóng, xét duyệt chỉ 5 phút ạ.'
 };
 
-// Cấu trúc trạng thái ứng dụng
+// Cấu trúc quản lý trạng thái ứng dụng nâng cao (Slot-Filling State)
 let sessionState = {
-  stage: 'INIT',
-  category: null,
-  collectedData: { roomSize: null, familySize: null },
+  stage: 'INIT', // INIT -> PROBING -> RECOMMENDATION
+  category: null, // ac, fridge, laptop
+  collectedData: {
+    brand: null,
+    budget: null, // { modifier: 'dưới'|'trên'|'tầm', value: số }
+    roomSize: null, // số m2
+    familySize: null, // số thành viên
+    purpose: null // học tập, gaming...
+  },
 };
 
 let consumerChatSessions = [];
@@ -175,11 +182,9 @@ function injectJiggleStyles() {
 
 function triggerMascotJiggle() {
   const allMascots = document.querySelectorAll('img[src*="mascot"]');
-
   allMascots.forEach(mascot => {
     mascot.classList.add('animate-jiggle-vivid');
   });
-
   setTimeout(() => {
     allMascots.forEach(mascot => {
       mascot.classList.remove('animate-jiggle-vivid');
@@ -188,14 +193,13 @@ function triggerMascotJiggle() {
 }
 
 window.handleBuyProduct = function() {
-  window.appendAssistantMessage('<p class="text-sm">Dạ tuyệt vời, em đã ghi nhận yêu cầu đặt mua sản phẩm của anh/chị!</p>');
+  window.appendAssistantMessage('<p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-circle-check mr-1.5"></i>Dạ tuyệt vời, hệ thống Điện Máy Xanh đã ghi nhận yêu cầu đặt mua sản phẩm của anh/chị! Nhân viên tổng đài sẽ liên hệ hỗ trợ mình sau ít phút ạ.</p>');
   triggerMascotJiggle();
 };
 
 // ==========================================
-// CORE FUNCTIONS - XỬ LÝ LỘC LUỒNG CHAT
+// UTILITIES & CHAT UI RENDERERS
 // ==========================================
-
 function formatVND(amount) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount).replace('₫', 'đ');
 }
@@ -253,7 +257,6 @@ function appendUserMessage(text) {
   }
 }
 
-// ĐỒNG BỘ HÓA ĐỘNG: ĐẢM BẢO CÁC TIN NHẮN DO AI SINH RA ĐỀU MANG PHONG CÁCH GLASSMORPHISM MỚI
 function appendAssistantMessage(htmlContent) {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
@@ -276,7 +279,6 @@ function appendAssistantMessage(htmlContent) {
     if (s) s.messages.push({ role: 'assistant', content: htmlContent });
   }
 }
-
 window.appendAssistantMessage = appendAssistantMessage;
 
 // ==========================================
@@ -371,7 +373,10 @@ function restoreSessionMessages(session) {
       </div>`;
     sessionState.stage = 'INIT';
     sessionState.category = null;
-    sessionState.collectedData = { roomSize: null, familySize: null };
+    sessionState.collectedData = { brand: null, budget: null, roomSize: null, familySize: null, purpose: null };
+
+    document.getElementById('active-category').textContent = 'Chưa xác định';
+    document.getElementById('chat-stage').textContent = 'INIT';
     scrollChatToBottom();
     return;
   }
@@ -386,12 +391,82 @@ function restoreSessionMessages(session) {
       chatBox.insertAdjacentHTML('beforeend', html);
     }
   });
+
+  sessionState.category = session.category;
+  sessionState.stage = session.messages.length > 0 ? 'RECOMMENDATION' : 'INIT';
+  document.getElementById('active-category').textContent = session.category || 'Chưa xác định';
+  document.getElementById('chat-stage').textContent = sessionState.stage;
   scrollChatToBottom();
 }
 
-// ==========================================
-// PIPELINE XỬ LÝ CHAT & LOGIC PHÂN TÍCH RAG
-// ==========================================
+// ========================================================
+// HEURISTIC NLP PARSER - TRÍCH XUẤT THÔNG TIN TỰ NHIÊN TIẾNG VIỆT
+// ========================================================
+function extractEntitiesFromText(text) {
+  const lower = text.toLowerCase();
+  let result = {};
+
+  // 1. Phân loại nhóm ngành hàng (Category)
+  if (lower.includes('máy lạnh') || lower.includes('điều hòa') || lower.includes('đh')) {
+    result.category = 'ac';
+  } else if (lower.includes('tủ lạnh') || lower.includes('tl')) {
+    result.category = 'fridge';
+  } else if (lower.includes('laptop') || lower.includes('máy tính')) {
+    result.category = 'laptop';
+  }
+
+  // 2. Trích xuất Hãng sản xuất (Brand)
+  const brandsList = ['panasonic', 'daikin', 'casper', 'samsung', 'lg', 'aqua', 'hp', 'asus', 'lenovo'];
+  for (const b of brandsList) {
+    if (lower.includes(b)) {
+      result.brand = b.charAt(0).toUpperCase() + b.slice(1);
+      break;
+    }
+  }
+  if (!result.brand && lower.includes('pana')) result.brand = 'Panasonic';
+
+  // 3. Trích xuất hạn mức tài chính (Budget) - Ví dụ: "dưới 15 củ", "tầm 10tr", "khoảng 8 triệu"
+  const priceRegex = /(dưới|trên|tầm|khoảng|~)?\s*(\d+)\s*(triệu|tr|củ)/i;
+  const matchPrice = lower.match(priceRegex);
+  if (matchPrice) {
+    const modifier = matchPrice[1] || 'tầm';
+    const numericValue = parseInt(matchPrice[2], 10) * 1000000;
+    result.budget = { modifier, value: numericValue };
+  }
+
+  // 4. Trích xuất diện tích phòng cho Máy Lạnh (Room Size)
+  const roomRegex = /(\d+)\s*(m2|m²)/i;
+  const matchRoom = lower.match(roomRegex);
+  if (matchRoom) {
+    result.roomSize = parseInt(matchRoom[1], 10);
+  } else if (lower.includes('phòng ngủ')) {
+    result.roomSize = 12; // Mức mặc định phòng ngủ phổ thông
+  } else if (lower.includes('phòng khách')) {
+    result.roomSize = 22; // Mức mặc định phòng khách phổ thông
+  }
+
+  // 5. Trích xuất số người dùng cho Tủ Lạnh (Family Size)
+  const familyRegex = /(\d+)\s*(người|thành viên|nhân khẩu)/i;
+  const matchFamily = lower.match(familyRegex);
+  if (matchFamily) {
+    result.familySize = parseInt(matchFamily[1], 10);
+  } else if (lower.includes('sinh viên') || lower.includes('ở một mình') || lower.includes('trọ')) {
+    result.familySize = 1;
+  }
+
+  // 6. Trích xuất nhu cầu laptop (Purpose)
+  if (lower.includes('sinh viên') || lower.includes('học tập') || lower.includes('văn phòng') || lower.includes('mỏng nhẹ')) {
+    result.purpose = 'office';
+  } else if (lower.includes('gaming') || lower.includes('đồ họa') || lower.includes('chơi game')) {
+    result.purpose = 'heavy';
+  }
+
+  return result;
+}
+
+// ========================================================
+// CORE LOGIC ENGINE - ĐIỀU PHỐI HỘI THOẠI & DỮ LIỆU RAG
+// ========================================================
 function handleFormSubmit(event) {
   event.preventDefault();
   const input = document.getElementById('user-input');
@@ -408,90 +483,234 @@ function handleFormSubmit(event) {
   setTimeout(() => {
     removeTypingIndicator();
     dispatchLogicEngine(val);
-  }, 700);
+  }, 600);
 }
 
 function dispatchLogicEngine(text) {
+  const startTime = performance.now();
   const lower = text.toLowerCase();
 
+  // BƯỚC 1: QUÉT FAQ ĐỒNG BỘ (Bảo hành, giao hàng, trả góp)
   for (const [key, answer] of Object.entries(MOCK_FAQ)) {
     if (lower.includes(key)) {
-      appendAssistantMessage(`<p class="text-sm">${answer}</p>`);
+      document.getElementById('rag-faq-status').textContent = `Khớp FAQ: [${key}]`;
+      document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
+      appendAssistantMessage(`<p class="text-sm"><i class="fa-solid fa-circle-info text-brand-electric mr-1.5"></i>${answer}</p>`);
       return;
     }
   }
+  document.getElementById('rag-faq-status').textContent = 'Không khớp FAQ';
 
-  if (sessionState.stage === 'INIT') {
-    if (lower.includes('máy lạnh') || lower.includes('điều hòa') || lower.includes('đh')) {
-      sessionState.category = 'ac';
-      sessionState.stage = 'PROBING';
-      updateActiveSessionTitle('Tư vấn mua Máy Lạnh', 'ac');
-    } else if (lower.includes('tủ lạnh') || lower.includes('tl')) {
-      sessionState.category = 'fridge';
-      sessionState.stage = 'PROBING';
-      updateActiveSessionTitle('Tư vấn mua Tủ Lạnh', 'fridge');
-    } else if (lower.includes('laptop') || lower.includes('máy tính')) {
-      sessionState.category = 'laptop';
-      sessionState.stage = 'PROBING';
-      updateActiveSessionTitle('Tư vấn mua Laptop', 'laptop');
-    } else {
-      appendAssistantMessage('<p class="text-sm">Dạ, em có thể hỗ trợ tư vấn chuyên sâu về <strong>Máy lạnh, Tủ lạnh, Laptop</strong>. Anh/chị đang muốn sắm sản phẩm nào ạ?</p>');
-      return;
-    }
-  }
+  // BƯỚC 2: NLP TRÍCH XUẤT THỰC THỂ (SLOT-FILLING)
+  const extracted = extractEntitiesFromText(text);
 
-  if (sessionState.stage === 'PROBING') {
-    if (sessionState.category === 'ac') {
-      if (!sessionState.collectedData.roomSize) {
-        appendAssistantMessage('<p class="text-sm">Dạ, anh/chị cho em hỏi <strong>diện tích phòng lắp đặt</strong> rộng khoảng bao nhiêu m² để em tính toán số Ngựa (HP) phù hợp nhất ạ?</p>');
-        sessionState.collectedData.roomSize = 'WAITING';
-        return;
-      } else {
-        sessionState.stage = 'RECOMMENDATION';
-      }
-    } else if (sessionState.category === 'fridge') {
-      if (!sessionState.collectedData.familySize) {
-        appendAssistantMessage('<p class="text-sm">Dạ, nhà mình hiện tại <strong>có khoảng mấy thành viên</strong> sử dụng tủ lạnh chung ạ để em tính dung tích lít tối ưu?</p>');
-        sessionState.collectedData.familySize = 'WAITING';
-        return;
-      } else {
-        sessionState.stage = 'RECOMMENDATION';
-      }
-    } else {
-      sessionState.stage = 'RECOMMENDATION';
-    }
-  }
+  // Hợp nhất các slot dữ liệu tìm được vào sessionState hiện hành
+  if (extracted.category) sessionState.category = extracted.category;
+  if (extracted.brand) sessionState.collectedData.brand = extracted.brand;
+  if (extracted.budget) sessionState.collectedData.budget = extracted.budget;
+  if (extracted.roomSize) sessionState.collectedData.roomSize = extracted.roomSize;
+  if (extracted.familySize) sessionState.collectedData.familySize = extracted.familySize;
+  if (extracted.purpose) sessionState.collectedData.purpose = extracted.purpose;
 
-  if (sessionState.stage === 'RECOMMENDATION') {
-    const products = MOCK_CATALOG[sessionState.category];
-    let cardsHtml = `<p class="text-sm mb-3">Dạ, em đã tra cứu kho hàng và đề xuất <strong>Top 3 sản phẩm</strong> phù hợp nhất kèm phân tích điểm đánh đổi (Trade-off):</p><div class="grid grid-cols-1 lg:grid-cols-3 gap-4">`;
+  // Cập nhật giao diện gỡ lỗi (Hộp đen ẩn) trực quan theo DOM
+  document.getElementById('active-category').textContent = sessionState.category || 'Chưa xác định';
+  document.getElementById('slang-inspector').textContent = JSON.stringify(sessionState.collectedData);
 
-    products.forEach((p, idx) => {
-      const promo = MOCK_PROMOTIONS.discounts[p.id] || 'Tặng phiếu mua hàng bách hóa';
-      cardsHtml += `
-        <div class="bg-white/80 dark:bg-brand-dark rounded-xl p-4 border border-slate-200 dark:border-brand-border flex flex-col justify-between space-y-3 shadow-sm">
-          <div>
-            <span class="px-2 py-0.5 text-[10px] font-bold bg-brand-electric/10 text-brand-electric rounded">Gợi ý ${idx+1}</span>
-            <h3 class="font-bold text-xs text-slate-900 dark:text-white mt-1">${p.name}</h3>
-            <div class="text-sm font-extrabold text-blue-600 dark:text-brand-electric mt-1">${formatVND(p.price)}</div>
-            <p class="text-[11px] text-slate-500 mt-2">Quà khuyến mãi: ${promo}</p>
-          </div>
-          <div class="bg-amber-50 dark:bg-amber-950/20 p-2 rounded text-[11px] text-amber-700 dark:text-amber-400 border border-amber-200/50">
-            <strong>Cân nhắc:</strong> Dòng này bán chạy nên đôi khi xảy ra tình trạng thiếu hàng cục bộ, cần đặt trước.
-          </div>
-          <button onclick="window.handleBuyProduct()" class="w-full custom-btn-select text-xs py-2 rounded-lg font-semibold transition-all">Chọn sản phẩm</button>
-        </div>`;
-    });
-
-    cardsHtml += `</div>`;
-    appendAssistantMessage(cardsHtml);
-
+  // BƯỚC 3: KIỂM TRA TÍNH XÁC ĐỊNH NGÀNH HÀNG (CATEGORY PROBING)
+  if (!sessionState.category) {
     sessionState.stage = 'INIT';
-    sessionState.category = null;
-    sessionState.collectedData = { roomSize: null, familySize: null };
+    document.getElementById('chat-stage').textContent = sessionState.stage;
+    document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
+    appendAssistantMessage('<p class="text-sm">Dạ, em có thể hỗ trợ tư vấn chuyên sâu và so sánh thông thái về 3 nhóm sản phẩm: <strong>Máy lạnh, Tủ lạnh, hoặc Laptop</strong>. Anh/chị đang có nhu cầu tìm mua sản phẩm nào ạ?</p>');
+    return;
   }
+
+  // Đồng bộ tiêu đề Sidebar dựa trên Ngành hàng được khóa
+  let categoryLabel = "Trò chuyện";
+  if (sessionState.category === 'ac') categoryLabel = "Tư vấn Máy Lạnh";
+  if (sessionState.category === 'fridge') categoryLabel = "Tư vấn Tủ Lạnh";
+  if (sessionState.category === 'laptop') categoryLabel = "Tư vấn Laptop";
+  updateActiveSessionTitle(categoryLabel, sessionState.category);
+
+  // BƯỚC 4: ĐIỀU TRA THÔNG TIN CÒN THIẾU DỰA TRÊN NGÀNH HÀNG (DYNAMIC SLOT PROBING)
+
+  // A. Nếu là Máy Lạnh mà chưa biết không gian / diện tích lắp đặt
+  if (sessionState.category === 'ac' && !sessionState.collectedData.roomSize) {
+    if (sessionState.stage === 'PROBING') {
+      // Người dùng đã được hỏi câu này ở lượt trước nhưng nhập text tự do không có số m2 cụ thể -> Áp dụng Default Fallback thông minh
+      sessionState.collectedData.roomSize = 12;
+      appendAssistantMessage('<p class="text-xs italic text-slate-400 mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Em xin phép lấy mức diện tích phòng ngủ tiêu chuẩn phổ thông (dưới 15m²) để lọc sản phẩm ngay cho mình nhé.</p>');
+    } else {
+      sessionState.stage = 'PROBING';
+      document.getElementById('chat-stage').textContent = sessionState.stage;
+      document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
+      appendAssistantMessage('<p class="text-sm">Dạ, để em tính toán công suất số Ngựa (HP) tối ưu nhất, anh/chị cho em hỏi <strong>diện tích phòng lắp đặt khoảng bao nhiêu m²</strong> (hoặc lắp cho không gian nào như phòng ngủ, phòng khách) ạ?</p>');
+      return;
+    }
+  }
+
+  // B. Nếu là Tủ Lạnh mà chưa biết nhu cầu thành viên sử dụng
+  if (sessionState.category === 'fridge' && !sessionState.collectedData.familySize) {
+    if (sessionState.stage === 'PROBING') {
+      // Fallback khi người dùng nhập dữ liệu text tự do không chứa số lượng
+      sessionState.collectedData.familySize = 3;
+      appendAssistantMessage('<p class="text-xs italic text-slate-400 mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Em xin phép lấy dung tích tiêu chuẩn cho hộ gia đình 3 - 4 thành viên phổ biến để đề xuất các mẫu tối ưu nhé.</p>');
+    } else {
+      sessionState.stage = 'PROBING';
+      document.getElementById('chat-stage').textContent = sessionState.stage;
+      document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
+      appendAssistantMessage('<p class="text-sm">Dạ, nhà mình dự kiến **có khoảng bao nhiêu thành viên** sẽ dùng chung tủ lạnh ạ, để em lọc mức dung tích (lít) chứa thực phẩm vừa vặn nhất cho gia đình mình?</p>');
+      return;
+    }
+  }
+
+  // C. Nếu là Laptop mà chưa biết phân khúc giá hoặc hãng, hỏi thêm để tăng tính gợi mở
+  if (sessionState.category === 'laptop' && !sessionState.collectedData.brand && !sessionState.collectedData.budget) {
+    if (sessionState.stage !== 'PROBING') {
+      sessionState.stage = 'PROBING';
+      document.getElementById('chat-stage').textContent = sessionState.stage;
+      document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
+      appendAssistantMessage('<p class="text-sm">Dạ, anh/chị tìm mua laptop phục vụ chính cho **nhu cầu học tập văn phòng mỏng nhẹ** hay **đồ họa chơi game nặng** ạ? Nếu mình có khoảng ngân sách dự kiến, hãy chia sẻ để em định hình máy chuẩn nhất nha!</p>');
+      return;
+    }
+  }
+
+  // BƯỚC 5: KHU VỰC TRUY VẤN DỮ LIỆU KHO HÀNG & PHÂN TÍCH TRADE-OFF (RECOMMENDATION ENGINE)
+  sessionState.stage = 'RECOMMENDATION';
+  document.getElementById('chat-stage').textContent = sessionState.stage;
+
+  const catalog = MOCK_CATALOG[sessionState.category];
+  let filteredProducts = [...catalog];
+
+  // Thực hiện lọc theo Hãng sản xuất nếu có
+  if (sessionState.collectedData.brand) {
+    const targetBrand = sessionState.collectedData.brand.toLowerCase();
+    filteredProducts = filteredProducts.filter(p => p.brand.toLowerCase().includes(targetBrand));
+  }
+
+  // Thực hiện lọc theo Hạn mức tài chính nếu có
+  if (sessionState.collectedData.budget) {
+    const { modifier, value } = sessionState.collectedData.budget;
+    if (modifier === 'dưới') {
+      filteredProducts = filteredProducts.filter(p => p.price <= value);
+    } else if (modifier === 'trên') {
+      filteredProducts = filteredProducts.filter(p => p.price >= value);
+    } else { // tầm, khoảng, ~
+      // Cho phép sai số biên rộng hơn 15% để tránh bộ lọc trống (Không làm mất cơ hội bán hàng)
+      filteredProducts = filteredProducts.filter(p => p.price <= value * 1.15);
+    }
+  }
+
+  // Thực hiện lọc theo Diện tích phòng (Đối với Máy lạnh)
+  if (sessionState.category === 'ac' && sessionState.collectedData.roomSize) {
+    const size = sessionState.collectedData.roomSize;
+    if (size <= 15) {
+      filteredProducts = filteredProducts.filter(p => p.room_size.includes('Dưới 15m²'));
+    } else {
+      filteredProducts = filteredProducts.filter(p => p.room_size.includes('15 đến 20m²'));
+    }
+  }
+
+  // Thực hiện lọc theo Số lượng người dùng (Đối với Tủ lạnh)
+  if (sessionState.category === 'fridge' && sessionState.collectedData.familySize) {
+    const size = sessionState.collectedData.familySize;
+    if (size <= 2) {
+      filteredProducts = filteredProducts.filter(p => p.family_size.includes('1 - 2') || p.family_size.includes('2 - 4'));
+    } else if (size >= 3 && size <= 4) {
+      filteredProducts = filteredProducts.filter(p => p.family_size.includes('2 - 4') || p.family_size.includes('3 - 5'));
+    } else {
+      filteredProducts = filteredProducts.filter(p => p.family_size.includes('3 - 5'));
+    }
+  }
+
+  // Nếu bộ lọc quá chặt dẫn đến không tìm thấy sản phẩm nào -> Fallback: Hiển thị toàn bộ danh mục kèm thông báo nới lỏng tiêu chí
+  let isFallbackTriggered = false;
+  if (filteredProducts.length === 0) {
+    filteredProducts = [...catalog];
+    isFallbackTriggered = true;
+  }
+
+  // Cập nhật trạng thái RAG gỡ lỗi trực quan lên DOM hộp ẩn
+  document.getElementById('rag-catalog-status').textContent = `Tìm thấy ${filteredProducts.length} mẫu`;
+  document.getElementById('rag-promo-status').textContent = 'Đã áp mã khuyến mãi dynamic';
+
+  // Biện luận tiêu đề giới thiệu dựa trên kết quả lọc dữ liệu thật
+  let introductionPrompt = "";
+  if (isFallbackTriggered) {
+    introductionPrompt = `Dạ hiện tại kho hàng không có mẫu nào khớp hoàn hảo 100% tiêu chí đặc thù trên, em xin phép đề xuất **Top ${filteredProducts.length} sản phẩm bán chạy nhất** thuộc nhóm ngành hàng này tại Điện Máy Xanh để anh/chị cân nhắc ạ:`;
+  } else {
+    introductionPrompt = `Dạ tuyệt vời! Khảo sát kho hàng thời gian thực, em đã tìm thấy **${filteredProducts.length} sản phẩm tối ưu nhất** phù hợp hoàn chỉnh với mong muốn của mình. Dưới đây là phân tích đặc tính kỹ thuật kèm điểm đánh đổi thực tế:`;
+  }
+
+  // Xây dựng chuỗi HTML thẻ sản phẩm lưới linh hoạt (Responsive Grid) phong cách thiết kế mới
+  let cardsHtml = `<p class="text-[13.5px] leading-relaxed mb-4 text-slate-800 dark:text-slate-200">${introductionPrompt}</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+
+  filteredProducts.forEach((product, idx) => {
+    const hasZeroInstallment = MOCK_PROMOTIONS.installment_0.includes(product.id);
+    const promotionGift = MOCK_PROMOTIONS.discounts[product.id] || 'Tặng phiếu mua hàng trị giá 200.000đ (Áp dụng mua đồ gia dụng)';
+
+    // Biện luận Điểm đánh đổi (Trade-off) động dựa trên thuộc tính sản phẩm thật
+    let tradeOffAnalysis = "Dòng sản phẩm quốc dân, lượng đặt mua rất cao dễ gặp tình trạng thiếu hàng cục bộ tại một số quận huyện.";
+    if (product.price < 6000000) {
+      tradeOffAnalysis = "Giá thành siêu rẻ tiết kiệm chi phí, tuy nhiên tính năng chỉ dừng ở mức cơ bản, không tích hợp nhiều công nghệ cảm biến cao cấp.";
+    } else if (product.price > 13000000) {
+      tradeOffAnalysis = "Công nghệ và độ bền xuất sắc hàng đầu, tuy nhiên tổng chi phí đầu tư ban đầu sẽ cao hơn các thương hiệu phổ thông.";
+    }
+
+    // Xử lý chuỗi thông số kỹ thuật đặc thù tương ứng từng ngành hàng
+    let specsHtml = "";
+    if (sessionState.category === 'ac') {
+      specsHtml = `<li><i class="fa-solid fa-expand text-slate-400 mr-1.5"></i>Diện tích: <strong>${product.room_size}</strong></li>
+                   <li><i class="fa-solid fa-volume-low text-slate-400 mr-1.5"></i>Độ ồn: <strong>${product.noise}</strong></li>`;
+    } else if (sessionState.category === 'fridge') {
+      specsHtml = `<li><i class="fa-solid fa-box-open text-slate-400 mr-1.5"></i>Dung tích: <strong>${product.liters} Lít</strong></li>
+                   <li><i class="fa-solid fa-snowflake text-slate-400 mr-1.5"></i>Làm lạnh: <strong>${product.family_size}</strong></li>`;
+    } else if (sessionState.category === 'laptop') {
+      specsHtml = `<li><i class="fa-solid fa-weight-hanging text-slate-400 mr-1.5"></i>Trọng lượng: <strong>${product.weight}</strong></li>
+                   <li><i class="fa-solid fa-laptop text-slate-400 mr-1.5"></i>Màn hình: <strong>${product.screen}</strong></li>`;
+    }
+
+    cardsHtml += `
+      <div class="bg-white dark:bg-brand-panel/90 rounded-xl p-4 border border-slate-200 dark:border-brand-border flex flex-col justify-between space-y-3.5 shadow-sm transition-all hover:shadow-md hover:border-brand-electric/40">
+        <div>
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 text-[10px] font-bold bg-brand-electric/10 text-brand-electric rounded">Đề xuất ${idx + 1}</span>
+            ${hasZeroInstallment ? `<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded flex items-center gap-0.5"><i class="fa-solid fa-bolt text-[8px]"></i> Trả góp 0%</span>` : ''}
+          </div>
+          <h3 class="font-bold text-[12.5px] text-slate-900 dark:text-white mt-2 line-clamp-2 h-9 leading-snug">${product.name}</h3>
+          <div class="text-[15px] font-extrabold text-blue-600 dark:text-brand-electric mt-1.5">${formatVND(product.price)}</div>
+
+          <ul class="text-[11px] text-slate-600 dark:text-slate-400 mt-2.5 space-y-1 bg-slate-50 dark:bg-brand-dark/40 p-2.5 rounded-lg border border-slate-100 dark:border-brand-border/30">
+            ${specsHtml}
+          </ul>
+
+          <p class="text-[11px] text-amber-700 dark:text-amber-400 font-semibold mt-2.5 flex items-start"><i class="fa-solid fa-gift mr-1.5 mt-0.5 text-xs shrink-0"></i><span>Quà tặng: ${promotionGift}</span></p>
+        </div>
+
+        <div class="bg-amber-500/5 dark:bg-amber-500/10 p-2.5 rounded-lg text-[11px] text-amber-800 dark:text-amber-400 border border-amber-500/20 leading-relaxed">
+          <strong>Điểm đánh đổi (Trade-off):</strong> ${tradeOffAnalysis}
+        </div>
+
+        <button onclick="window.handleBuyProduct()" class="w-full custom-btn-select text-xs py-2.5 rounded-xl font-bold transition-all shadow-sm">Đặt Mua Ngay</button>
+      </div>`;
+  });
+
+  cardsHtml += `</div>`;
+  appendAssistantMessage(cardsHtml);
+
+  // Khôi phục chu trình máy trạng thái về trạng thái khởi tạo ban đầu chuẩn bị cho phiên lọc tiếp theo
+  sessionState.stage = 'INIT';
+  sessionState.category = null;
+  sessionState.collectedData = { brand: null, budget: null, roomSize: null, familySize: null, purpose: null };
+
+  document.getElementById('chat-stage').textContent = sessionState.stage;
+  document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
 }
 
+// ==========================================
+// CÁC HÀM KHỞI TẠO VÀ LÀM MỚI PHIÊN (RESET/PROMPT)
+// ==========================================
 window.resetConversation = function() {
   if (activeSessionId) {
     const currentSession = consumerChatSessions.find(item => item.id === activeSessionId);
@@ -509,14 +728,23 @@ window.resetConversation = function() {
         </div>
         <div class="space-y-1 max-w-[85%] w-full">
           <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
-            <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ!</p>
+            <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
           </div>
         </div>
       </div>`;
   }
+
   sessionState.stage = 'INIT';
   sessionState.category = null;
-  sessionState.collectedData = { roomSize: null, familySize: null };
+  sessionState.collectedData = { brand: null, budget: null, roomSize: null, familySize: null, purpose: null };
+
+  document.getElementById('active-category').textContent = 'Chưa xác định';
+  document.getElementById('chat-stage').textContent = 'INIT';
+  document.getElementById('slang-inspector').textContent = '';
+  document.getElementById('rag-catalog-status').textContent = '';
+  document.getElementById('rag-promo-status').textContent = '';
+  document.getElementById('rag-faq-status').textContent = '';
+
   createNewChatSession();
 };
 
@@ -528,7 +756,7 @@ window.fillQuickPrompt = function(promptText) {
   }
 };
 
-// Khởi tạo các sự kiện khi tải trang hoàn tất
+// ĐỒNG BỘ KHỞI TẠO KHI TẢI TRANG HOÀN TẤT
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('chat-form');
   if (form) form.addEventListener('submit', handleFormSubmit);
@@ -536,7 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCollapsibleSidebarLogic();
   injectJiggleStyles();
 
-  // Ép cụm text Bảo mật canh trái thẳng hàng tuyệt đối với dòng dưới
+  // Ép cụm văn bản bảo mật căn lề trái chuẩn xác theo thiết kế đồ họa
   const allElements = document.getElementsByTagName('*');
   for (let el of allElements) {
     if (el.textContent.trim().startsWith('Dữ liệu bảo mật') && el.children.length === 0) {
