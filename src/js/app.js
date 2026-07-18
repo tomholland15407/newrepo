@@ -209,11 +209,11 @@ function showTypingIndicator() {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
   const html = `
-    <div id="typing-indicator" class="flex items-start space-x-3 message-fade-in">
+    <div id="typing-indicator" class="flex items-start space-x-3.5 message-fade-in">
       <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
         <img src="img/mascot.png" alt="..." class="w-full h-full object-contain p-0.5 animate-pulse" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
-      <div class="bg-white dark:bg-brand-panel text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border">
+      <div class="glass-message-card text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 border border-slate-200 dark:border-brand-border">
         <div class="flex items-center space-x-1 py-1">
           <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
           <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
@@ -236,7 +236,7 @@ function appendUserMessage(text) {
   const html = `
     <div class="flex items-start space-x-3 justify-end message-fade-in">
       <div class="space-y-1 max-w-[80%]">
-        <div class="bg-brand-cobalt text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md">
+        <div class="bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md">
           <p class="text-sm leading-relaxed">${text}</p>
         </div>
       </div>
@@ -253,16 +253,17 @@ function appendUserMessage(text) {
   }
 }
 
+// ĐỒNG BỘ HÓA ĐỘNG: ĐẢM BẢO CÁC TIN NHẮN DO AI SINH RA ĐỀU MANG PHONG CÁCH GLASSMORPHISM MỚI
 function appendAssistantMessage(htmlContent) {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
   const html = `
-    <div class="flex items-start space-x-3 message-fade-in">
-      <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-        <img src="img/mascot.png" alt="Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+    <div class="flex items-start space-x-3.5 message-fade-in">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-slate-100 border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden">
+        <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
-        <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border">
+        <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
           ${htmlContent}
         </div>
       </div>
@@ -352,19 +353,18 @@ function renderChatHistoryUI() {
   });
 }
 
-// Sửa lỗi 1: Cho phép chuyển đổi và tải lại giao diện chào mừng khi bấm vào session rỗng
 function restoreSessionMessages(session) {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
 
   if (!session.messages || session.messages.length === 0) {
     chatBox.innerHTML = `
-      <div class="flex items-start space-x-3 message-fade-in">
-        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-          <img src="img/mascot.png" alt="Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+      <div class="flex items-start space-x-3.5 message-fade-in">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-slate-100 border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] bg-white">
+          <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
         </div>
         <div class="space-y-1 max-w-[85%] w-full">
-          <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border">
+          <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
             <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ!</p>
           </div>
         </div>
@@ -379,10 +379,10 @@ function restoreSessionMessages(session) {
   chatBox.innerHTML = '';
   session.messages.forEach(msg => {
     if (msg.role === 'user') {
-      const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-brand-cobalt text-white rounded-2xl px-4 py-3 text-sm">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tr-none px-4 py-3 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     } else {
-      const html = `<div class="flex items-start space-x-3 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md"><img src="img/mascot.png" class="p-0.5 object-contain"></div><div class="max-w-[85%] bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl px-4 py-3 border border-slate-200 dark:border-brand-border text-sm">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain"></div><div class="max-w-[85%] w-full glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 text-[13.5px]">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     }
   });
@@ -469,7 +469,7 @@ function dispatchLogicEngine(text) {
     products.forEach((p, idx) => {
       const promo = MOCK_PROMOTIONS.discounts[p.id] || 'Tặng phiếu mua hàng bách hóa';
       cardsHtml += `
-        <div class="bg-slate-50 dark:bg-brand-dark rounded-xl p-4 border border-slate-200 dark:border-brand-border flex flex-col justify-between space-y-3">
+        <div class="bg-white/80 dark:bg-brand-dark rounded-xl p-4 border border-slate-200 dark:border-brand-border flex flex-col justify-between space-y-3 shadow-sm">
           <div>
             <span class="px-2 py-0.5 text-[10px] font-bold bg-brand-electric/10 text-brand-electric rounded">Gợi ý ${idx+1}</span>
             <h3 class="font-bold text-xs text-slate-900 dark:text-white mt-1">${p.name}</h3>
@@ -479,7 +479,7 @@ function dispatchLogicEngine(text) {
           <div class="bg-amber-50 dark:bg-amber-950/20 p-2 rounded text-[11px] text-amber-700 dark:text-amber-400 border border-amber-200/50">
             <strong>Cân nhắc:</strong> Dòng này bán chạy nên đôi khi xảy ra tình trạng thiếu hàng cục bộ, cần đặt trước.
           </div>
-          <button onclick="window.handleBuyProduct()" class="w-full bg-white dark:bg-brand-panel hover:bg-brand-electric hover:text-white text-xs py-2 rounded-lg border border-slate-200 dark:border-brand-border font-semibold transition-all">Chọn sản phẩm</button>
+          <button onclick="window.handleBuyProduct()" class="w-full custom-btn-select text-xs py-2 rounded-lg font-semibold transition-all">Chọn sản phẩm</button>
         </div>`;
     });
 
@@ -492,7 +492,6 @@ function dispatchLogicEngine(text) {
   }
 }
 
-// Sửa lỗi 2: Bấm nút New Chat khi đang ở hội thoại trống thì không làm gì cả
 window.resetConversation = function() {
   if (activeSessionId) {
     const currentSession = consumerChatSessions.find(item => item.id === activeSessionId);
@@ -504,12 +503,12 @@ window.resetConversation = function() {
   const chatBox = document.getElementById('chat-box');
   if (chatBox) {
     chatBox.innerHTML = `
-      <div class="flex items-start space-x-3 message-fade-in">
-        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-          <img src="img/mascot.png" alt="Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+      <div class="flex items-start space-x-3.5 message-fade-in">
+        <div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)]">
+          <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
         </div>
         <div class="space-y-1 max-w-[85%] w-full">
-          <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border">
+          <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
             <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ!</p>
           </div>
         </div>
