@@ -115,7 +115,25 @@ const MOCK_FAQ = {
   'giao hàng': 'Dạ, hệ thống miễn phí vận chuyển lắp đặt trong bán kính 10km quanh siêu thị gần nhất ngay trong ngày ạ.',
   'trả góp': 'Dạ, hiện tại có chương trình hỗ trợ trả góp 0% lãi suất qua căn cước công dân gắn chip cực nhanh chóng, xét duyệt chỉ 5 phút ạ.'
 };
-
+const MASCOT_IMAGES = [
+  'ChatGPT Image 21_08_20 17 thg 7, 2026 (1).png',
+  'ChatGPT Image 21_08_20 17 thg 7, 2026 (2).png',
+  'ChatGPT Image 21_08_21 17 thg 7, 2026 (3).png',
+  'ChatGPT Image 21_09_41 17 thg 7, 2026 (4).png',
+  'ChatGPT Image 21_09_42 17 thg 7, 2026 (5).png',
+  'ChatGPT Image 21_09_43 17 thg 7, 2026 (7).png',
+  'ChatGPT Image 21_09_43 17 thg 7, 2026 (8).png',
+  'ChatGPT Image 21_09_51 17 thg 7, 2026 (10).png',
+  'ChatGPT Image 21_18_18 17 thg 7, 2026 (1).png',
+  'ChatGPT Image 21_18_19 17 thg 7, 2026 (2).png',
+  'ChatGPT Image 21_18_19 17 thg 7, 2026 (3).png',
+  'ChatGPT Image 21_18_20 17 thg 7, 2026 (4).png',
+  'ChatGPT Image 21_18_21 17 thg 7, 2026 (5).png',
+  'ChatGPT Image 21_18_21 17 thg 7, 2026 (6).png',
+  'ChatGPT Image 21_18_22 17 thg 7, 2026 (7).png',
+  'ChatGPT Image 21_18_22 17 thg 7, 2026 (8).png',
+  'ChatGPT Image 21_18_23 17 thg 7, 2026 (9).png'
+];
 // Cấu trúc quản lý trạng thái ứng dụng nâng cao (Slot-Filling State)
 let sessionState = {
   stage: 'INIT', // INIT -> PROBING -> RECOMMENDATION
@@ -288,12 +306,17 @@ window.appendAssistantMessage = appendAssistantMessage;
 // ==========================================
 function createNewChatSession(initialTitle = "Cuộc trò chuyện mới") {
   const newId = 'session_' + Date.now();
+
+  // Pick a random mascot image from the array
+  const randomMascot = MASCOT_IMAGES[Math.floor(Math.random() * MASCOT_IMAGES.length)];
+
   const newSession = {
     id: newId,
     title: initialTitle,
     timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     messages: [],
-    category: null
+    category: null,
+    mascot: randomMascot // Persistent storage for this chat block item
   };
   consumerChatSessions.unshift(newSession);
   activeSessionId = newId;
@@ -334,14 +357,13 @@ function renderChatHistoryUI() {
       : 'border-amber-200/70 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-950/10 text-amber-800 dark:text-amber-300 hover:bg-amber-100/60 dark:hover:bg-amber-900/20'
     }`;
 
-    let icon = '<i class="fa-regular fa-comment text-amber-500/70"></i>';
-    if (session.category === 'ac') icon = '<i class="fa-solid fa-snowflake text-cyan-500"></i>';
-    if (session.category === 'fridge') icon = '<i class="fa-solid fa-carrot text-emerald-500"></i>';
-    if (session.category === 'laptop') icon = '<i class="fa-solid fa-laptop text-indigo-500"></i>';
+    // REPLACED OLD LOGIC: Dynamic custom image avatar instead of generic AI emojis/icons
+    const mascotFile = session.mascot || 'mascot.png';
+    const iconImageHtml = `<img src="img/${mascotFile}" alt="Mascot" class="w-6 h-6 object-contain rounded-md shadow-sm bg-white" onerror="this.src='img/mascot.png'">`;
 
     pill.innerHTML = `
       <div class="flex items-center space-x-2.5 truncate w-[90%]">
-        <span class="shrink-0 text-sm">${icon}</span>
+        <span class="shrink-0 flex items-center">${iconImageHtml}</span>
         <div class="truncate flex flex-col text-left">
           <span class="truncate font-semibold text-amber-950 dark:text-amber-100">${session.title}</span>
           <span class="text-[10px] text-amber-600/80 dark:text-amber-400/60 mt-0.5">${session.timestamp} • Điện Máy Xanh</span>
