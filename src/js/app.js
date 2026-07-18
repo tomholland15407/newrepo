@@ -120,13 +120,13 @@ const MOCK_FAQ = {
 let sessionState = {
   stage: 'INIT', // INIT -> PROBING -> RECOMMENDATION
   category: null, // ac, fridge, laptop
-  collectedData = {
+  collectedData: {  // <--- FIXED: Changed from '=' to ':'
     brand: null,
     budget: null, // { modifier: 'dưới'|'trên'|'tầm', value: số }
     roomSize: null, // số m2
     familySize: null, // số thành viên
     purpose: null // học tập, gaming...
-  },
+  }
 };
 
 let consumerChatSessions = [];
@@ -537,7 +537,6 @@ function dispatchLogicEngine(text) {
   // A. Nếu là Máy Lạnh mà chưa biết không gian / diện tích lắp đặt
   if (sessionState.category === 'ac' && !sessionState.collectedData.roomSize) {
     if (sessionState.stage === 'PROBING') {
-      // Người dùng đã được hỏi câu này ở lượt trước nhưng nhập text tự do không có số m2 cụ thể -> Áp dụng Default Fallback thông minh
       sessionState.collectedData.roomSize = 12;
       appendAssistantMessage('<p class="text-xs italic text-slate-400 mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Em xin phép lấy mức diện tích phòng ngủ tiêu chuẩn phổ thông (dưới 15m²) để lọc sản phẩm ngay cho mình nhé.</p>');
     } else {
@@ -552,7 +551,6 @@ function dispatchLogicEngine(text) {
   // B. Nếu là Tủ Lạnh mà chưa biết nhu cầu thành viên sử dụng
   if (sessionState.category === 'fridge' && !sessionState.collectedData.familySize) {
     if (sessionState.stage === 'PROBING') {
-      // Fallback khi người dùng nhập dữ liệu text tự do không chứa số lượng
       sessionState.collectedData.familySize = 3;
       appendAssistantMessage('<p class="text-xs italic text-slate-400 mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Em xin phép lấy dung tích tiêu chuẩn cho hộ gia đình 3 - 4 thành viên phổ biến để đề xuất các mẫu tối ưu nhé.</p>');
     } else {
@@ -582,26 +580,22 @@ function dispatchLogicEngine(text) {
   const catalog = MOCK_CATALOG[sessionState.category];
   let filteredProducts = [...catalog];
 
-  // Thực hiện lọc theo Hãng sản xuất nếu có
   if (sessionState.collectedData.brand) {
     const targetBrand = sessionState.collectedData.brand.toLowerCase();
     filteredProducts = filteredProducts.filter(p => p.brand.toLowerCase().includes(targetBrand));
   }
 
-  // Thực hiện lọc theo Hạn mức tài chính nếu có
   if (sessionState.collectedData.budget) {
     const { modifier, value } = sessionState.collectedData.budget;
     if (modifier === 'dưới') {
       filteredProducts = filteredProducts.filter(p => p.price <= value);
     } else if (modifier === 'trên') {
       filteredProducts = filteredProducts.filter(p => p.price >= value);
-    } else { // tầm, khoảng, ~
-      // Cho phép sai số biên rộng hơn 15% để tránh bộ lọc trống (Không làm mất cơ hội bán hàng)
+    } else {
       filteredProducts = filteredProducts.filter(p => p.price <= value * 1.15);
     }
   }
 
-  // Thực hiện lọc theo Diện tích phòng (Đối với Máy lạnh)
   if (sessionState.category === 'ac' && sessionState.collectedData.roomSize) {
     const size = sessionState.collectedData.roomSize;
     if (size <= 15) {
@@ -611,7 +605,6 @@ function dispatchLogicEngine(text) {
     }
   }
 
-  // Thực hiện lọc theo Số lượng người dùng (Đối với Tủ lạnh)
   if (sessionState.category === 'fridge' && sessionState.collectedData.familySize) {
     const size = sessionState.collectedData.familySize;
     if (size <= 2) {
@@ -623,18 +616,15 @@ function dispatchLogicEngine(text) {
     }
   }
 
-  // Nếu bộ lọc quá chặt dẫn đến không tìm thấy sản phẩm nào -> Fallback: Hiển thị toàn bộ danh mục kèm thông báo nới lỏng tiêu chí
   let isFallbackTriggered = false;
   if (filteredProducts.length === 0) {
     filteredProducts = [...catalog];
     isFallbackTriggered = true;
   }
 
-  // Cập nhật trạng thái RAG gỡ lỗi trực quan lên DOM hộp ẩn
   document.getElementById('rag-catalog-status').textContent = `Tìm thấy ${filteredProducts.length} mẫu`;
   document.getElementById('rag-promo-status').textContent = 'Đã áp mã khuyến mãi dynamic';
 
-  // Biện luận tiêu đề giới thiệu dựa trên kết quả lọc dữ liệu thật
   let introductionPrompt = "";
   if (isFallbackTriggered) {
     introductionPrompt = `Dạ hiện tại kho hàng không có mẫu nào khớp hoàn hảo 100% tiêu chí đặc thù trên, em xin phép đề xuất **Top ${filteredProducts.length} sản phẩm bán chạy nhất** thuộc nhóm ngành hàng này tại Điện Máy Xanh để anh/chị cân nhắc ạ:`;
@@ -642,7 +632,6 @@ function dispatchLogicEngine(text) {
     introductionPrompt = `Dạ tuyệt vời! Khảo sát kho hàng thời gian thực, em đã tìm thấy **${filteredProducts.length} sản phẩm tối ưu nhất** phù hợp hoàn chỉnh với mong muốn của mình. Dưới đây là phân tích đặc tính kỹ thuật kèm điểm đánh đổi thực tế:`;
   }
 
-  // Xây dựng chuỗi HTML thẻ sản phẩm lưới linh hoạt (Responsive Grid) phong cách thiết kế mới
   let cardsHtml = `<p class="text-[13.5px] leading-relaxed mb-4 text-slate-800 dark:text-slate-200">${introductionPrompt}</p>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
 
@@ -650,7 +639,6 @@ function dispatchLogicEngine(text) {
     const hasZeroInstallment = MOCK_PROMOTIONS.installment_0.includes(product.id);
     const promotionGift = MOCK_PROMOTIONS.discounts[product.id] || 'Tặng phiếu mua hàng trị giá 200.000đ (Áp dụng mua đồ gia dụng)';
 
-    // Biện luận Điểm đánh đổi (Trade-off) động dựa trên thuộc tính sản phẩm thật
     let tradeOffAnalysis = "Dòng sản phẩm quốc dân, lượng đặt mua rất cao dễ gặp tình trạng thiếu hàng cục bộ tại một số quận huyện.";
     if (product.price < 6000000) {
       tradeOffAnalysis = "Giá thành siêu rẻ tiết kiệm chi phí, tuy nhiên tính năng chỉ dừng ở mức cơ bản, không tích hợp nhiều công nghệ cảm biến cao cấp.";
@@ -658,7 +646,6 @@ function dispatchLogicEngine(text) {
       tradeOffAnalysis = "Công nghệ và độ bền xuất sắc hàng đầu, tuy nhiên tổng chi phí đầu tư ban đầu sẽ cao hơn các thương hiệu phổ thông.";
     }
 
-    // Xử lý chuỗi thông số kỹ thuật đặc thù tương ứng từng ngành hàng
     let specsHtml = "";
     if (sessionState.category === 'ac') {
       specsHtml = `<li><i class="fa-solid fa-expand text-slate-400 mr-1.5"></i>Diện tích: <strong>${product.room_size}</strong></li>
@@ -699,7 +686,6 @@ function dispatchLogicEngine(text) {
   cardsHtml += `</div>`;
   appendAssistantMessage(cardsHtml);
 
-  // Khôi phục chu trình máy trạng thái về trạng thái khởi tạo ban đầu chuẩn bị cho phiên lọc tiếp theo
   sessionState.stage = 'INIT';
   sessionState.category = null;
   sessionState.collectedData = { brand: null, budget: null, roomSize: null, familySize: null, purpose: null };
@@ -723,13 +709,10 @@ window.resetConversation = function() {
   const newestEmptySession = consumerChatSessions.find(session => !session.messages || session.messages.length === 0);
 
   if (newestEmptySession) {
-    // TÁI SỬ DỤNG PHIÊN TRỐNG SẴN CÓ: Chuyển activeSessionId sang ID của phiên trống này
+    // TÁI SỬ DỤNG PHIÊN TRỐNG SẴN CÓ
     activeSessionId = newestEmptySession.id;
-
-    // Gọi hàm phục hồi tin nhắn mặc định của hệ thống dành cho phiên trống
     restoreSessionMessages(newestEmptySession);
 
-    // Dọn sạch thêm dữ liệu gỡ lỗi ẩn trên DOM để tránh lỗi dữ liệu rác
     const slangInspectorEl = document.getElementById('slang-inspector');
     if (slangInspectorEl) slangInspectorEl.textContent = '';
     const catalogStatusEl = document.getElementById('rag-catalog-status');
@@ -739,10 +722,9 @@ window.resetConversation = function() {
     const faqStatusEl = document.getElementById('rag-faq-status');
     if (faqStatusEl) faqStatusEl.textContent = '';
 
-    // Làm mới UI danh sách lịch sử để highlight đúng phiên trống này trên Sidebar
     renderChatHistoryUI();
   } else {
-    // KHỞI TẠO PHIÊN MỚI TINH: Nếu trong mảng hoàn toàn không có phiên trống nào khả dụng
+    // KHỞI TẠO PHIÊN MỚI TINH
     const chatBox = document.getElementById('chat-box');
     if (chatBox) {
       chatBox.innerHTML = `
