@@ -13,11 +13,13 @@
       theme: {
         extend: {
           colors: {
-            darkBg: '#111418',
-            darkPanel: '#16191e',
-            darkCard: '#1a1f26',
+            darkBg: '#0e1116',
+            darkPanel: '#14171c',
+            darkCard: '#181b22',
+            darkCardBorder: '#262b35',
             brandGold: '#bc9c6a',
-            brandRed: '#c92a2a'
+            brandRed: '#c92a2a',
+            textMuted: '#8a94a6'
           }
         }
       }
@@ -29,28 +31,30 @@
 
 <body class="bg-darkBg text-slate-300 h-screen flex flex-col overflow-hidden select-none">
 
-  <!-- HEADER BAR -->
-  <header class="bg-darkPanel border-b border-zinc-800/80 px-6 py-3 flex justify-between items-center shrink-0 z-10">
+  <!-- TOP APPLICATION BAR -->
+  <header class="bg-darkPanel border-b border-zinc-900 px-6 py-3.5 flex justify-between items-center shrink-0 z-10">
     <div class="flex items-center space-x-3">
       <img id="header-mascot" src="img/mascot.png" class="w-9 h-9 object-contain shrink-0">
       <div>
         <div class="flex items-center space-x-2">
           <h1 class="font-bold text-sm tracking-wide text-white">Trợ Lý Mua Sắm Thông Thái</h1>
-          <span class="px-2 py-0.5 text-[10px] bg-zinc-800 text-slate-400 rounded-full border border-zinc-700/60">v1.5—Customer</span>
+          <span class="px-2 py-0.5 text-[10px] bg-zinc-800 text-zinc-400 rounded-full border border-zinc-700/50">v1.5—Customer</span>
         </div>
-        <div class="flex items-center space-x-1.5 mt-0.5 text-[11px] text-slate-400">
+        <div class="flex items-center space-x-1.5 mt-0.5 text-[11px] text-textMuted">
           <span>Hệ thống Sẵn Sàng</span>
-          <span class="w-2 h-2 bg-emerald-500 rounded-full inline-block"></span>
+          <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full inline-block"></span>
         </div>
       </div>
     </div>
 
-    <!-- STAT ENGINE VISUALS -->
-    <div class="flex items-center space-x-4 bg-darkBg/60 px-4 py-1.5 border border-zinc-800 rounded-lg">
+    <!-- HUD PERFORMANCE STAT MOTIFS (Keeps JS scoring system synchronized) -->
+    <div class="flex items-center space-x-4 bg-darkBg px-4 py-2 border border-zinc-800/80 rounded-lg">
       <div class="text-xs">
-        <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mr-1" id="game-mascot-title">MASCOT TÂN BINH</span>
-        <span class="text-brandGold font-semibold">Cấp <span id="game-mascot-level">1</span></span>
-        <!-- Hidden progress tracking element to preserve original app.js requirements -->
+        <div class="flex items-center space-x-1">
+          <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider" id="game-mascot-title">MASCOT TÂN BINH</span>
+          <span class="text-brandGold font-semibold ml-1">Cấp <span id="game-mascot-level">1</span></span>
+        </div>
+        <!-- Safe operational anchor bars for app.js background updates -->
         <div id="game-xp-progress-bar" class="hidden w-0"></div>
         <span id="game-xp-text-value" class="hidden"></span>
       </div>
@@ -61,7 +65,7 @@
       </div>
     </div>
 
-    <!-- UTILITIES -->
+    <!-- UTILITY CONTROL SHELF -->
     <div class="flex items-center space-x-3 text-xs">
       <button id="theme-toggle-btn" class="flex items-center space-x-1.5 text-slate-300 hover:text-white transition-colors">
         <i class="fa-regular fa-sun text-brandGold"></i>
@@ -70,14 +74,14 @@
     </div>
   </header>
 
-  <!-- MAIN AREA -->
+  <!-- MAIN WORKSPACE LINK CONTAINER -->
   <main class="flex-1 flex overflow-hidden relative">
 
-    <!-- SIDEBAR: CONVERSATION HISTORY -->
-    <aside id="sidebar-panel" class="w-64 bg-darkPanel border-r border-zinc-800/80 p-4 flex flex-col justify-between shrink-0 sidebar-transition">
+    <!-- LEFT SIDEBAR PANEL: TIMELINE VAULT -->
+    <aside id="sidebar-panel" class="w-64 bg-darkPanel border-r border-zinc-900 p-4 flex flex-col justify-between shrink-0 sidebar-transition">
       <div class="flex flex-col flex-1 space-y-4 overflow-hidden">
 
-        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+        <div class="flex items-center justify-between border-b border-zinc-800/60 pb-2">
           <div class="flex items-center space-x-2 text-white font-bold text-xs uppercase tracking-wider">
             <i class="fa-regular fa-comment-dots text-brandGold"></i>
             <h2>Lịch sử tư vấn</h2>
@@ -87,17 +91,17 @@
           </button>
         </div>
 
-        <!-- NEW SESSION BUTTON -->
-        <button onclick="window.resetConversation()" class="w-full bg-brandGold hover:bg-amber-700 text-white font-medium text-xs py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 shadow-sm">
+        <!-- NEW CONVERSATION SPARK ACTION -->
+        <button onclick="window.resetConversation()" class="w-full bg-brandGold hover:bg-amber-700 text-white font-semibold text-xs py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 shadow-sm">
           <i class="fa-solid fa-plus text-[10px]"></i>
           <span>Bắt đầu tư vấn mới</span>
         </button>
 
-        <!-- SESSION STACK -->
+        <!-- SESSION HISTORICAL QUEUE STACK -->
         <div class="flex-1 overflow-y-auto">
           <div id="chat-history-list" class="space-y-2">
-            <!-- Active item block built to mirror your screenshot styling -->
-            <div class="border border-zinc-700 bg-darkCard/40 p-3 rounded-lg cursor-pointer">
+            <!-- Exact mirror layout of item card visible in screenshot -->
+            <div class="border border-zinc-700 bg-darkBg/50 p-3 rounded-lg cursor-pointer">
               <div class="text-xs text-white font-medium truncate">Cuộc trò chuyện mới</div>
               <div class="text-[10px] text-zinc-500 mt-1">02:09</div>
             </div>
@@ -105,48 +109,48 @@
         </div>
       </div>
 
-      <!-- SIDEBAR FOOTER -->
-      <div class="pt-3 border-t border-zinc-800 text-[11px] text-zinc-500 space-y-0.5">
+      <!-- LEGAL SYSTEM STAMP -->
+      <div class="pt-3 border-t border-zinc-800/80 text-[10px] text-zinc-500 space-y-0.5 leading-normal">
         <div>Dữ liệu bảo mật & chính xác 100%</div>
         <div>Hệ thống CSKH tự động Điện Máy Xanh 2026.</div>
       </div>
     </aside>
 
-    <!-- MAIN CHAT DIALOG FRAME -->
+    <!-- RIGHT STAGE PANEL: STREAM CONTAINER -->
     <section class="flex-1 flex flex-col overflow-hidden bg-darkBg relative">
 
-      <!-- TOP UTILITY LINE -->
-      <div class="px-6 py-2.5 flex justify-between items-center text-xs text-zinc-400 border-b border-zinc-900 shrink-0">
+      <!-- SUB HEADER HINT LINE -->
+      <div class="px-6 py-2.5 flex justify-between items-center text-xs text-textMuted border-b border-zinc-900 shrink-0">
         <div class="flex items-center space-x-2">
           <button id="btn-open-sidebar" class="hidden text-brandGold font-medium hover:underline mr-2">
             <i class="fa-solid fa-chevron-right mr-1"></i> Xem lịch sử
           </button>
-          <span class="w-1.5 h-1.5 rounded-full bg-brandGold"></span>
+          <span class="w-1 h-1 bg-brandGold rounded-full"></span>
           <span>Mẹo: Nhập nhu cầu mua sắm bằng tiếng Việt tự nhiên để nhận tư vấn tốt nhất.</span>
         </div>
-        <button onclick="window.resetConversation()" class="hover:text-white transition-colors flex items-center space-x-1">
+        <button onclick="window.resetConversation()" class="hover:text-white transition-colors flex items-center space-x-1.5">
           <i class="fa-solid fa-arrow-rotate-left text-[10px]"></i>
           <span>Làm mới cuộc trò chuyện</span>
         </button>
       </div>
 
-      <!-- CHAT MESSAGE DISPLAY WINDOW -->
+      <!-- CHAT MESSAGE LOG CONTAINER -->
       <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-6">
 
-        <!-- INITIAL ASSISTANT SYSTEM BUBBLE -->
+        <!-- INITIAL CONTEXT ASSISTANT ITEM -->
         <div class="flex items-start space-x-3.5 max-w-4xl">
-          <img src="img/mascot.png" class="w-7 h-7 object-contain mt-1 shrink-0">
+          <img src="img/mascot.png" class="w-7 h-7 object-contain mt-0.5 shrink-0">
           <div class="space-y-1.5 flex-1">
-            <div class="bg-darkCard text-slate-200 text-xs rounded-xl px-5 py-4 border border-zinc-800/60 shadow-md leading-relaxed">
+            <div class="bg-darkCard text-slate-200 text-xs rounded-xl px-5 py-4 border border-darkCardBorder shadow-md leading-relaxed">
               <p class="mb-3">Dạ, em xin chào anh/chị! Em là <strong>Trợ lý Mua sắm Thông thái</strong> đồng hành cùng anh/chị tại hệ thống Điện Máy Xanh.</p>
               <p class="mb-3">Em ở đây để hỗ trợ anh/chị chọn lựa các dòng sản phẩm công nghệ và điện máy phù hợp nhất dựa trên nhu cầu sử dụng thực tế, không gian lắp đặt, số lượng thành viên hay hạn mức tài chính cụ thể của gia đình mình.</p>
               <p class="mb-4">Anh/chị đang quan tâm đến nhóm sản phẩm nào dưới đây để em hỗ trợ tư vấn, phân tích và so sánh ngay lập tức ạ?</p>
 
-              <!-- INTEGRATED FILTER CHIPS -->
+              <!-- FILTER SELECTION CATEGORIES -->
               <div class="flex gap-2 flex-wrap">
-                <button onclick="window.fillQuickPrompt('Tư vấn mua máy lạnh')" class="px-3 py-1.5 bg-zinc-800/40 hover:bg-zinc-800 border border-zinc-700/60 text-slate-300 text-[11px] rounded-md transition-colors">Máy lạnh</button>
-                <button onclick="window.fillQuickPrompt('Tư vấn mua tủ lạnh')" class="px-3 py-1.5 bg-zinc-800/40 hover:bg-zinc-800 border border-zinc-700/60 text-slate-300 text-[11px] rounded-md transition-colors">Tủ lạnh</button>
-                <button onclick="window.fillQuickPrompt('Tư vấn mua laptop')" class="px-3 py-1.5 bg-zinc-800/40 hover:bg-zinc-800 border border-zinc-700/60 text-slate-300 text-[11px] rounded-md transition-colors">Laptop</button>
+                <button onclick="window.fillQuickPrompt('Tư vấn mua máy lạnh')" class="px-3 py-1.5 bg-zinc-900/30 hover:bg-zinc-800 border border-zinc-800 text-slate-300 text-[11px] rounded-md transition-colors">Máy lạnh</button>
+                <button onclick="window.fillQuickPrompt('Tư vấn mua tủ lạnh')" class="px-3 py-1.5 bg-zinc-900/30 hover:bg-zinc-800 border border-zinc-800 text-slate-300 text-[11px] rounded-md transition-colors">Tủ lạnh</button>
+                <button onclick="window.fillQuickPrompt('Tư vấn mua laptop')" class="px-3 py-1.5 bg-zinc-900/30 hover:bg-zinc-800 border border-zinc-800 text-slate-300 text-[11px] rounded-md transition-colors">Laptop</button>
               </div>
             </div>
             <span class="text-[10px] text-zinc-500 block pl-1">Vừa mới gửi</span>
@@ -155,32 +159,32 @@
 
       </div>
 
-      <!-- SUGGESTION CHIPS SHELF -->
-      <div class="px-6 py-3 border-t border-zinc-900/60 shrink-0">
+      <!-- SUGGESTED DISCOVERY QUERY CAROUSEL SHELF -->
+      <div class="px-6 py-3 border-t border-zinc-900 shrink-0">
         <p class="text-[10px] font-bold text-zinc-500 mb-2 tracking-wider uppercase">
-          <i class="fa-regular fa-lightbulb text-brandGold mr-1"></i> Gợi ý nhu cầu tìm kiếm nhanh:
+          <i class="fa-regular fa-lightbulb text-brandGold mr-1.5"></i> Gợi ý nhu cầu tìm kiếm nhanh:
         </p>
         <div class="flex flex-wrap gap-2">
-          <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 cử cho phòng ngủ')" class="text-xs bg-zinc-800/30 hover:bg-zinc-800 text-slate-300 border border-zinc-800 px-3 py-1.5 rounded-full transition-colors">
+          <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 cử cho phòng ngủ')" class="text-xs bg-zinc-900/20 hover:bg-zinc-800 text-slate-300 border border-zinc-800/80 px-3 py-1.5 rounded-full transition-colors">
             "Mua đh pana dưới 15 củ"
           </button>
-          <button onclick="window.fillQuickPrompt('Tìm tủ lạnh tầm 10tr cho nhà 4 người')" class="text-xs bg-zinc-800/30 hover:bg-zinc-800 text-slate-300 border border-zinc-800 px-3 py-1.5 rounded-full transition-colors">
+          <button onclick="window.fillQuickPrompt('Tìm tủ lạnh tầm 10tr cho nhà 4 người')" class="text-xs bg-zinc-800/20 hover:bg-zinc-800 text-slate-300 border border-zinc-800/80 px-3 py-1.5 rounded-full transition-colors">
             "Tủ lạnh tầm 10tr cho 4 người"
           </button>
-          <button onclick="window.fillQuickPrompt('Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học')" class="text-xs bg-zinc-800/30 hover:bg-zinc-800 text-slate-300 border border-zinc-800 px-3 py-1.5 rounded-full transition-colors">
+          <button onclick="window.fillQuickPrompt('Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học')" class="text-xs bg-zinc-800/20 hover:bg-zinc-800 text-slate-300 border border-zinc-800/80 px-3 py-1.5 rounded-full transition-colors">
             "Laptop mỏng nhẹ ~15tr"
           </button>
         </div>
       </div>
 
-      <!-- INPUT BAR MODULE -->
+      <!-- MESSAGE ENTRY INPUT FOOTER MODULE -->
       <footer class="p-4 border-t border-zinc-900 shrink-0">
         <form id="chat-form" class="relative flex items-center w-full">
           <input type="text" id="user-input" placeholder="Nhập câu hỏi bằng tiếng Việt... (Ví dụ: 'Cần tìm tủ lạnh tầm 8 triệu cho gia đình 3 người tiết kiệm điện')"
-            class="w-full bg-darkPanel border border-zinc-800 focus:border-zinc-700 text-white placeholder-zinc-600 text-xs rounded-lg pl-4 pr-20 py-3.5 focus:outline-none transition-all shadow-inner"
+            class="w-full bg-darkPanel border border-zinc-800/80 focus:border-zinc-700 text-white placeholder-zinc-600 text-xs rounded-lg pl-4 pr-20 py-3.5 focus:outline-none transition-all"
             autocomplete="off" required>
-          <div class="absolute right-2">
-            <button type="submit" class="bg-brandRed hover:bg-red-700 text-white font-medium text-xs px-4 py-1.5 rounded-md transition-colors flex items-center space-x-1.5">
+          <div class="absolute right-2.5">
+            <button type="submit" class="bg-brandRed hover:bg-red-700 text-white font-medium text-xs px-3.5 py-1.5 rounded-md transition-colors flex items-center space-x-1.5">
               <span>Gửi</span>
               <i class="fa-regular fa-paper-plane text-[10px]"></i>
             </button>
@@ -191,7 +195,7 @@
     </section>
   </main>
 
-  <!-- HIDDEN APP ENGINE STATE REGISTRATION SYNC PANEL (Keeps app.js from throwing errors) -->
+  <!-- IMMUTABLE STATE LAYER (Guards app.js background bindings against running into null pointer errors) -->
   <div hidden aria-hidden="true" class="absolute pointer-events-none opacity-0 invisible w-0 h-0 overflow-hidden">
     <span id="active-category">Chưa xác định</span><span id="chat-stage">Khởi tạo</span>
     <span id="rag-catalog-status"></span><span id="rag-promo-status"></span><span id="rag-faq-status"></span>
@@ -202,7 +206,7 @@
     <span id="theme-text-status"></span>
   </div>
 
-  <!-- PERSISTENT RESTRUCTURING LOGIC -->
+  <!-- INTERFACE LAYOUT STATE CONTROL SCRIPTS -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const sidebar = document.getElementById('sidebar-panel');
