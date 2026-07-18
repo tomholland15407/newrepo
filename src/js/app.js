@@ -116,44 +116,38 @@ const MOCK_FAQ = {
   'trả góp': 'Dạ, hiện tại có chương trình hỗ trợ trả góp 0% lãi suất qua căn cước công dân gắn chip cực nhanh chóng, xét duyệt chỉ 5 phút ạ.'
 };
 
-const MASCOT_IMAGES = [
-  'mascot.png'
-];
+const MASCOT_IMAGES = ['mascot.png'];
 
 let sessionState = {
-  stage: 'INIT', // INIT -> PROBING -> RECOMMENDATION
-  category: null, // ac, fridge, laptop
-  collectedData: {
-    brand: null,
-    budget: null, // { modifier: 'dưới'|'trên'|'tầm', value: số }
-    roomSize: null,
-    familySize: null,
-    purpose: null
-  }
+  stage: 'INIT',
+  category: null,
+  collectedData: { brand: null, budget: null, roomSize: null, familySize: null, purpose: null }
 };
 
 let consumerChatSessions = [];
 let activeSessionId = null;
 
 // ==========================================
-// HỆ THỐNG TRẠNG THÁI GAMIFICATION TOÀN CỤC
+// TACTICAL GAME VARIABLE LEDGER
 // ==========================================
-let gameSystemState = {
-  xp: 0,
+let playerGameState = {
   level: 1,
-  xpRequired: 100,
-  score: 0,
-  comboStreak: 0,
-  quests: {
-    firstContact: { id: 'firstContact', name: 'Khoi tao ket noi', completed: false, xpReward: 30 },
-    deepSearch: { id: 'deepSearch', name: 'Tim kiem chi tiet', completed: false, xpReward: 50 },
-    faqExplorer: { id: 'faqExplorer', name: 'Khai pha trung tam ho tro', completed: false, xpReward: 40 },
-    conversionMaster: { id: 'conversionMaster', name: 'Chot don chong nhanh', completed: false, xpReward: 100 }
+  xpCurrent: 0,
+  xpTarget: 100,
+  goldScore: 0,
+  spellStreak: 0,
+  hpGauge: 100,
+  mpGauge: 100,
+  campaignQuests: {
+    firstContact: { code: 'firstContact', label: 'Bat dau chien dich', done: false, prize: 35 },
+    deepScan: { code: 'deepScan', label: 'Khai pha chi tiet', done: false, prize: 60 },
+    supportNode: { code: 'supportNode', label: 'Khai thac mat thu', done: false, prize: 45 },
+    instantBuy: { code: 'instantBuy', label: 'Chinh phuc bao vat', done: false, prize: 120 }
   }
 };
 
 // ==========================================
-// HỆ THỐNG ĐIỀU KHIỂN ĐÓNG/MỞ SIDEBAR
+// INTERFACE COLLAPSIBLE PANEL CONTROLLERS
 // ==========================================
 function initCollapsibleSidebarLogic() {
   const sidebarPanel = document.getElementById('sidebar-panel');
@@ -175,68 +169,34 @@ function initCollapsibleSidebarLogic() {
   });
 }
 
-// ==========================================
-// HIỆU ỨNG RUNG LẮC ĐỒNG LOẠT CHO TOÀN BỘ MASCOT
-// ==========================================
-function injectJiggleStyles() {
-  if (document.getElementById('mascot-jiggle-style')) return;
-  const style = document.createElement('style');
-  style.id = 'mascot-jiggle-style';
-  style.innerHTML = `
-    @keyframes jiggleVivid {
-      0% { transform: scale(1) rotate(0deg); }
-      15% { transform: scale(1.15) rotate(-10deg); }
-      30% { transform: scale(1.15) rotate(8deg); }
-      45% { transform: scale(1.08) rotate(-6deg); }
-      60% { transform: scale(1.08) rotate(4deg); }
-      75% { transform: scale(1.02) rotate(-2deg); }
-      100% { transform: scale(1) rotate(0deg); }
-    }
-    .animate-jiggle-vivid {
-      animation: jiggleVivid 0.6s ease-in-out;
-      display: inline-block !important;
-    }
-  `;
-  document.head.appendChild(style);
-}
-
-function triggerMascotJiggle() {
-  const allMascots = document.querySelectorAll('img[src*="mascot"]');
-  allMascots.forEach(mascot => {
-    if (mascot.id === 'header-mascot') return;
-    mascot.classList.add('animate-jiggle-vivid');
-  });
-  setTimeout(() => {
-    allMascots.forEach(mascot => {
-      if (mascot.id === 'header-mascot') return;
-      mascot.classList.remove('animate-jiggle-vivid');
-    });
-  }, 600);
-}
-
-// LOGIC XỬ LÝ ĐẶT MUA SẢN PHẨM PHỐI HỢP GAMIFICATION
-window.handleBuyProduct = function() {
-  window.appendAssistantMessage('<p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-circle-check mr-1.5"></i>Dạ tuyệt vời, hệ thống Điện Máy Xanh đã ghi nhận yêu cầu đặt mua sản phẩm của anh/chị! Nhân viên tổng đài sẽ liên hệ hỗ trợ mình sau ít phút ạ.</p>');
-  triggerMascotJiggle();
-
-  // Thuc thi thong so Gamification khi mua hang hang thanh cong
-  executeGamificationReward(gameSystemState.quests.conversionMaster.xpReward, 'Chot Don Thanh Cong');
-  triggerQuestCompletion('conversionMaster');
-
-  const headerMascot = document.getElementById('header-mascot');
-  if (headerMascot) {
-    headerMascot.classList.remove('animate-glowing-orb');
-    headerMascot.classList.add('animate-violent-bounce');
+function triggerMascotSpriteImpactAnimation() {
+  const spriteElements = document.querySelectorAll('.mascot-sprite-node');
+  spriteElements.forEach(node => {
+    node.classList.add('mascot-combat-strike');
     setTimeout(() => {
-      headerMascot.classList.remove('animate-violent-bounce');
-      headerMascot.classList.add('animate-glowing-orb');
+      node.classList.remove('mascot-combat-strike');
+    }, 450);
+  });
+}
+
+window.handleBuyProduct = function() {
+  window.appendAssistantMessage('<p class="text-sm font-bold text-emerald-400"><i class="fa-solid fa-shield-halved mr-1.5"></i>Lenh truyen duoc gui. Giao dich thanh cong. Bao vat da khoa vao tai khoan hanh trang cua cu dan!</p>');
+  triggerMascotSpriteImpactAnimation();
+
+  modifyPlayerGameStats(playerGameState.campaignQuests.instantBuy.prize, 'Chinh Phuc Bao Vat');
+  markCampaignQuestResolved('instantBuy');
+
+  const mainStageMascot = document.getElementById('header-mascot');
+  if (mainStageMascot) {
+    mainStageMascot.classList.remove('animate-glowing-orb');
+    mainStageMascot.classList.add('animate-violent-bounce');
+    setTimeout(() => {
+      mainStageMascot.classList.remove('animate-violent-bounce');
+      mainStageMascot.classList.add('animate-glowing-orb');
     }, 1000);
   }
 };
 
-// ==========================================
-// UTILITIES & CHAT UI RENDERERS
-// ==========================================
 function formatVND(amount) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount).replace('₫', 'đ');
 }
@@ -257,14 +217,14 @@ function showTypingIndicator() {
   if (!chatBox) return;
   const html = `
     <div id="typing-indicator" class="flex items-start space-x-3.5 message-fade-in">
-      <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-        <img src="img/mascot.png" alt="..." class="w-full h-full object-contain p-0.5 animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+      <div class="w-10 h-10 border-2 border-slate-700 bg-slate-900 flex items-center justify-center overflow-hidden shrink-0 shadow-[inset_0_0_6px_rgba(0,149,218,0.5)]">
+        <img src="img/mascot.png" class="w-full h-full object-contain p-0.5 animate-mascot-idle mascot-sprite-node">
       </div>
-      <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 border border-blue-100 dark:border-blue-900/50 shadow-sm">
+      <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-3 shadow-md">
         <div class="flex items-center space-x-1.5 py-1">
-          <span class="w-2 h-2 bg-slate-500 dark:bg-slate-400 rounded-full typing-dot inline-block"></span>
-          <span class="w-2 h-2 bg-slate-500 dark:bg-slate-400 rounded-full typing-dot inline-block"></span>
-          <span class="w-2 h-2 bg-slate-500 dark:bg-slate-400 rounded-full typing-dot inline-block"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
         </div>
       </div>
     </div>`;
@@ -283,12 +243,9 @@ function appendUserMessage(text) {
   const html = `
     <div class="flex items-start space-x-3 justify-end message-fade-in">
       <div class="space-y-1 max-w-[80%]">
-        <div class="bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tl-none px-4 py-3 shadow-md">
-          <p class="text-sm leading-relaxed">${text}</p>
+        <div class="bg-slate-900 border-2 border-brand-electric text-slate-100 rounded-lg px-4 py-2.5 shadow-md">
+          <p class="text-xs font-mono tracking-wide"><span class="text-brand-electric font-bold"> PLAYER></span> ${text}</p>
         </div>
-      </div>
-      <div class="w-9 h-9 rounded-xl bg-white dark:bg-brand-panel border border-slate-200 dark:border-brand-border flex items-center justify-center shrink-0 shadow-sm">
-        <i class="fa-solid fa-user text-brand-electric text-sm"></i>
       </div>
     </div>`;
   chatBox.insertAdjacentHTML('beforeend', html);
@@ -305,20 +262,23 @@ function appendAssistantMessage(htmlContent) {
   if (!chatBox) return;
   const html = `
     <div class="flex items-start space-x-3.5 message-fade-in">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-slate-100 border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden">
-        <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" id="assistant-avatar-node" onerror="this.src='https://placehold.co/100x100?text=AI'">
+      <div class="w-10 h-10 border-2 border-slate-700 bg-slate-900 flex items-center justify-center shrink-0 overflow-hidden shadow-[inset_0_0_6px_rgba(0,149,218,0.5)]">
+        <img src="img/mascot.png" class="w-[90%] h-[90%] object-contain animate-mascot-idle mascot-sprite-node" id="live-dynamic-avatar-node">
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
-        <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
-          ${htmlContent}
+        <div class="bg-slate-950/90 text-slate-300 rounded-lg px-5 py-3.5 border-2 border-slate-800 shadow-xl relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-2 h-2 bg-brand-electric"></div>
+          <div class="absolute top-0 right-0 w-2 h-2 bg-brand-electric"></div>
+          <div class="absolute bottom-0 left-0 w-2 h-2 bg-brand-electric"></div>
+          <div class="absolute bottom-0 right-0 w-2 h-2 bg-brand-electric"></div>
+          <div class="text-xs leading-relaxed font-mono">${htmlContent}</div>
         </div>
       </div>
     </div>`;
   chatBox.insertAdjacentHTML('beforeend', html);
   scrollChatToBottom();
 
-  // Gia tri aura thay doi theo cap do lien ket cua Mascot
-  applyMascotVisualRankAura();
+  applyCurrentDynamicMascotAura();
 
   if (activeSessionId) {
     const s = consumerChatSessions.find(item => item.id === activeSessionId);
@@ -332,15 +292,13 @@ window.appendAssistantMessage = appendAssistantMessage;
 // ==========================================
 function createNewChatSession(initialTitle = "Cuộc trò chuyện mới") {
   const newId = 'session_' + Date.now();
-  const randomMascot = MASCOT_IMAGES[Math.floor(Math.random() * MASCOT_IMAGES.length)];
-
   const newSession = {
     id: newId,
     title: initialTitle,
     timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     messages: [],
     category: null,
-    mascot: randomMascot
+    mascot: 'mascot.png'
   };
   consumerChatSessions.unshift(newSession);
   activeSessionId = newId;
@@ -364,8 +322,8 @@ function renderChatHistoryUI() {
 
   if (consumerChatSessions.length === 0) {
     container.innerHTML = `
-      <div id="history-empty-state" class="text-center py-8 px-4 border border-dashed border-amber-200 dark:border-amber-500/20 rounded-xl bg-amber-50/20">
-        <p class="text-[11px] text-amber-600 italic">Chưa có cuộc trò chuyện cũ.</p>
+      <div class="text-center py-6 px-4 border border-dashed border-slate-800 rounded-lg bg-slate-950/50">
+        <p class="text-[10px] text-slate-600 font-mono">Hanh trang rong.</p>
       </div>`;
     return;
   }
@@ -375,21 +333,18 @@ function renderChatHistoryUI() {
     const isActive = session.id === activeSessionId;
     const pill = document.createElement('div');
 
-    pill.className = `group flex items-center justify-between p-3 rounded-xl border transition-all duration-200 pointer cursor-pointer text-xs font-medium history-item-appear ${
+    pill.className = `group flex items-center justify-between p-2.5 rounded-lg border font-mono text-[11px] transition-all duration-150 cursor-pointer ${
       isActive
-      ? 'border-brand-electric/50 bg-brand-electric/5 text-brand-electric dark:bg-brand-electric/10'
-      : 'border-amber-200/70 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-950/10 text-amber-800 dark:text-amber-300 hover:bg-amber-100/60 dark:hover:bg-amber-900/20'
+      ? 'border-brand-electric bg-brand-electric/10 text-brand-electric shadow-[0_0_8px_rgba(0,149,218,0.2)]'
+      : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'
     }`;
 
-    const mascotFile = 'mascot.png';
-    const iconImageHtml = `<img src="img/${mascotFile}" alt="Mascot" class="w-6 h-6 object-contain rounded-md shadow-sm bg-white" onerror="this.src='img/mascot.png'">`;
-
     pill.innerHTML = `
-      <div class="flex items-center space-x-2.5 truncate w-[90%]">
-        <span class="shrink-0 flex items-center">${iconImageHtml}</span>
+      <div class="flex items-center space-x-2 truncate w-full">
+        <i class="fa-solid fa-box-open text-xs shrink-0 ${isActive ? 'text-brand-electric' : 'text-slate-600'}"></i>
         <div class="truncate flex flex-col text-left">
-          <span class="truncate font-semibold text-amber-950 dark:text-amber-100">${session.title}</span>
-          <span class="text-[10px] text-amber-600/80 dark:text-amber-400/60 mt-0.5">${session.timestamp} • Điện Máy Xanh</span>
+          <span class="truncate font-bold">${session.title}</span>
+          <span class="text-[9px] text-slate-600 mt-0.5">${session.timestamp}</span>
         </div>
       </div>`;
 
@@ -409,12 +364,12 @@ function restoreSessionMessages(session) {
   if (!session.messages || session.messages.length === 0) {
     chatBox.innerHTML = `
       <div class="flex items-start space-x-3.5 message-fade-in">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-slate-100 border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] bg-white">
-          <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
+        <div class="w-10 h-10 border-2 border-slate-700 bg-slate-900 flex items-center justify-center overflow-hidden shrink-0 shadow-[inset_0_0_6px_rgba(0,149,218,0.5)]">
+          <img src="img/mascot.png" class="w-[90%] h-[90%] object-contain animate-mascot-idle mascot-sprite-node">
         </div>
         <div class="space-y-1 max-w-[85%] w-full">
-          <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
-            <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
+          <div class="bg-slate-950/90 text-slate-300 rounded-lg px-5 py-3.5 border-2 border-slate-800 text-xs font-mono">
+            Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?
           </div>
         </div>
       </div>`;
@@ -431,10 +386,10 @@ function restoreSessionMessages(session) {
   chatBox.innerHTML = '';
   session.messages.forEach(msg => {
     if (msg.role === 'user') {
-      const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tl-none px-4 py-3 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-slate-900 border-2 border-brand-electric text-slate-100 rounded-lg px-4 py-2.5 text-xs font-mono">PLAYER> ${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     } else {
-      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain animate-mascot-idle"></div><div class="max-w-[85%] w-full bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 border-2 border-slate-700 bg-slate-900 flex items-center justify-center shrink-0 overflow-hidden"><img src="img/mascot.png" class="w-[90%] h-[90%] object-contain animate-mascot-idle mascot-sprite-node"></div><div class="max-w-[85%] w-full bg-slate-950/90 text-slate-300 rounded-lg px-5 py-3.5 border-2 border-slate-800 text-xs font-mono">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     }
   });
@@ -524,8 +479,8 @@ function handleFormSubmit(event) {
   input.value = '';
   showTypingIndicator();
 
-  // Van hanh cong cu Gamification phat hien Combo chi tiet tin nhan
-  evaluateMessageGamificationCombo(val);
+  // Kich hoat mach do tim to hop toan ma chiêu thong tin
+  analyzeStrategicSpellCombos(val);
 
   setTimeout(() => {
     removeTypingIndicator();
@@ -537,21 +492,20 @@ function dispatchLogicEngine(text) {
   const startTime = performance.now();
   const lower = text.toLowerCase();
 
-  // Kich hoat nhiem vu dau tien khi tro chuyen
-  if (!gameSystemState.quests.firstContact.completed) {
-    executeGamificationReward(gameSystemState.quests.firstContact.xpReward, 'Ket Noi Mascot');
-    triggerQuestCompletion('firstContact');
+  // Khoi dong chien dich ngay khi buoc vao tran combat dau tien
+  if (!playerGameState.campaignQuests.firstContact.done) {
+    modifyPlayerGameStats(playerGameState.campaignQuests.firstContact.prize, 'Lien Ket Linh Hon Mascot');
+    markCampaignQuestResolved('firstContact');
   }
 
   for (const [key, answer] of Object.entries(MOCK_FAQ)) {
     if (lower.includes(key)) {
       document.getElementById('rag-faq-status').textContent = `Khớp FAQ: [${key}]`;
       document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
-      appendAssistantMessage(`<p class="text-sm"><i class="fa-solid fa-circle-info text-brand-electric mr-1.5"></i>${answer}</p>`);
+      appendAssistantMessage(`<p class="text-xs font-mono"><i class="fa-solid fa-scroll text-amber-500 mr-1.5"></i>[THONG TIN QUAN TRONG] ${answer}</p>`);
 
-      // Thuong Diem khi tiep can FAQ He thong
-      executeGamificationReward(20, 'Khai Thac FAQ');
-      triggerQuestCompletion('faqExplorer');
+      modifyPlayerGameStats(25, 'Khai Pha Mat Thu FAQ');
+      markCampaignQuestResolved('supportNode');
       return;
     }
   }
@@ -569,21 +523,21 @@ function dispatchLogicEngine(text) {
   document.getElementById('active-category').textContent = sessionState.category || 'Chưa xác định';
   document.getElementById('slang-inspector').textContent = JSON.stringify(sessionState.collectedData);
 
-  // Kiem tra thuong quoc te cho viec dien thong tin phuc tap
-  let entitiesFoundCount = 0;
-  if (extracted.brand) entitiesFoundCount++;
-  if (extracted.budget) entitiesFoundCount++;
-  if (extracted.roomSize || extracted.familySize) entitiesFoundCount++;
-  if (entitiesFoundCount >= 2) {
-    executeGamificationReward(gameSystemState.quests.deepSearch.xpReward, 'Xay Dung Tieu Chi Chuyen Sau');
-    triggerQuestCompletion('deepSearch');
+  // Ghi nhan nhiem vu phuc tap phan tich tim kiem chuyen sau
+  let totalDetections = 0;
+  if (extracted.brand) totalDetections++;
+  if (extracted.budget) totalDetections++;
+  if (extracted.roomSize || extracted.familySize) totalDetections++;
+  if (totalDetections >= 2) {
+    modifyPlayerGameStats(playerGameState.campaignQuests.deepScan.prize, 'Phan Tich Tran Phap Chuyen Sau');
+    markCampaignQuestResolved('deepScan');
   }
 
   if (!sessionState.category) {
     sessionState.stage = 'INIT';
     document.getElementById('chat-stage').textContent = sessionState.stage;
     document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
-    appendAssistantMessage('<p class="text-sm">Dạ, em có thể hỗ trợ tư vấn chuyên sâu và so sánh thông thái về 3 nhóm sản phẩm: <strong>Máy lạnh, Tủ lạnh, hoặc Laptop</strong>. Anh/chị đang có nhu cầu tìm mua sản phẩm nào ạ?</p>');
+    appendAssistantMessage('Dạ, em có thể hỗ trợ tư vấn chuyên sâu và so sánh thông thái về 3 nhóm sản phẩm: <strong>Máy lạnh, Tủ lạnh, hoặc Laptop</strong>. Anh/chị đang có nhu cầu tìm mua sản phẩm nào ạ?');
     return;
   }
 
@@ -596,12 +550,12 @@ function dispatchLogicEngine(text) {
   if (sessionState.category === 'ac' && !sessionState.collectedData.roomSize) {
     if (sessionState.stage === 'PROBING') {
       sessionState.collectedData.roomSize = 12;
-      appendAssistantMessage('<p class="text-xs italic text-slate-400 mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Em xin phép lấy mức diện tích phòng ngủ tiêu chuẩn phổ thông (dưới 15m²) để lọc sản phẩm ngay cho mình nhé.</p>');
+      appendAssistantMessage('<p class="text-[11px] font-mono text-slate-500 mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> [MA LUCH BO TRO] Lay mac dinh khong gian phong ngu standard (duoi 15m2) de quet bau vat phu hop.</p>');
     } else {
       sessionState.stage = 'PROBING';
       document.getElementById('chat-stage').textContent = sessionState.stage;
       document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
-      appendAssistantMessage('<p class="text-sm">Dạ, để em tính toán công suất số Ngựa (HP) tối ưu nhất, anh/chị cho em hỏi <strong>diện tích phòng lắp đặt khoảng bao nhiêu m²</strong> (hoặc lắp cho không gian nào như phòng ngủ, phòng khách) ạ?</p>');
+      appendAssistantMessage('Dạ, để em tính toán công suất số Ngựa (HP) tối ưu nhất, anh/chị cho em hỏi <strong>diện tích phòng lắp đặt khoảng bao nhiêu m²</strong> (hoặc lắp cho không gian nào như phòng ngủ, phòng khách) ạ?');
       return;
     }
   }
@@ -609,12 +563,12 @@ function dispatchLogicEngine(text) {
   if (sessionState.category === 'fridge' && !sessionState.collectedData.familySize) {
     if (sessionState.stage === 'PROBING') {
       sessionState.collectedData.familySize = 3;
-      appendAssistantMessage('<p class="text-xs italic text-slate-400 mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Em xin phép lấy dung tích tiêu chuẩn cho hộ gia đình 3 - 4 thành viên phổ biến để đề xuất các mẫu tối ưu nhé.</p>');
+      appendAssistantMessage('<p class="text-[11px] font-mono text-slate-500 mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> [MA LUCH BO TRO] Tu dong thiet lap cau hinh tieu chuan ho gia dinh 3 thanh vien nhan khau.</p>');
     } else {
       sessionState.stage = 'PROBING';
       document.getElementById('chat-stage').textContent = sessionState.stage;
       document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
-      appendAssistantMessage('<p class="text-sm">Dạ, nhà mình dự kiến **có khoảng bao nhiêu thành viên** sẽ dùng chung tủ lạnh ạ, để em lọc mức dung tích (lít) chứa thực phẩm vừa vặn nhất cho gia đình mình?</p>');
+      appendAssistantMessage('Dạ, nhà mình dự kiến **có khoảng bao nhiêu thành viên** sẽ dùng chung tủ lạnh ạ, để em lọc mức dung tích (lít) chứa thực phẩm vừa vặn nhất cho gia đình mình?');
       return;
     }
   }
@@ -624,7 +578,7 @@ function dispatchLogicEngine(text) {
       sessionState.stage = 'PROBING';
       document.getElementById('chat-stage').textContent = sessionState.stage;
       document.getElementById('latency-val').textContent = Math.round(performance.now() - startTime) + 'ms';
-      appendAssistantMessage('<p class="text-sm">Dạ, anh/chị tìm mua laptop phục vụ chính cho **nhu cầu học tập văn phòng mỏng nhẹ** hay **đồ họa chơi game nặng** ạ? Nếu mình có khoảng ngân sách dự kiến, hãy chia sẻ để em định hình máy chuẩn nhất nha!</p>');
+      appendAssistantMessage('Dạ, anh/chị tìm mua laptop phục vụ chính cho **nhu cầu học tập văn phòng mỏng nhẹ** hay **đồ họa chơi game nặng** ạ? Nếu mình có khoảng ngân sách dự kiến, hãy chia sẻ để em định hình máy chuẩn nhất nha!');
       return;
     }
   }
@@ -682,17 +636,28 @@ function dispatchLogicEngine(text) {
 
   let introductionPrompt = "";
   if (isFallbackTriggered) {
-    introductionPrompt = `Dạ hiện tại kho hàng không có mẫu nào khớp hoàn hảo 100% tiêu chí đặc thù trên, em xin phép đề xuất **Top ${filteredProducts.length} sản phẩm bán chạy nhất** thuộc nhóm ngành hàng này tại Điện Máy Xanh để anh/chị cân nhắc ạ:`;
+    introductionPrompt = `Khai thac kho hang: Khong tim thay bao vat hop 100% thuoc tinh. Da cu phat **Top ${filteredProducts.length} thiet bi co ti le drop cao nhat** tai ma ban do de anh/chi lua chon:`;
   } else {
-    introductionPrompt = `Dạ tuyệt vời! Khảo sát kho hàng thời gian thực, em đã tìm thấy **${filteredProducts.length} sản phẩm tối ưu nhất** phù hợp hoàn chỉnh với mong muốn của mình. Dưới đây là phân tích đặc tính kỹ thuật kèm điểm đánh đổi thực tế:`;
+    introductionPrompt = `Ket qua quet tran dia thoi gian thuc: Tim thay **${filteredProducts.length} thiet bi dat chuan chi so**. Duoi day la thong so va danh gia nhuoc diem chi tiet:`;
   }
 
-  let cardsHtml = `<p class="text-[13.5px] leading-relaxed mb-4 text-slate-800 dark:text-slate-200">${introductionPrompt}</p>
+  let cardsHtml = `<p class="mb-4 font-mono text-xs">${introductionPrompt}</p>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
 
   filteredProducts.forEach((product, idx) => {
     const hasZeroInstallment = MOCK_PROMOTIONS.installment_0.includes(product.id);
     const promotionGift = MOCK_PROMOTIONS.discounts[product.id] || 'Tặng phiếu mua hàng trị giá 200.000đ (Áp dụng mua đồ gia dụng)';
+
+    // Algorithmic rarity index binding
+    let rarityClass = "loot-card-common";
+    let rarityLabel = "Vat Pham Thong Thuong";
+    if (product.price >= 6000000 && product.price <= 13000000) {
+      rarityClass = "loot-card-rare";
+      rarityLabel = "Bao Vat Hieng Co";
+    } else if (product.price > 13000000) {
+      rarityClass = "loot-card-legendary";
+      rarityLabel = "Vat Pham Truyen THUYET";
+    }
 
     let tradeOffAnalysis = "Dòng sản phẩm quốc dân, lượng đặt mua rất cao dễ gặp tình trạng thiếu hàng cục bộ tại một số quận huyện.";
     if (product.price < 6000000) {
@@ -703,46 +668,46 @@ function dispatchLogicEngine(text) {
 
     let specsHtml = "";
     if (sessionState.category === 'ac') {
-      specsHtml = `<li><i class="fa-solid fa-expand text-slate-400 mr-1.5"></i>Diện tích: <strong>${product.room_size}</strong></li>
-                   <li><i class="fa-solid fa-volume-low text-slate-400 mr-1.5"></i>Độ ồn: <strong>${product.noise}</strong></li>`;
+      specsHtml = `<li><i class="fa-solid fa-expand text-slate-500 mr-1.5"></i>Khong gian: <strong>${product.room_size}</strong></li>
+                   <li><i class="fa-solid fa-volume-low text-slate-500 mr-1.5"></i>Am thanh: <strong>${product.noise}</strong></li>`;
     } else if (sessionState.category === 'fridge') {
-      specsHtml = `<li><i class="fa-solid fa-box-open text-slate-400 mr-1.5"></i>Dung tích: <strong>${product.liters} Lít</strong></li>
-                   <li><i class="fa-solid fa-snowflake text-slate-400 mr-1.5"></i>Làm lạnh: <strong>${product.family_size}</strong></li>`;
+      specsHtml = `<li><i class="fa-solid fa-box-open text-slate-500 mr-1.5"></i>Suc chua: <strong>${product.liters} Lit</strong></li>
+                   <li><i class="fa-solid fa-snowflake text-slate-500 mr-1.5"></i>Cong nghe: <strong>${product.family_size}</strong></li>`;
     } else if (sessionState.category === 'laptop') {
-      specsHtml = `<li><i class="fa-solid fa-weight-hanging text-slate-400 mr-1.5"></i>Trọng lượng: <strong>${product.weight}</strong></li>
-                   <li><i class="fa-solid fa-laptop text-slate-400 mr-1.5"></i>Màn hình: <strong>${product.screen}</strong></li>`;
+      specsHtml = `<li><i class="fa-solid fa-weight-hanging text-slate-500 mr-1.5"></i>Khoi luong: <strong>${product.weight}</strong></li>
+                   <li><i class="fa-solid fa-laptop text-slate-500 mr-1.5"></i>Hien thi: <strong>${product.screen}</strong></li>`;
     }
 
     cardsHtml += `
-      <div class="bg-amber-50/60 dark:bg-amber-950/20 rounded-xl p-4 border border-amber-200/80 dark:border-amber-500/20 flex flex-col justify-between space-y-3.5 shadow-sm transition-all hover:shadow-md hover:border-amber-400/80">
+      <div class="${rarityClass} rounded-lg p-4 flex flex-col justify-between space-y-3.5 shadow-lg transition-transform hover:scale-[1.02] border font-mono">
         <div>
           <div class="flex items-center justify-between">
-            <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-200/50 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200 rounded">Đề xuất ${idx + 1}</span>
-            ${hasZeroInstallment ? `<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded flex items-center gap-0.5"><i class="fa-solid fa-bolt text-[8px]"></i> Trả góp 0%</span>` : ''}
+            <span class="px-2 py-0.5 text-[9px] font-bold bg-slate-900 text-slate-400 border border-slate-800 rounded uppercase">${rarityLabel}</span>
+            ${hasZeroInstallment ? `<span class="px-2 py-0.5 text-[9px] font-black bg-emerald-950 border border-emerald-500 text-emerald-400 rounded flex items-center gap-0.5"><i class="fa-solid fa-bolt text-[8px]"></i> GIAM TAI TOI DA</span>` : ''}
           </div>
-          <h3 class="font-bold text-[12.5px] text-slate-900 dark:text-white mt-2 line-clamp-2 h-9 leading-snug">${product.name}</h3>
-          <div class="text-[15px] font-extrabold text-blue-600 dark:text-brand-electric mt-1.5">${formatVND(product.price)}</div>
+          <h3 class="font-extrabold text-xs text-slate-100 mt-2 line-clamp-2 h-9 leading-snug">${product.name}</h3>
+          <div class="text-[14px] font-black text-brand-electric tracking-wider mt-1.5">${formatVND(product.price)}</div>
 
-          <ul class="text-[11px] text-slate-600 dark:text-slate-400 mt-2.5 space-y-1 bg-white/80 dark:bg-brand-dark/40 p-2.5 rounded-lg border border-amber-100 dark:border-brand-border/30">
+          <ul class="text-[10px] text-slate-400 mt-2.5 space-y-1.5 bg-slate-950 p-2.5 rounded border border-slate-900">
             ${specsHtml}
           </ul>
 
-          <p class="text-[11px] text-amber-700 dark:text-amber-400 font-semibold mt-2.5 flex items-start"><i class="fa-solid fa-gift mr-1.5 mt-0.5 text-xs shrink-0"></i><span>Quà tặng: ${promotionGift}</span></p>
+          <p class="text-[10px] text-amber-500 font-bold mt-2.5 flex items-start"><i class="fa-solid fa-gift mr-1.5 mt-0.5 text-xs shrink-0"></i><span>Thuong kem: ${promotionGift}</span></p>
         </div>
 
-        <div class="bg-white dark:bg-amber-900/20 p-2.5 rounded-lg text-[11px] text-amber-900 dark:text-amber-400 border border-amber-200/60 leading-relaxed">
-          <strong>Điểm đánh đổi (Trade-off):</strong> ${tradeOffAnalysis}
+        <div class="bg-slate-950/60 p-2.5 rounded text-[10px] text-slate-400 border border-slate-900 leading-relaxed">
+          <strong class="text-orange-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Diem Danh Doi:</strong> ${tradeOffAnalysis}
         </div>
 
-        <button class="w-full custom-btn-select text-xs py-2.5 rounded-xl font-bold transition-all shadow-sm">Đặt Mua Ngay</button>
+        <button class="w-full custom-btn-select text-[11px] py-2 rounded font-black transition-colors uppercase bg-slate-900 hover:bg-brand-electric border border-slate-700 text-slate-300 hover:text-white">Khoa Bao Vat Ngay</button>
       </div>`;
   });
 
   cardsHtml += `</div>`;
   appendAssistantMessage(cardsHtml);
 
-  // Thuong diem khi quet xong danh muc kho hang RAG thanh cong
-  executeGamificationReward(15, 'Quet Du Lieu RAG Kho Hang');
+  // Thuong vang khi ket thuc quet thiet bi tu kho hang thanh cong
+  modifyPlayerGameStats(20, 'Khai Thac Kho Hang Hoan Tat');
 
   sessionState.stage = 'INIT';
   sessionState.category = null;
@@ -780,12 +745,12 @@ window.resetConversation = function() {
     if (chatBox) {
       chatBox.innerHTML = `
         <div class="flex items-start space-x-3.5 message-fade-in">
-          <div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)]">
-            <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
+          <div class="w-10 h-10 border-2 border-slate-700 bg-slate-900 flex items-center justify-center overflow-hidden shrink-0 shadow-[inset_0_0_6px_rgba(0,149,218,0.5)]">
+            <img src="img/mascot.png" class="w-[90%] h-[90%] object-contain animate-mascot-idle mascot-sprite-node">
           </div>
           <div class="space-y-1 max-w-[85%] w-full">
-            <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
-              <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
+            <div class="bg-slate-950/90 text-slate-300 rounded-lg px-5 py-3.5 border-2 border-slate-800 text-xs font-mono">
+              Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?
             </div>
           </div>
         </div>`;
@@ -815,138 +780,145 @@ window.fillQuickPrompt = function(promptText) {
 };
 
 // ==========================================
-// CÁC HÀM XỬ LÝ LOGIC ENGINE MỚI CỦA GAMIFICATION
+// OPERATIONAL ADVANCED SYSTEM GAME LOOPS
 // ==========================================
-function evaluateMessageGamificationCombo(text) {
+function analyzeStrategicSpellCombos(text) {
   const parsed = extractEntitiesFromText(text);
-  let comboScore = 0;
-  if (parsed.category) comboScore++;
-  if (parsed.brand) comboScore++;
-  if (parsed.budget) comboScore++;
-  if (parsed.roomSize || parsed.familySize) comboScore++;
+  let resolvedEntitiesCount = 0;
 
-  if (comboScore >= 2) {
-    gameSystemState.comboStreak++;
-    gameSystemState.score += (comboScore * 50 * gameSystemState.comboStreak);
-    executeGamificationReward(comboScore * 15, 'Combo Thong Tin Bac ' + comboScore);
-    triggerMascotJiggle();
+  if (parsed.category) resolvedEntitiesCount++;
+  if (parsed.brand) resolvedEntitiesCount++;
+  if (parsed.budget) resolvedEntitiesCount++;
+  if (parsed.roomSize || parsed.familySize) resolvedEntitiesCount++;
+
+  // Cap nhat thanh nang luong Mana Point hanh dong
+  if (resolvedEntitiesCount >= 2) {
+    playerGameState.spellStreak++;
+    playerGameState.mpGauge = Math.min(100, playerGameState.mpGauge + 20);
+    playerGameState.goldScore += (resolvedEntitiesCount * 40 * playerGameState.spellStreak);
+
+    modifyPlayerGameStats(resolvedEntitiesCount * 12, 'Dai Chieu To Hop Tieu Chi Banh Truong');
+    triggerMascotSpriteImpactAnimation();
   } else {
-    gameSystemState.comboStreak = 0;
+    playerGameState.spellStreak = 0;
+    playerGameState.mpGauge = Math.max(10, playerGameState.mpGauge - 15);
   }
-  updateGamificationVisualHUD();
+  syncDynamicGameHUDIndicators();
 }
 
-function executeGamificationReward(xpValue, reasonString) {
-  gameSystemState.xp += xpValue;
-  gameSystemState.score += (xpValue * 10);
+function modifyPlayerGameStats(xpGained, logicReason) {
+  playerGameState.xpCurrent += xpGained;
+  playerGameState.goldScore += (xpGained * 8);
 
-  // Tinh toan cap do Level Up phu hop
-  if (gameSystemState.xp >= gameSystemState.xpRequired) {
-    gameSystemState.xp -= gameSystemState.xpRequired;
-    gameSystemState.level++;
-    gameSystemState.xpRequired = Math.round(gameSystemState.xpRequired * 1.5);
+  if (playerGameState.xpCurrent >= playerGameState.xpTarget) {
+    playerGameState.xpCurrent -= playerGameState.xpTarget;
+    playerGameState.level++;
+    playerGameState.xpTarget = Math.round(playerGameState.xpTarget * 1.6);
+    playerGameState.hpGauge = 100;
+    playerGameState.mpGauge = 100;
 
-    // Day thong bao Level Up dac biet vao khung Chat
     setTimeout(() => {
-      renderLevelUpNotificationInChat();
-    }, 600);
+      pushLevelUpNotificationToViewport();
+    }, 500);
   }
 
-  updateGamificationVisualHUD();
-  renderFloatingScoreTextIndicator(xpValue, reasonString);
+  syncDynamicGameHUDIndicators();
+  spawnFloatingTextNotification(xpGained, logicReason);
 }
 
-function triggerQuestCompletion(questId) {
-  if (gameSystemState.quests[questId] && !gameSystemState.quests[questId].completed) {
-    gameSystemState.quests[questId].completed = true;
-    updateGamificationVisualHUD();
+function markCampaignQuestResolved(questCode) {
+  if (playerGameState.campaignQuests[questCode] && !playerGameState.campaignQuests[questCode].done) {
+    playerGameState.campaignQuests[questCode].done = true;
+    syncDynamicGameHUDIndicators();
 
-    const element = document.getElementById('quest-card-' + questId);
-    if (element) {
-      element.classList.add('quest-card-resolved');
-      const badge = element.querySelector('.quest-badge-status');
-      if (badge) {
-        badge.className = 'quest-badge-status px-2 py-0.5 text-[9px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded';
-        badge.textContent = 'Hoan thanh';
+    const uiNode = document.getElementById('quest-block-' + questCode);
+    if (uiNode) {
+      uiNode.className = 'flex justify-between items-center bg-slate-950 p-2 rounded border border-emerald-500/40 text-slate-400 quest-card-resolved';
+      const indicator = uiNode.querySelector('.quest-badge-status');
+      if (indicator) {
+        indicator.className = 'quest-badge-status px-1.5 py-0.5 text-[8px] font-black bg-emerald-950 text-emerald-400 border border-emerald-500 rounded uppercase';
+        indicator.textContent = 'Hoan Tat';
       }
     }
   }
 }
 
-function updateGamificationVisualHUD() {
-  const lvlElement = document.getElementById('game-mascot-level');
-  const titleElement = document.getElementById('game-mascot-title');
-  const xpBarElement = document.getElementById('game-xp-progress-bar');
-  const xpTextElement = document.getElementById('game-xp-text-value');
-  const scoreElement = document.getElementById('game-score-total');
-  const streakElement = document.getElementById('game-streak-multiplier');
+function syncDynamicGameHUDIndicators() {
+  const lvlNode = document.getElementById('game-mascot-level');
+  const rankNode = document.getElementById('game-mascot-title');
+  const barNode = document.getElementById('game-xp-progress-bar');
+  const valNode = document.getElementById('game-xp-text-value');
+  const goldNode = document.getElementById('game-score-total');
+  const streakNode = document.getElementById('game-streak-multiplier');
 
-  if (lvlElement) lvlElement.textContent = gameSystemState.level;
-  if (scoreElement) scoreElement.textContent = gameSystemState.score;
+  const hpNode = document.getElementById('hud-player-hp-bar');
+  const mpNode = document.getElementById('hud-player-mp-bar');
 
-  if (streakElement) {
-    if (gameSystemState.comboStreak > 0) {
-      streakElement.textContent = 'Combo x' + gameSystemState.comboStreak;
-      streakElement.classList.remove('hidden');
+  if (lvlNode) lvlNode.textContent = playerGameState.level;
+  if (goldNode) goldNode.textContent = playerGameState.goldScore.toLocaleString();
+
+  if (hpNode) hpNode.style.width = playerGameState.hpGauge + '%';
+  if (mpNode) mpNode.style.width = playerGameState.mpGauge + '%';
+
+  if (streakNode) {
+    if (playerGameState.spellStreak > 0) {
+      streakNode.textContent = 'COMBO X' + playerGameState.spellStreak;
+      streakNode.classList.remove('hidden');
     } else {
-      streakElement.classList.add('hidden');
+      streakNode.classList.add('hidden');
     }
   }
 
-  // Tinh toan phan tram thanh trai nghiem XP
-  const percentage = Math.min(100, Math.round((gameSystemState.xp / gameSystemState.xpRequired) * 100));
-  if (xpBarElement) xpBarElement.style.width = percentage + '%';
-  if (xpTextElement) xpTextElement.textContent = gameSystemState.xp + '/' + gameSystemState.xpRequired + ' XP';
+  const ratio = Math.min(100, Math.round((playerGameState.xpCurrent / playerGameState.xpTarget) * 100));
+  if (barNode) barNode.style.width = ratio + '%';
+  if (valNode) valNode.textContent = playerGameState.xpCurrent + '/' + playerGameState.xpTarget + ' XP';
 
-  // Cap nhat danh hieu tien hoa cua Mascot theo linh hon web
-  if (titleElement) {
-    if (gameSystemState.level === 1) titleElement.textContent = 'Mascot Tap Su';
-    else if (gameSystemState.level === 2) titleElement.textContent = 'Mascot Thong Thai';
-    else if (gameSystemState.level === 3) titleElement.textContent = 'Mascot Chuyen Gia';
-    else titleElement.textContent = 'Mascot Dai Su Dien May';
+  if (rankNode) {
+    if (playerGameState.level === 1) rankNode.textContent = 'Mascot Tan Binh';
+    else if (playerGameState.level === 2) rankNode.textContent = 'Mascot Cuong Chien';
+    else if (playerGameState.level === 3) rankNode.textContent = 'Mascot Uu Tu';
+    else rankNode.textContent = 'Mascot Huyen Thoai Toan Nang';
   }
 }
 
-function renderFloatingScoreTextIndicator(xpAmount, reason) {
-  const chatForm = document.getElementById('chat-form');
-  if (!chatForm) return;
+function spawnFloatingTextNotification(xpVal, cause) {
+  const referenceContainer = document.getElementById('chat-form');
+  if (!referenceContainer) return;
 
-  const indicator = document.createElement('div');
-  indicator.className = 'absolute bottom-16 left-4 bg-slate-900/90 text-white font-sans text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-md pointer-events-none z-50 animate-score-popup flex items-center space-x-1 border border-brand-electric/30';
-  indicator.innerHTML = `<i class="fa-solid fa-star text-brand-gold mr-1"></i><span>+${xpAmount} XP: ${reason}</span>`;
+  const node = document.createElement('div');
+  node.className = 'absolute bottom-20 left-6 bg-slate-950/95 border-2 border-brand-electric text-slate-200 font-mono text-[10px] font-bold px-3 py-1.5 rounded shadow-2xl pointer-events-none z-50 animate-score-popup flex items-center space-x-1';
+  node.innerHTML = `<i class="fa-solid fa-bolt text-amber-400 mr-1"></i><span>+${xpVal} XP: ${cause}</span>`;
 
-  chatForm.appendChild(indicator);
-  setTimeout(() => {
-    indicator.remove();
-  }, 1200);
+  referenceContainer.appendChild(node);
+  setTimeout(() => { node.remove(); }, 1400);
 }
 
-function renderLevelUpNotificationInChat() {
+function pushLevelUpNotificationToViewport() {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
 
   const html = `
     <div class="flex items-center justify-center py-2 message-fade-in select-none">
-      <div class="bg-gradient-to-r from-orange-500/10 via-amber-500/20 to-orange-500/10 border-y border-amber-500/30 w-full text-center py-2.5 px-4">
-        <p class="text-xs font-bold tracking-widest text-amber-800 dark:text-amber-300 uppercase">
-          <i class="fa-solid fa-angles-up mr-2 text-orange-500 animate-bounce"></i>
-          Lien ket Mascot tang bac: Cap do ${gameSystemState.level}
+      <div class="bg-gradient-to-r from-blue-950 via-slate-900 to-blue-950 border-y-2 border-brand-electric w-full text-center py-3 px-4 shadow-[0_0_15px_rgba(0,149,218,0.3)]">
+        <p class="text-xs font-black tracking-widest text-brand-electric font-mono uppercase">
+          <i class="fa-solid fa-angles-up mr-2 text-brand-electric animate-bounce"></i>
+          DANG CAP TIEN HOA - LINH HON MASCOT DAT TOC DO CAP: ${playerGameState.level}
         </p>
-        <p class="text-[10px] text-amber-700/80 dark:text-amber-400/70 mt-0.5">Mascot phat trien nang luc tu van, ho tro anh/chi nhiet tinh hon nua!</p>
+        <p class="text-[9px] font-mono text-slate-500 mt-1 uppercase">Thuoc tinh cu dan da dat trang thai toan man. Suc dung quet quac an duoc cuong hoa!</p>
       </div>
     </div>`;
   chatBox.insertAdjacentHTML('beforeend', html);
   scrollChatToBottom();
-  triggerMascotJiggle();
+  triggerMascotSpriteImpactAnimation();
 }
 
-function applyMascotVisualRankAura() {
-  const avatars = document.querySelectorAll('#assistant-avatar-node');
-  avatars.forEach(node => {
-    if (gameSystemState.level >= 2) {
-      node.classList.add('mascot-epic-glow');
+function applyCurrentDynamicMascotAura() {
+  const targetAvatars = document.querySelectorAll('#live-dynamic-avatar-node');
+  targetAvatars.forEach(img => {
+    if (playerGameState.level >= 2) {
+      img.classList.add('mascot-epic-glow');
     } else {
-      node.classList.remove('mascot-epic-glow');
+      img.classList.remove('mascot-epic-glow');
     }
   });
 }
@@ -957,8 +929,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) form.addEventListener('submit', handleFormSubmit);
 
   initCollapsibleSidebarLogic();
-  injectJiggleStyles();
-  updateGamificationVisualHUD();
+  syncDynamicGameHUDIndicators();
 
   const allElements = document.getElementsByTagName('*');
   for (let el of allElements) {
@@ -1016,42 +987,6 @@ document.addEventListener('DOMContentLoaded', () => {
     .animate-violent-bounce {
       animation: violentBounce 1s cubic-bezier(.36,.07,.19,.97) both !important;
       will-change: transform;
-    }
-  `;
-  document.head.appendChild(style);
-})();
-
-// ==========================================
-// FORCE INJECT HACKATHON LIVE DOTS ANIMATION
-// ==========================================
-(function injectUltraLivelyDots() {
-  if (document.getElementById('ultra-lively-dots-style')) return;
-  const style = document.createElement('style');
-  style.id = 'ultra-lively-dots-style';
-  style.innerHTML = `
-    .typing-dot {
-      display: inline-block !important;
-      will-change: transform, opacity, background-color, box-shadow;
-      animation: ultra-lively-wave 0.5s infinite cubic-bezier(0.25, 1, 0.5, 1) !important;
-    }
-    .typing-dot:nth-child(2) { animation-delay: 0.08s !important; }
-    .typing-dot:nth-child(3) { animation-delay: 0.16s !important; }
-
-    @keyframes ultra-lively-wave {
-      0%, 100% {
-        transform: translateY(0) scale(1);
-        opacity: 0.4;
-      }
-      35% {
-        transform: translateY(-10px) scaleX(0.8) scaleY(1.25) !important;
-        opacity: 1;
-        background-color: #0095da !important;
-        box-shadow: 0 0 10px #0095da, 0 0 20px rgba(0, 149, 218, 0.4);
-      }
-      70% {
-        transform: translateY(1.5px) scaleX(1.2) scaleY(0.85) !important;
-        opacity: 0.7;
-      }
     }
   `;
   document.head.appendChild(style);

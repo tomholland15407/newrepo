@@ -21,13 +21,13 @@
         extend: {
           colors: {
             brand: {
-              dark: '#070f1e',
-              panel: '#0f1d36',
-              border: '#1e2e4a',
+              dark: '#020617',
+              panel: '#0f172a',
+              border: '#1e293b',
               cobalt: '#1d4ed8',
               electric: '#0095da',
-              coral: '#ff3b30',
-              gold: '#ffb800',
+              coral: '#ef4444',
+              gold: '#eab308',
               success: '#10b981',
             }
           },
@@ -54,56 +54,71 @@
   <link rel="stylesheet" href="css/main.css">
 </head>
 
-<body class="bg-slate-50 dark:bg-brand-dark text-slate-800 dark:text-slate-200 font-sans h-screen flex flex-col overflow-hidden transition-colors duration-300">
+<body class="bg-slate-950 text-slate-200 font-sans h-screen flex flex-col overflow-hidden transition-colors duration-300 select-none">
 
-  <!-- PHẦN ĐẦU TRANG (HEADER BAR) -->
-  <header class="bg-white dark:bg-brand-panel border-b border-slate-200 dark:border-brand-border px-6 py-4 flex justify-between items-center shrink-0 transition-colors duration-300 shadow-sm dark:shadow-none z-10">
+  <!-- PHẦN ĐẦU TRANG - TÁI CẤU TRÚC THÀNH HỆ THỐNG MÀN HÌNH CHỈ SỐ HUD ARCADE CONSOLE -->
+  <header class="bg-slate-900 border-b-2 border-slate-800 px-6 py-3 flex justify-between items-center shrink-0 z-10 shadow-2xl relative">
     <div class="flex items-center space-x-3">
-      <!-- MASCOT THAY THẾ KHỐI CẦU VỚI HIỆU ỨNG FLOATING CHUYỂN ĐỘNG -->
-      <img id="header-mascot" src="img/mascot.png" alt="Mascot" class="w-11 h-11 object-contain shrink-0 transition-transform duration-500 hover:scale-105 animate-glowing-orb" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+      <!-- LINH HỒN WEB - MASCOT BAN PHÂN PHOÁI AURA DYNAMIC CHUYỂN ĐỘNG -->
+      <img id="header-mascot" src="img/mascot.png" class="w-12 h-12 object-contain shrink-0 transition-transform duration-500 hover:scale-110 animate-glowing-orb mascot-sprite-node">
       <div>
-        <h1 class="font-bold text-lg tracking-wide text-slate-900 dark:text-white flex items-center transition-colors duration-300">
-          Trợ Lý Mua Sắm Thông Thái
-          <span class="ml-2 px-2 py-0.5 text-xs bg-brand-electric/10 text-brand-electric rounded border border-brand-electric/20 font-normal">v1.5-Gamified</span>
+        <h1 class="font-black text-sm uppercase tracking-widest text-slate-100 flex items-center font-mono">
+          Console: Guardian Assistant
+          <span class="ml-2 px-1.5 py-0.2 text-[9px] bg-brand-electric/20 text-brand-electric border border-brand-electric rounded font-bold">GAME-EDITION v2.0</span>
         </h1>
-        <p class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">Tư vấn chọn sản phẩm Điện máy & Công nghệ tối ưu theo nhu cầu thực tế</p>
+
+        <!-- Bo hien thi HP/MP truc quan cap toc cho Player -->
+        <div class="flex items-center space-x-3 mt-1 font-mono text-[9px] text-slate-400">
+          <div class="flex items-center space-x-1">
+            <span class="font-bold text-red-500">HP</span>
+            <div class="w-16 bg-slate-950 h-1.5 border border-slate-800 rounded-sm overflow-hidden">
+              <div id="hud-player-hp-bar" class="bg-gradient-to-r from-red-600 to-red-400 h-full w-full transition-all duration-300"></div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-1">
+            <span class="font-bold text-blue-400">MP</span>
+            <div class="w-16 bg-slate-950 h-1.5 border border-slate-800 rounded-sm overflow-hidden">
+              <div id="hud-player-mp-bar" class="bg-gradient-to-r from-blue-600 to-blue-400 h-full w-full transition-all duration-300"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- BỘ THÔNG SỐ HUD GAMIFICATION TRÊN HEADER HỖ TRỢ HIỂN THỊ LINH HỒN CỦA WEB -->
-    <div class="hidden lg:flex items-center space-x-6 bg-slate-50 dark:bg-brand-dark/50 px-4 py-1.5 rounded-xl border border-slate-200 dark:border-brand-border">
-      <div class="flex flex-col text-left">
+    <!-- BỘ THÔNG SỐ HUD TRÊN HEADER CHỨA LINH HỒN VÀ TIẾN TRÌNH MASCOT VỚI THỐNG KÊ CHI TIẾT -->
+    <div class="hidden md:flex items-center space-x-5 bg-slate-950 px-4 py-2 border-2 border-slate-800 rounded shadow-inner">
+      <div class="flex flex-col text-left font-mono">
         <div class="flex items-center space-x-2">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider" id="game-mascot-title">Mascot Tap Su</span>
-          <span class="px-1.5 py-0.2 bg-brand-electric text-white text-[9px] font-extrabold rounded-md">CAP <span id="game-mascot-level">1</span></span>
+          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest" id="game-mascot-title">Mascot Tan Binh</span>
+          <span class="px-1.5 py-0.2 bg-brand-electric text-slate-950 text-[9px] font-black rounded border border-brand-electric">LV <span id="game-mascot-level">1</span></span>
         </div>
-        <!-- Thanh diem trai nghiem XP -->
-        <div class="w-32 bg-slate-200 dark:bg-brand-border h-1.5 rounded-full mt-1 overflow-hidden relative">
-          <div id="game-xp-progress-bar" class="bg-gradient-to-r from-blue-500 to-brand-electric h-full w-0 xp-transition-bar"></div>
+        <!-- Thanh nghiem ngat tinh toan diem tinh hoa XP -->
+        <div class="w-28 bg-slate-900 h-1.5 border border-slate-800 rounded-full mt-1 overflow-hidden">
+          <div id="game-xp-progress-bar" class="bg-gradient-to-r from-cyan-500 to-brand-electric h-full w-0 xp-transition-bar"></div>
         </div>
-        <span class="text-[8px] text-slate-400 font-semibold mt-0.5 text-right" id="game-xp-text-value">0/100 XP</span>
+        <span class="text-[7px] text-slate-500 font-bold mt-0.5 text-right" id="game-xp-text-value">0/100 XP</span>
       </div>
-      <div class="h-6 w-[1px] bg-slate-300 dark:bg-brand-border"></div>
-      <div class="text-left">
-        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Tong Diem Thuong</div>
-        <div class="text-sm font-black text-brand-electric tracking-wide"><span id="game-score-total">0</span> PTS</div>
+      <div class="h-6 w-[1px] bg-slate-800"></div>
+      <div class="text-left font-mono">
+        <div class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Tai Khoan Vang</div>
+        <div class="text-xs font-black text-brand-electric tracking-widest"><span id="game-score-total">0</span> GP</div>
       </div>
-      <span id="game-streak-multiplier" class="hidden px-2 py-0.5 bg-orange-500 text-white font-extrabold text-[9px] rounded-full animate-pulse">Combo x0</span>
+      <span id="game-streak-multiplier" class="hidden px-2 py-0.5 bg-orange-600 border border-orange-400 text-slate-100 font-black text-[8px] rounded uppercase animate-pulse">Combo x0</span>
     </div>
 
     <!-- KHU VỰC TRẠNG THÁI VÀ TOGGLE GIAO DIỆN -->
-    <div class="flex items-center space-x-4 text-xs">
-      <span class="flex items-center text-brand-success font-medium">
-        <span class="w-2 h-2 rounded-full bg-brand-success inline-block mr-2 animate-ping"></span>
-        Hệ thống Sẵn Sàng
+    <div class="flex items-center space-x-4 text-[10px] font-mono">
+      <span class="flex items-center text-brand-success font-bold uppercase tracking-wider">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-success inline-block mr-1.5 animate-ping"></span>
+        CONSOLED READY
       </span>
-      <span class="text-slate-300 dark:text-brand-border hidden sm:inline">|</span>
+      <span class="text-slate-800 hidden sm:inline">|</span>
 
-      <button id="theme-toggle-btn" class="flex items-center space-x-2 bg-slate-100 dark:bg-brand-dark/80 hover:bg-slate-200 dark:hover:bg-brand-border px-3 py-2 rounded-lg border border-slate-200 dark:border-brand-border text-slate-700 dark:text-slate-300 transition-all duration-300 shadow-sm active:scale-95" title="Chuyển đổi giao diện Sáng/Tối">
+      <button id="theme-toggle-btn" class="flex items-center space-x-2 bg-slate-950 hover:bg-slate-800 px-3 py-1.5 rounded border border-slate-800 text-slate-400 transition-all active:scale-95 shadow-md">
         <span id="theme-icon-container" class="flex items-center">
-          <i class="fa-solid fa-moon text-slate-600 dark:text-brand-gold text-sm"></i>
+          <i class="fa-solid fa-moon text-brand-gold text-xs"></i>
         </span>
-        <span class="font-semibold text-[11px] hidden md:inline" id="theme-text-status">Giao diện: Tối</span>
+        <span class="font-bold text-[10px] hidden md:inline" id="theme-text-status">MATRIX: DARK</span>
       </button>
     </div>
   </header>
@@ -111,97 +126,90 @@
   <!-- KHU VỰC CHÍNH (MAIN AREA) -->
   <main class="flex-1 flex overflow-hidden relative">
 
-    <!-- BÊN TRÁI: DANH SÁCH LỊCH SỬ TRÒ CHUYỆN (COLLAPSIBLE SIDEBAR) -->
-    <aside id="sidebar-panel" class="w-80 bg-white dark:bg-brand-panel border-r border-slate-200 dark:border-brand-border p-5 flex flex-col justify-between shrink-0 transition-colors duration-300 sidebar-transition relative z-20">
+    <!-- BÊN TRÁI: DỊCH CHUYỂN THÀNH BẢNG CHIÊN DỊCH VÀ VAULT HÀNH TRANG TRUY CẬP -->
+    <aside id="sidebar-panel" class="w-80 bg-slate-900 border-r-2 border-slate-800 p-4 flex flex-col justify-between shrink-0 sidebar-transition relative z-20 shadow-2xl">
 
-      <!-- Vỏ bọc kiểm soát cuộn nội dung khi thu nhỏ chiều rộng -->
       <div class="space-y-4 w-72 flex flex-col flex-1 overflow-hidden">
 
-        <!-- Header Sidebar chứa tiêu đề thân thiện và nút thu gọn -->
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-brand-border/60 pb-2 shrink-0">
-          <div class="flex items-center space-x-2 text-slate-900 dark:text-white">
-            <i class="fa-solid fa-clock-rotate-left text-brand-electric"></i>
-            <h2 class="text-sm font-bold tracking-wide">Lịch sử tư vấn</h2>
+        <!-- Header Panel -->
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2 shrink-0">
+          <div class="flex items-center space-x-2 text-slate-200 font-mono">
+            <i class="fa-solid fa-shield-halved text-brand-electric"></i>
+            <h2 class="text-xs font-black uppercase tracking-widest">Nhiem Vu & Hanh Trang</h2>
           </div>
-          <button id="btn-close-sidebar" class="text-slate-400 hover:text-brand-coral dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-brand-dark/60 transition-all" title="Thu gọn thanh lịch sử">
+          <button id="btn-close-sidebar" class="text-slate-500 hover:text-brand-coral p-1.5 rounded border border-transparent hover:border-slate-800 transition-all" title="Collapse Control">
             <i class="fa-solid fa-angles-left"></i>
           </button>
         </div>
 
-        <!-- NÚT GRADIENT CAO CẤP TẠO ĐIỂM NHẤN HOÀN HẢO CHO SIDEBAR -->
-        <button onclick="window.resetConversation()" class="w-full bg-gradient-to-b from-[#008bfc] to-[#006bd6] hover:from-[#0096ff] hover:to-[#007be8] text-white font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 shadow-[0_4px_12px_rgba(0,107,214,0.25)] hover:shadow-[0_6px_16px_rgba(0,107,214,0.35)] shrink-0 active:scale-[0.97]">
-          <i class="fa-solid fa-plus text-sm"></i>
-          <span class="tracking-wide">Bắt đầu tư vấn mới</span>
+        <!-- NEW GAME CORE OPERATIONAL TRIGGER -->
+        <button onclick="window.resetConversation()" class="w-full bg-slate-950 hover:bg-slate-800 border-2 border-brand-electric text-brand-electric font-mono font-black text-xs py-2.5 px-4 rounded transition-all shadow-[0_0_10px_rgba(0,149,218,0.15)] active:scale-[0.98] uppercase tracking-wider flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-rotate text-xs"></i>
+          <span>Khoi Tao Campaign Moi</span>
         </button>
 
-        <!-- PHÂN HỆ THEO DÕI NHIỆM VỤ CHI TIẾT (GAMIFICATION QUEST MANAGER) -->
-        <div class="bg-slate-50 dark:bg-brand-dark/40 border border-slate-200 dark:border-brand-border p-3 rounded-xl shrink-0 space-y-2">
-          <div class="flex items-center space-x-1.5 text-slate-900 dark:text-white text-[11px] font-extrabold tracking-wider uppercase">
+        <!-- PHÂN HỆ THEO DÕI NHIỆM VỤ CHI TIẾT DÀNH CHO BẢN CẤP TIẾN PHÁT TRIỂN -->
+        <div class="bg-slate-950 border border-slate-800 p-3 rounded space-y-2 shrink-0 font-mono">
+          <div class="flex items-center space-x-1.5 text-slate-300 text-[10px] font-black tracking-widest uppercase">
             <i class="fa-solid fa-trophy text-brand-gold text-xs"></i>
-            <span>Nhiệm Vụ Thân Thiết Mascot</span>
+            <span>Campaign Quests Tracker</span>
           </div>
 
-          <div class="space-y-1.5 text-[11px]">
-            <div id="quest-card-firstContact" class="flex justify-between items-center bg-white dark:bg-brand-panel p-2 rounded-lg border border-slate-200 dark:border-brand-border/60 transition-colors">
-              <span class="text-slate-700 dark:text-slate-300 font-medium">1. Bat dau tro chuyen</span>
-              <span class="quest-badge-status px-2 py-0.5 text-[9px] font-bold bg-slate-100 text-slate-500 dark:bg-brand-border dark:text-slate-400 rounded">Chua khoa</span>
+          <div class="space-y-1 text-[10px]">
+            <div id="quest-block-firstContact" class="flex justify-between items-center bg-slate-900 p-2 rounded border border-slate-800 text-slate-500 transition-colors">
+              <span class="font-medium">1. Bat dau chien dich</span>
+              <span class="quest-badge-status px-1.5 py-0.5 text-[8px] font-bold bg-slate-950 text-slate-600 border border-slate-800 rounded uppercase">Locked</span>
             </div>
 
-            <div id="quest-card-deepSearch" class="flex justify-between items-center bg-white dark:bg-brand-panel p-2 rounded-lg border border-slate-200 dark:border-brand-border/60 transition-colors">
-              <span class="text-slate-700 dark:text-slate-300 font-medium">2. Nhap ngu canh sau</span>
-              <span class="quest-badge-status px-2 py-0.5 text-[9px] font-bold bg-slate-100 text-slate-500 dark:bg-brand-border dark:text-slate-400 rounded">Chua khoa</span>
+            <div id="quest-block-deepScan" class="flex justify-between items-center bg-slate-900 p-2 rounded border border-slate-800 text-slate-500 transition-colors">
+              <span class="font-medium">2. Khai pha thuoc tinh</span>
+              <span class="quest-badge-status px-1.5 py-0.5 text-[8px] font-bold bg-slate-950 text-slate-600 border border-slate-800 rounded uppercase">Locked</span>
             </div>
 
-            <div id="quest-card-faqExplorer" class="flex justify-between items-center bg-white dark:bg-brand-panel p-2 rounded-lg border border-slate-200 dark:border-brand-border/60 transition-colors">
-              <span class="text-slate-700 dark:text-slate-300 font-medium">3. Tra cuu CSKH</span>
-              <span class="quest-badge-status px-2 py-0.5 text-[9px] font-bold bg-slate-100 text-slate-500 dark:bg-brand-border dark:text-slate-400 rounded">Chua khoa</span>
+            <div id="quest-block-supportNode" class="flex justify-between items-center bg-slate-900 p-2 rounded border border-slate-800 text-slate-500 transition-colors">
+              <span class="font-medium">3. Thu thap thong tin</span>
+              <span class="quest-badge-status px-1.5 py-0.5 text-[8px] font-bold bg-slate-950 text-slate-600 border border-slate-800 rounded uppercase">Locked</span>
             </div>
 
-            <div id="quest-card-conversionMaster" class="flex justify-between items-center bg-white dark:bg-brand-panel p-2 rounded-lg border border-slate-200 dark:border-brand-border/60 transition-colors">
-              <span class="text-slate-700 dark:text-slate-300 font-medium">4. Dat hang sieu toc</span>
-              <span class="quest-badge-status px-2 py-0.5 text-[9px] font-bold bg-slate-100 text-slate-500 dark:bg-brand-border dark:text-slate-400 rounded">Chua khoa</span>
+            <div id="quest-block-instantBuy" class="flex justify-between items-center bg-slate-900 p-2 rounded border border-slate-800 text-slate-500 transition-colors">
+              <span class="font-medium">4. Chinh phuc bao vat</span>
+              <span class="quest-badge-status px-1.5 py-0.5 text-[8px] font-bold bg-slate-950 text-slate-600 border border-slate-800 rounded uppercase">Locked</span>
             </div>
           </div>
         </div>
 
-        <!-- Container chứa các danh mục lịch sử trò chuyện được cập nhật động -->
+        <!-- Vault Hanh trang chua danh sach phan he cu cuoc hoi thoai -->
         <div class="flex-1 overflow-y-auto pr-1">
           <div id="chat-history-list" class="space-y-2">
-            <!-- Được render động từ app.js -->
-            <div id="history-empty-state" class="text-center py-8 px-4 border border-dashed border-slate-200 dark:border-brand-border/40 rounded-xl">
-              <i class="fa-regular fa-comments text-slate-300 dark:text-slate-600 text-2xl mb-2 block"></i>
-              <p class="text-[11px] text-slate-400 dark:text-slate-500 italic">Chưa có cuộc trò chuyện cũ nào tại phiên này.</p>
+            <div class="text-center py-6 border border-dashed border-slate-800 rounded bg-slate-950/20">
+              <p class="text-[10px] text-slate-600 font-mono italic">Kho hang chua duoc nap thong tin.</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- FOOTER SIDEBAR NÂNG CẤP VỚI HỌA TIẾT ĐỒ HỌA SỌC CHÉO PHONG CÁCH DIGITAL -->
-      <div class="w-full font-sans select-none px-4 pb-4 text-center">
-
-        <!-- INTEGRATED OPTION C: MODERN TRIPLE-DASH SPLIT LINE -->
-        <div class="w-full flex items-center justify-center space-x-2 py-4 select-none">
-          <div class="h-[1px] flex-1 bg-gradient-to-r from-transparent to-slate-200 dark:to-brand-border/50"></div>
-          <div class="flex items-center space-x-1.5 shrink-0 px-1">
-            <span class="w-1.5 h-1 bg-brand-electric/30 dark:bg-brand-electric/20 rounded-full"></span>
-            <span class="w-6 h-1 bg-brand-electric shadow-[0_0_10px_rgba(0,149,218,0.7)] rounded-full animate-pulse"></span>
-            <span class="w-1.5 h-1 bg-brand-electric/30 dark:bg-brand-electric/20 rounded-full"></span>
+      <!-- KHOA DU LIEU BAO MAT VA CONSOLE FOOTER SYSTEM -->
+      <div class="w-full font-mono select-none text-center pt-2">
+        <div class="w-full flex items-center justify-center space-x-1.5 py-2">
+          <div class="h-[1px] flex-1 bg-gradient-to-r from-transparent to-slate-800"></div>
+          <div class="flex items-center space-x-1 shrink-0 px-1">
+            <span class="w-1 h-1 bg-brand-electric rounded-full"></span>
+            <span class="w-4 h-0.5 bg-brand-electric shadow-[0_0_8px_#0095da] rounded-full animate-pulse"></span>
+            <span class="w-1 h-1 bg-brand-electric rounded-full"></span>
           </div>
-          <div class="h-[1px] flex-1 bg-gradient-to-l from-transparent to-slate-200 dark:to-brand-border/50"></div>
+          <div class="h-[1px] flex-1 bg-gradient-to-l from-transparent to-slate-800"></div>
         </div>
-
-        <!-- Content Block -->
-        <div class="mt-3 space-y-1">
-          <div class="text-[12px] font-semibold tracking-wide text-amber-900 dark:text-amber-200">
-            Dữ liệu bảo mật & chính xác 100%
+        <div class="mt-2 space-y-0.5">
+          <div class="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+            Ledger Secure Core 100%
           </div>
-          <div class="text-[10px] tracking-normal text-stone-400 dark:text-stone-500 font-light">
-            Hệ thống CSKH tự động Điện Máy Xanh 2026.
+          <div class="text-[8px] tracking-normal text-slate-600 uppercase">
+            Platform Engine Terminal 2026.
           </div>
         </div>
       </div>
 
-      <!-- HỘP ĐEN GỠ LỖI ẨN -->
+      <!-- HỘP ĐEN GỠ LỖI ẨN CỦA HỆ THỐNG GỐC CHẠY CHÌNH CHÍNH -->
       <div hidden aria-hidden="true" class="absolute pointer-events-none opacity-0 invisible w-0 h-0 overflow-hidden">
         <span id="active-category">Chưa xác định</span>
         <span id="chat-stage">Khởi tạo</span>
@@ -213,99 +221,96 @@
       </div>
     </aside>
 
-    <!-- BÊN PHẢI: KHUNG CHAT TƯƠNG TÁC (INTERACTIVE CHAT INTERFACE) -->
-    <section class="flex-1 flex flex-col bg-gradient-to-br from-[#f3f7fa] via-[#edf2f7] to-[#e4ecf3] dark:from-brand-dark dark:to-brand-dark relative transition-colors duration-300 overflow-hidden custom-mesh-bg">
+    <!-- BÊN PHẢI: KHUNG TRẬN CHIẾN TÀI NĂNG (TACTICAL NARRATIVE BATTLE ENGINE SCREEN) -->
+    <section class="flex-1 flex flex-col relative transition-colors duration-300 overflow-hidden custom-mesh-bg">
 
-      <!-- ========================================================================= -->
-      <!-- THÀNH PHẦN KHỐI NỀN ĐƯỢC TỐI ƯU HÓA: PHÓNG ĐẠI TRÀN BIÊN KHÔNG GÂY MẤT TÍNH NĂNG -->
-      <!-- ========================================================================= -->
       <div class="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
-        <img src="img/dienmayxanh-bg.png" alt="Điện Máy Xanh Watermark"
-             class="w-full h-full object-cover opacity-[0.065] dark:opacity-[0.035] transition-opacity duration-300"
-             style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
+        <img src="img/dienmayxanh-bg.png" class="w-full h-full object-cover opacity-[0.025] border-none" style="image-rendering: pixelated;">
       </div>
-      <!-- ========================================================================= -->
 
-      <!-- Banner Thông báo + Nút Mở rộng Sidebar khi bị thu gọn -->
-      <div class="bg-white/80 dark:bg-brand-panel/40 border-b border-slate-200 dark:border-brand-border px-4 py-2 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 shrink-0 transition-colors duration-300 min-h-[45px] relative z-10">
+      <!-- Banner Dynamic Dashboard Control -->
+      <div class="bg-slate-900 border-b-2 border-slate-800 px-4 py-2 flex justify-between items-center text-[10px] font-mono text-slate-400 shrink-0 z-10 relative">
         <div class="flex items-center space-x-3">
-          <button id="btn-open-sidebar" class="hidden flex items-center space-x-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-blue-600 font-semibold shadow-sm hover:bg-slate-50 transition-all dark:bg-brand-panel dark:border-brand-border dark:text-brand-electric">
-            <i class="fa-solid fa-angles-right mr-1"></i> Lịch sử
+          <button id="btn-open-sidebar" class="hidden flex items-center space-x-1 px-2 py-1 bg-slate-950 border border-slate-800 rounded font-bold text-brand-electric shadow hover:bg-slate-900 transition-all">
+            <i class="fa-solid fa-angles-right mr-1"></i> Open Ledger
           </button>
           <div class="flex items-center space-x-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-brand-electric inline-block animate-pulse"></span>
-            <span class="truncate max-w-[250px] sm:max-w-none">Mẹo: Nhập nhu cầu mua sắm bằng tiếng Việt tự nhiên để nhận tư vấn tốt nhất.</span>
+            <span class="w-1 h-1 rounded-full bg-brand-electric inline-block animate-pulse"></span>
+            <span class="uppercase tracking-wide text-slate-500">System Formula: Su dung text tieng Viet tu nhien de thi trien phap thuat quet ma nguon.</span>
           </div>
         </div>
-        <button onclick="window.resetConversation()" class="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center space-x-1 text-[11px] bg-slate-50 dark:bg-brand-panel hover:bg-slate-100 dark:hover:bg-brand-border px-2.5 py-1 rounded border border-slate-200 dark:border-brand-border/40 shadow-sm shrink-0">
-          <i class="fa-solid fa-rotate-left"></i>
-          <span class="hidden sm:inline">Làm mới cuộc trò chuyện</span>
+        <button onclick="window.resetConversation()" class="text-slate-400 hover:text-slate-100 transition-colors flex items-center space-x-1 bg-slate-950 px-2.5 py-1 rounded border border-slate-800 shadow-md shrink-0 uppercase font-black text-[9px]">
+          <i class="fa-solid fa-sync"></i>
+          <span class="hidden sm:inline">Refresh Terminal</span>
         </button>
       </div>
 
-      <!-- Khu vực hiển thị tin nhắn -->
+      <!-- Khu vực hiển thị tin nhắn - CHUYỂN HÓA THÀNH RETRO BATTLE SCREEN DIALOG FEED -->
       <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-6 relative z-10">
 
-        <!-- THẺ TIN NHẮN CHÀO MỪNG ĐÃ ĐƯỢC PHỦ MÀU XANH CAO CẤP MỚI ĐỒNG BỘ -->
+        <!-- THẺ TIN NHẮN CHÀO MỪNG CONSOLE ĐẦU GAME NHẬP CUỘC -->
         <div class="flex items-start space-x-3.5 message-fade-in">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-slate-100 border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden">
-            <img src="img/mascot.png" alt="Mascot Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
+          <div class="w-10 h-10 border-2 border-slate-700 bg-slate-900 flex items-center justify-center shrink-0 overflow-hidden shadow-[inset_0_0_6px_rgba(0,149,218,0.5)]">
+            <img src="img/mascot.png" class="w-[90%] h-[90%] object-contain animate-mascot-idle mascot-sprite-node">
           </div>
 
-          <div class="space-y-1.5 max-w-[85%] w-full sm:w-auto">
-            <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm transition-all">
-              <p class="text-[13.5px] leading-relaxed text-slate-900 dark:text-slate-100">
-                Dạ, em xin chào anh/chị ạ! Em là <strong class="text-slate-950 dark:text-white font-bold">Trợ lý Mua sắm Thông thái</strong> đồng hành cùng anh/chị tại hệ thống Điện Máy Xanh.
+          <div class="space-y-1.5 max-w-[85%] w-full sm:w-auto font-mono">
+            <div class="bg-slate-950/95 text-slate-300 rounded-lg px-5 py-3.5 border-2 border-slate-800 shadow-2xl relative">
+              <div class="absolute top-0 left-0 w-1.5 h-1.5 bg-brand-electric"></div>
+              <div class="absolute top-0 right-0 w-1.5 h-1.5 bg-brand-electric"></div>
+              <p class="text-xs tracking-wide">
+                Dạ, em xin kính chào anh/chị! Hân hạnh được gia nhập tổ đội hành trình cùng anh/chị. Em là <strong class="text-white font-black">Trợ lý Mua sắm Thông thái</strong> - Linh hồn dẫn đường phân tích hệ thống dữ liệu Điện Máy Xanh.
               </p>
-              <p class="text-[13.5px] leading-relaxed mt-2.5 text-slate-800 dark:text-slate-300">
-                Em ở đây để hỗ trợ anh/chị chọn lựa các dòng sản phẩm công nghệ và điện máy phù hợp nhất dựa trên nhu cầu sử dụng thực tế, không gian lắp đặt, số lượng thành viên hay hạn mức tài chính cụ thể của gia đình mình.
+              <p class="text-xs mt-2 text-slate-400">
+                Em đã sẳn sàng kích hoạt ma trận quét thuộc tính thiết bị tối ưu theo diện tích khong gian, quy mo nhan khau su dung va muc tieu tai chinh cua to doi.
               </p>
-              <p class="text-[13.5px] leading-relaxed mt-2.5 text-slate-800 dark:text-slate-300">
-                Anh/chị đang quan tâm đến nhóm sản phẩm nào dưới đây để em hỗ trợ tư vấn, phân tích và so sánh ngay lập tức ạ?
+              <p class="text-xs mt-2 text-slate-400">
+                Hay chon nhanh nhanh loai thiet bi muon dua vao luc luong phan tich duoi day:
               </p>
 
-              <!-- CÁC THẺ DANH MỤC ĐƯỢC GIỮ NGUYÊN MÀU CAM ẤM -->
+              <!-- GIỮ NGUYÊN HOÀN TOÀN CÁC CHỨC NĂNG VÀ MÀU SẮC PHỤ TRỢ NHƯNG PHỦ PHONG CÁCH RETRO SKILL SLOTS -->
               <div class="mt-4 flex gap-2 flex-wrap">
-                <span onclick="window.fillQuickPrompt('Tư vấn mua máy lạnh')" class="px-3 py-1 bg-[#fffbf4] hover:bg-[#fff3db] text-[#b25e00] text-xs font-semibold rounded-lg border border-[#f5d0a1] cursor-pointer transition-all duration-150 shadow-sm active:scale-95">Máy lạnh</span>
-                <span onclick="window.fillQuickPrompt('Tư vấn mua tủ lạnh')" class="px-3 py-1 bg-[#fffbf4] hover:bg-[#fff3db] text-[#b25e00] text-xs font-semibold rounded-lg border border-[#f5d0a1] cursor-pointer transition-all duration-150 shadow-sm active:scale-95">Tủ lạnh</span>
-                <span onclick="window.fillQuickPrompt('Tư vấn mua laptop')" class="px-3 py-1 bg-[#fffbf4] hover:bg-[#fff3db] text-[#b25e00] text-xs font-semibold rounded-lg border border-[#f5d0a1] cursor-pointer transition-all duration-150 shadow-sm active:scale-95">Laptop</span>
+                <span onclick="window.fillQuickPrompt('Tư vấn mua máy lạnh')" class="px-3 py-1 bg-amber-950 text-amber-400 border border-amber-600 text-[10px] font-black rounded cursor-pointer transition-all hover:bg-amber-900 uppercase tracking-wider shadow-md active:scale-95">Skill: AC Frost Bolt</span>
+                <span onclick="window.fillQuickPrompt('Tư vấn mua tủ lạnh')" class="px-3 py-1 bg-amber-950 text-amber-400 border border-amber-600 text-[10px] font-black rounded cursor-pointer transition-all hover:bg-amber-900 uppercase tracking-wider shadow-md active:scale-95">Skill: Fridge Zero Freeze</span>
+                <span onclick="window.fillQuickPrompt('Tư vấn mua laptop')" class="px-3 py-1 bg-amber-950 text-amber-400 border border-amber-600 text-[10px] font-black rounded cursor-pointer transition-all hover:bg-amber-900 uppercase tracking-wider shadow-md active:scale-95">Skill: Laptop Core Overload</span>
               </div>
             </div>
-            <span class="text-[10px] text-slate-400 font-medium pl-1.5 block">Vừa mới gửi</span>
+            <span class="text-[8px] text-slate-600 font-mono uppercase tracking-widest pl-1 block">Live Turn Status</span>
           </div>
         </div>
 
       </div>
 
-      <!-- Thẻ Gợi ý Kịch bản nhanh (Quick Prompts) -->
-      <div class="px-6 py-3 bg-white/60 dark:bg-brand-panel/30 border-t border-slate-200 dark:border-brand-border/40 shrink-0 transition-colors duration-300 relative z-10">
-        <p class="text-[11px] text-slate-500 dark:text-slate-500 mb-2 flex items-center font-semibold uppercase tracking-wider">
-          <i class="fa-regular fa-lightbulb text-brand-gold mr-1.5"></i> Gợi ý nhu cầu tìm kiếm nhanh:
+      <!-- Thẻ Gợi ý Kịch bản nhanh (Quick Strategic Action Spells Matrix) -->
+      <div class="px-6 py-3 bg-slate-900 border-t-2 border-slate-800 shrink-0 z-10 relative font-mono">
+        <p class="text-[9px] text-slate-500 mb-2 flex items-center font-black uppercase tracking-widest">
+          <i class="fa-regular fa-lightbulb text-brand-gold mr-1.5"></i> Goi y cau lenh thi trien nhanh:
         </p>
         <div class="flex flex-wrap gap-2">
-          <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 củ cho phòng ngủ')" class="text-xs bg-[#fefce8] hover:bg-[#fef9c3] border border-[#fef08a] text-[#854d0e] font-medium px-4 py-1.5 rounded-full transition-all duration-150 hover:scale-[1.03] active:scale-95 shadow-sm">
-            "Mua đh pana dưới 15 củ"
+          <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 củ cho phòng ngủ')" class="text-[10px] bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 font-bold px-3 py-1.5 rounded transition-transform hover:scale-[1.02] active:scale-95 shadow-md">
+            Cast: "Mua đh pana dưới 15 củ"
           </button>
-          <button onclick="window.fillQuickPrompt('Tìm tủ lạnh tầm 10tr cho nhà 4 người')" class="text-xs bg-[#fefce8] hover:bg-[#fef9c3] border border-[#fef08a] text-[#854d0e] font-medium px-4 py-1.5 rounded-full transition-all duration-150 hover:scale-[1.03] active:scale-95 shadow-sm">
-            "Tủ lạnh tầm 10tr cho 4 người"
+          <button onclick="window.fillQuickPrompt('Tìm tủ lạnh tầm 10tr cho nhà 4 người')" class="text-[10px] bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 font-bold px-3 py-1.5 rounded transition-transform hover:scale-[1.02] active:scale-95 shadow-md">
+            Cast: "Tủ lạnh tầm 10tr cho 4 người"
           </button>
-          <button onclick="window.fillQuickPrompt('Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học')" class="text-xs bg-[#fefce8] hover:bg-[#fef9c3] border border-[#fef08a] text-[#854d0e] font-medium px-4 py-1.5 rounded-full transition-all duration-150 hover:scale-[1.03] active:scale-95 shadow-sm">
-            "Laptop mỏng nhẹ ~15tr"
+          <button onclick="window.fillQuickPrompt('Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học')" class="text-[10px] bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 font-bold px-3 py-1.5 rounded transition-transform hover:scale-[1.02] active:scale-95 shadow-md">
+            Cast: "Laptop mỏng nhẹ ~15tr"
           </button>
         </div>
       </div>
 
-      <!-- Ô NHẬP LIỆU GỬI TIN NHẮN (INPUT BAR) -->
-      <footer class="p-4 bg-white dark:bg-brand-panel border-t border-slate-200 dark:border-brand-border shrink-0 transition-colors duration-300 shadow-lg dark:shadow-none relative z-10">
+      <!-- Ô NHẬP LIỆU GỬI TIN NHẮN CHUYỂN HOÀN TOÀN THÀNH COMMAND TERMINAL SLOT BAR -->
+      <footer class="p-4 bg-slate-900 border-t-2 border-slate-800 shrink-0 z-10 relative shadow-inner">
         <form id="chat-form" class="relative flex items-center">
-          <input type="text" id="user-input" placeholder="Nhập câu hỏi bằng tiếng Việt... (Ví dụ: 'Cần tìm tủ lạnh tầm 8 triệu cho gia đình 3 người tiết kiệm điện')"
-            class="w-full bg-slate-50 dark:bg-brand-dark border border-slate-200 dark:border-brand-border focus:border-brand-electric focus:ring-1 focus:ring-brand-electric text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm rounded-xl pl-4 pr-24 py-4 focus:outline-none transition-all duration-200 shadow-inner"
+          <div class="absolute left-4 pointer-events-none text-brand-electric font-mono font-black text-sm select-none">&gt;</div>
+          <input type="text" id="user-input" placeholder="Enter Command Matrix or Cast Magic Spell Formula here..."
+            class="w-full bg-slate-950 border-2 border-slate-800 focus:border-brand-electric focus:ring-0 text-slate-100 placeholder-slate-600 font-mono text-xs rounded pl-8 pr-28 py-3.5 focus:outline-none transition-all shadow-inner"
             autocomplete="off" required>
 
-          <div class="absolute right-3 flex items-center space-x-2">
-            <button type="submit" class="bg-gradient-to-b from-[#dc2626] to-[#b91c1c] hover:from-[#ea580c] hover:to-[#dc2626] text-white font-bold text-sm px-5 py-2 rounded-xl flex items-center space-x-2 transition-all duration-150 shadow-[0_4px_12px_rgba(220,38,38,0.3)] hover:shadow-[0_6px_16px_rgba(220,38,38,0.45)] active:scale-95">
-              <span>Gửi</span>
-              <i class="fa-solid fa-paper-plane text-xs"></i>
+          <div class="absolute right-2 flex items-center">
+            <button type="submit" class="bg-gradient-to-b from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white font-mono font-black text-xs px-4 py-2 rounded border border-red-900 transition-all shadow-md active:scale-95 uppercase tracking-wider flex items-center space-x-1.5">
+              <span>Execute</span>
+              <i class="fa-solid fa-gamepad text-xs"></i>
             </button>
           </div>
         </form>
@@ -324,11 +329,11 @@
 
       function updateToggleButton(isDark) {
         if (isDark) {
-          themeIconContainer.innerHTML = '<i class="fa-solid fa-sun text-brand-gold text-sm animate-pulse"></i>';
-          themeTextStatus.textContent = 'Giao diện: Tối';
+          themeIconContainer.innerHTML = '<i class="fa-solid fa-sun text-brand-gold text-xs animate-pulse"></i>';
+          themeTextStatus.textContent = 'MATRIX: DARK';
         } else {
-          themeIconContainer.innerHTML = '<i class="fa-solid fa-moon text-slate-600 text-sm"></i>';
-          themeTextStatus.textContent = 'Giao diện: Sáng';
+          themeIconContainer.innerHTML = '<i class="fa-solid fa-moon text-slate-400 text-xs"></i>';
+          themeTextStatus.textContent = 'MATRIX: LIGHT';
         }
       }
 
